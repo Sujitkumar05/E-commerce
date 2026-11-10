@@ -1,0 +1,1371 @@
+<!-- BACKDROP OVERLAY -->
+<div 
+  class="drawer-backdrop" 
+  *ngIf="isOpen" 
+  (click)="closeDrawer()" 
+  aria-hidden="true"
+></div>
+
+<!-- SLIDE-IN COLLAPSIBLE DRAWER -->
+<aside 
+  class="customer-drawer-panel" 
+  [class.open]="isOpen" 
+  [class.wide-mode]="drawerWidthMode === 'wide'"
+  *ngIf="customer"
+>
+
+  <!-- 1. DRAWER TOP HEADER -->
+  <div class="drawer-header">
+    <div class="header-customer-info">
+      <div class="customer-avatar" [style.background-color]="customer.avatarBg || '#dbeafe'">
+        <span>{{ customer.avatarInitials || (customer.name | slice:0:2) }}</span>
+      </div>
+      <div class="customer-title-group">
+        <div class="name-status-line">
+          <h2 class="customer-name">{{ customer.name }}</h2>
+          <span class="status-badge" [ngClass]="'status-' + customer.status.toLowerCase()">
+            {{ customer.status }}
+          </span>
+          <span class="type-pill" [ngClass]="'type-' + customer.customerType.toLowerCase()">
+            {{ customer.customerType }}
+          </span>
+        </div>
+        <div class="meta-subline">
+          <span class="cust-id-tag">{{ customer.id }}</span>
+          <span class="dot-separator">•</span>
+          <span class="joined-tag">Joined {{ customer.joinDate }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Header Action Controls -->
+    <div class="header-controls">
+      <!-- Width toggle (Standard <-> Wide) -->
+      <button 
+        type="button" 
+        class="ctrl-btn" 
+        (click)="toggleDrawerWidth()" 
+        [title]="drawerWidthMode === 'standard' ? 'Expand to wide view' : 'Collapse to standard view'"
+      >
+        <i class="bi" [ngClass]="drawerWidthMode === 'standard' ? 'bi-arrows-angle-expand' : 'bi-arrows-angle-contract'"></i>
+        <span class="ctrl-btn-label">{{ drawerWidthMode === 'standard' ? 'Wide' : 'Compact' }}</span>
+      </button>
+
+      <!-- Close Drawer Button -->
+      <button 
+        type="button" 
+        class="ctrl-btn close-btn" 
+        (click)="closeDrawer()" 
+        title="Close customer drawer"
+      >
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. HIGH PRIORITY STOCK DEFICIT ALERT BANNER -->
+  <div class="stock-deficit-alert-banner" *ngIf="allDeficitCount > 0">
+    <div class="alert-icon-box">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+    </div>
+    <div class="alert-content">
+      <div class="alert-heading">
+        <strong>Inventory Shortage Flagged!</strong>
+        <span class="badge-deficit">{{ allDeficitCount }} {{ allDeficitCount === 1 ? 'item deficit' : 'items deficit' }}</span>
+      </div>
+      <p class="alert-desc">
+        Customer orders contain quantities exceeding live warehouse stock. Use <strong>Partial Dispatch</strong> to ship available items immediately while routing short items directly to procurement.
+      </p>
+    </div>
+    <div class="alert-action">
+      <button 
+        type="button" 
+        class="btn-banner-action" 
+        (click)="activeSection = 'fulfillment'"
+      >
+        <i class="bi bi-box2-heart-fill"></i>
+        <span>Go to Fulfillment</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 3. NAVIGATION SECTION TABS -->
+  <div class="drawer-nav-tabs">
+    <!-- Dedicated Order Fulfillment Tab -->
+    <button 
+      type="button" 
+      class="nav-tab-btn" 
+      [class.active]="activeSection === 'fulfillment'"
+      (click)="activeSection = 'fulfillment'"
+    >
+      <i class="bi bi-box2-heart-fill text-primary"></i>
+      <span>Order Fulfillment</span>
+      <span class="tab-badge warning" *ngIf="highPriorityCount > 0">{{ highPriorityCount }} High Urgency</span>
+      <span class="tab-badge check" *ngIf="highPriorityCount === 0">Ready</span>
+    </button>
+
+    <!-- Inventory Comparison Tab -->
+    <button 
+      type="button" 
+      class="nav-tab-btn" 
+      [class.active]="activeSection === 'inventory'"
+      (click)="activeSection = 'inventory'"
+    >
+      <i class="bi bi-layers-half"></i>
+      <span>Inventory Comparison</span>
+      <span class="tab-badge warning" *ngIf="allDeficitCount > 0">{{ allDeficitCount }} Short</span>
+      <span class="tab-badge check" *ngIf="allDeficitCount === 0">OK</span>
+    </button>
+
+    <!-- Orders & Items Tab -->
+    <button 
+      type="button" 
+      class="nav-tab-btn" 
+      [class.active]="activeSection === 'orders'"
+      (click)="activeSection = 'orders'"
+    >
+      <i class="bi bi-box-seam"></i>
+      <span>Orders & Items</span>
+      <span class="tab-badge info">{{ customer.recentOrders?.length || 0 }}</span>
+    </button>
+
+    <!-- Customer Profile Tab -->
+    <button 
+      type="button" 
+      class="nav-tab-btn" 
+      [class.active]="activeSection === 'profile'"
+      (click)="activeSection = 'profile'"
+    >
+      <i class="bi bi-person-lines-fill"></i>
+      <span>Customer Profile</span>
+    </button>
+
+    <!-- Procurement Log Tab -->
+    <button 
+      type="button" 
+      class="nav-tab-btn" 
+      [class.active]="activeSection === 'procurement'"
+      (click)="activeSection = 'procurement'"
+    >
+      <i class="bi bi-truck"></i>
+      <span>Procurement Log</span>
+      <span class="tab-badge neutral">{{ customer.procurementRequisitions?.length || 0 }}</span>
+    </button>
+  </div>
+
+  <!-- 4. DRAWER BODY SCROLL AREA -->
+  <div class="drawer-body">
+
+    <!-- ========================================================================= -->
+    <!-- SECTION 1: ORDER FULFILLMENT TAB (PRIORITY, PICKING, PARTIAL DISPATCH)   -->
+    <!-- ========================================================================= -->
+    <div class="section-pane" *ngIf="activeSection === 'fulfillment'">
+      
+      <!-- Fulfillment Priority Toolbar & Filter -->
+      <div class="fulfillment-toolbar-card">
+        <div class="toolbar-head">
+          <div class="t-title">
+            <h4 class="m-0"><i class="bi bi-speedometer2"></i> Fulfillment Queue</h4>
+            <span class="sub-muted">Orders sorted by nearest delivery deadline</span>
+          </div>
+          <div class="urgency-legend-pill">
+            <span class="legend-tag tag-high">High (≤ 2d)</span>
+            <span class="legend-tag tag-medium">Medium (3-5d)</span>
+            <span class="legend-tag tag-low">Low (> 5d)</span>
+          </div>
+        </div>
+
+        <div class="priority-filter-tabs">
+          <button 
+            type="button" 
+            class="p-tab" 
+            [class.active]="fulfillmentPriorityFilter === 'All'"
+            (click)="fulfillmentPriorityFilter = 'All'"
+          >
+            All Orders ({{ customer.recentOrders?.length || 0 }})
+          </button>
+          <button 
+            type="button" 
+            class="p-tab tab-p-high" 
+            [class.active]="fulfillmentPriorityFilter === 'High'"
+            (click)="fulfillmentPriorityFilter = 'High'"
+          >
+            🚨 High ({{ highPriorityCount }})
+          </button>
+          <button 
+            type="button" 
+            class="p-tab tab-p-medium" 
+            [class.active]="fulfillmentPriorityFilter === 'Medium'"
+            (click)="fulfillmentPriorityFilter = 'Medium'"
+          >
+            ⚠️ Medium ({{ mediumPriorityCount }})
+          </button>
+          <button 
+            type="button" 
+            class="p-tab tab-p-low" 
+            [class.active]="fulfillmentPriorityFilter === 'Low'"
+            (click)="fulfillmentPriorityFilter = 'Low'"
+          >
+            🟢 Low ({{ lowPriorityCount }})
+          </button>
+        </div>
+      </div>
+
+      <!-- Prioritized Orders List -->
+      <div class="fulfillment-orders-list" *ngIf="prioritizedFulfillmentOrders.length > 0">
+        <div 
+          class="fulfillment-order-card" 
+          *ngFor="let ord of prioritizedFulfillmentOrders"
+          [class.prio-card-high]="ord.fulfillmentPriority === 'High'"
+          [class.prio-card-medium]="ord.fulfillmentPriority === 'Medium'"
+          [class.prio-card-low]="ord.fulfillmentPriority === 'Low'"
+        >
+          
+          <!-- Collapsible Header -->
+          <div class="f-order-head" (click)="toggleOrderAccordion(ord)">
+            <div class="f-head-main">
+              <!-- Priority & Deadline Pill -->
+              <div class="priority-flag-pill" [ngClass]="'prio-' + (ord.fulfillmentPriority?.toLowerCase() || 'medium')">
+                <i class="bi" [ngClass]="ord.fulfillmentPriority === 'High' ? 'bi-fire' : ord.fulfillmentPriority === 'Medium' ? 'bi-clock-history' : 'bi-calendar-check'"></i>
+                <span class="prio-text">{{ ord.fulfillmentPriority }} Urgency</span>
+                <span class="prio-deadline">Deadline: {{ ord.deliveryDeadline }}</span>
+              </div>
+
+              <!-- Order Title Line -->
+              <div class="f-order-meta-line">
+                <span class="f-order-id">{{ ord.orderId }}</span>
+                <span class="f-order-amount">₹{{ ord.amount.toLocaleString() }}</span>
+                <span class="dispatch-badge" [ngClass]="getDispatchStatusClass(ord.dispatchStatus)">
+                  {{ ord.dispatchStatus || 'Unfulfilled' }}
+                </span>
+                <span class="item-count-text">{{ ord.items.length }} items</span>
+              </div>
+            </div>
+
+            <!-- Quick Action Buttons in Header -->
+            <div class="f-head-actions" (click)="$event.stopPropagation()">
+              <button 
+                type="button" 
+                class="btn-dsp-action btn-partial"
+                *ngIf="ord.dispatchStatus !== 'Fully Dispatched'"
+                (click)="openDispatchModal(ord, 'Partial', $event)"
+                title="Ship available stock immediately"
+              >
+                <i class="bi bi-box-arrow-up-right"></i>
+                <span>Partial Dispatch</span>
+              </button>
+
+              <button 
+                type="button" 
+                class="btn-dsp-action btn-full"
+                *ngIf="ord.dispatchStatus !== 'Fully Dispatched'"
+                (click)="openDispatchModal(ord, 'Full', $event)"
+                title="Ship entire order"
+              >
+                <i class="bi bi-send-check"></i>
+                <span>Full Dispatch</span>
+              </button>
+
+              <button type="button" class="btn-chevron" (click)="toggleOrderAccordion(ord)">
+                <i class="bi" [ngClass]="ord.isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Collapsible Order Fulfillment Body -->
+          <div class="f-order-body" *ngIf="ord.isExpanded">
+            
+            <!-- Shipping Destination Strip -->
+            <div class="f-destination-strip">
+              <div class="f-dest-item">
+                <i class="bi bi-geo-alt-fill text-danger"></i>
+                <div>
+                  <span class="f-dest-lbl">Ship To:</span>
+                  <span class="f-dest-val">{{ ord.shippingAddress }}</span>
+                </div>
+              </div>
+              <div class="f-dest-item">
+                <i class="bi bi-credit-card-2-front"></i>
+                <div>
+                  <span class="f-dest-lbl">Payment:</span>
+                  <span class="f-dest-val">{{ ord.paymentMethod }} ({{ ord.paymentStatus }})</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Warehouse Picking Information & Stock Checklist Table -->
+            <div class="picking-table-container">
+              <div class="picking-table-header">
+                <div class="pick-title">
+                  <i class="bi bi-clipboard2-check"></i>
+                  <span>Warehouse Picker Checklist & Location Router</span>
+                </div>
+                <span class="pick-instruction">Packers: tick items once retrieved from shelf</span>
+              </div>
+
+              <table class="picking-table">
+                <thead>
+                  <tr>
+                    <th class="th-picked text-center">Pick</th>
+                    <th>Item & Brand</th>
+                    <th>Warehouse Location (Aisle/Shelf)</th>
+                    <th class="text-center">Required</th>
+                    <th class="text-center">Stock</th>
+                    <th class="text-center">Dispatched</th>
+                    <th class="text-end">Status / Procurement</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let itm of ord.items" [class.row-picked]="itm.picked">
+                    <!-- Picker checkbox -->
+                    <td class="text-center">
+                      <input 
+                        type="checkbox" 
+                        class="picker-checkbox" 
+                        [checked]="itm.picked" 
+                        (change)="toggleItemPickerCheck(ord, itm, $event)"
+                        title="Mark item picked"
+                      />
+                    </td>
+
+                    <!-- Item info -->
+                    <td>
+                      <div class="p-item-cell">
+                        <img 
+                          [src]="itm.image" 
+                          [alt]="itm.name" 
+                          (error)="$any($event.target).src = '/images/wellness/neem-bottle-nature.jpg'"
+                          class="p-item-thumb"
+                        />
+                        <div class="p-item-meta">
+                          <span class="p-name">{{ itm.name }}</span>
+                          <span class="p-sku">SKU: {{ itm.sku }}</span>
+                        </div>
+                      </div>
+                    </td>
+
+                    <!-- Aisle & Shelf Warehouse Location -->
+                    <td>
+                      <div class="warehouse-location-pill" *ngIf="itm.pickingLocation">
+                        <i class="bi bi-layers"></i>
+                        <span class="loc-aisle">{{ itm.pickingLocation.aisle }}</span>
+                        <span class="loc-sep">•</span>
+                        <span class="loc-rack">{{ itm.pickingLocation.rack }}</span>
+                        <span class="loc-sep">•</span>
+                        <span class="loc-shelf">{{ itm.pickingLocation.shelf }} ({{ itm.pickingLocation.bin }})</span>
+                      </div>
+                      <span *ngIf="!itm.pickingLocation" class="text-muted">{{ itm.warehouseLocation }}</span>
+                    </td>
+
+                    <!-- Required Quantity -->
+                    <td class="text-center font-bold">{{ itm.quantity }}</td>
+
+                    <!-- Stock Available -->
+                    <td class="text-center">
+                      <span 
+                        class="stock-num-badge" 
+                        [class.stock-shortage]="itm.inStock < (itm.quantity - (itm.dispatchedQty || 0))"
+                        [class.stock-good]="itm.inStock >= (itm.quantity - (itm.dispatchedQty || 0))"
+                      >
+                        {{ itm.inStock }} in stock
+                      </span>
+                    </td>
+
+                    <!-- Dispatched Qty -->
+                    <td class="text-center">
+                      <span class="dispatched-count-tag" [class.partial-sent]="(itm.dispatchedQty || 0) > 0">
+                        {{ itm.dispatchedQty || 0 }} / {{ itm.quantity }}
+                      </span>
+                    </td>
+
+                    <!-- Deficit & Procurement Action -->
+                    <td class="text-end">
+                      <!-- Case 1: Shortage / Deficit -->
+                      <div class="shortage-action-box" *ngIf="itm.inStock < (itm.quantity - (itm.dispatchedQty || 0)) && itm.procurementStatus !== 'Requested'">
+                        <span class="deficit-flag-mini">Missing {{ (itm.quantity - (itm.dispatchedQty || 0)) - itm.inStock }}</span>
+                        <button 
+                          type="button" 
+                          class="btn-procure-mini"
+                          (click)="openProcurementModal(itm, ord.orderId, $event)"
+                          title="Direct route to procurement"
+                        >
+                          <i class="bi bi-cart-plus"></i> Procure
+                        </button>
+                      </div>
+
+                      <!-- Case 2: In Procurement -->
+                      <div class="procured-status-box" *ngIf="itm.procurementStatus === 'Requested'">
+                        <span class="po-mini-tag">{{ itm.procurementPoNumber }}</span>
+                        <span class="po-supplier-sub">PO active</span>
+                      </div>
+
+                      <!-- Case 3: Fully Ready -->
+                      <div class="ready-status-box" *ngIf="itm.inStock >= (itm.quantity - (itm.dispatchedQty || 0)) && (itm.dispatchedQty || 0) < itm.quantity">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        <span class="ready-text">Ready to Pick</span>
+                      </div>
+
+                      <!-- Case 4: Dispatched -->
+                      <div class="dispatched-status-box" *ngIf="(itm.dispatchedQty || 0) >= itm.quantity">
+                        <i class="bi bi-box-seam-fill text-primary"></i>
+                        <span class="dispatched-text">Dispatched</span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Partial / Full Dispatch Action Footer Bar -->
+            <div class="fulfillment-action-bar">
+              <div class="dispatch-instructions">
+                <i class="bi bi-info-circle text-primary"></i>
+                <span *ngIf="ord.dispatchStatus !== 'Fully Dispatched'">
+                  Pack ready items from their respective aisles. Use <strong>Partial Dispatch</strong> to deliver available units immediately while short units are procured.
+                </span>
+                <span *ngIf="ord.dispatchStatus === 'Fully Dispatched'" class="text-success font-bold">
+                  ✓ Order has been fully dispatched. All tracking details are available below.
+                </span>
+              </div>
+
+              <div class="dispatch-buttons-group" *ngIf="ord.dispatchStatus !== 'Fully Dispatched'">
+                <button 
+                  type="button" 
+                  class="btn-dsp-primary btn-partial-main"
+                  (click)="openDispatchModal(ord, 'Partial', $event)"
+                >
+                  <i class="bi bi-box-arrow-up-right"></i>
+                  <span>Initiate Partial Dispatch</span>
+                </button>
+
+                <button 
+                  type="button" 
+                  class="btn-dsp-secondary"
+                  (click)="openDispatchModal(ord, 'Full', $event)"
+                >
+                  <i class="bi bi-send-check"></i>
+                  <span>Initiate Full Dispatch</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Courier Shipments & Tracking History -->
+            <div class="shipment-history-section" *ngIf="ord.shipments && ord.shipments.length > 0">
+              <div class="shipment-history-title">
+                <i class="bi bi-truck"></i>
+                <span>Courier Dispatch & Live Tracking History ({{ ord.shipments.length }})</span>
+              </div>
+
+              <div class="shipment-cards-grid">
+                <div class="shipment-card" *ngFor="let shp of ord.shipments">
+                  <div class="shp-head">
+                    <div class="shp-title-line">
+                      <span class="shp-type-tag" [class.type-partial]="shp.type === 'Partial'">
+                        {{ shp.type }} Dispatch
+                      </span>
+                      <span class="shp-courier">{{ shp.courier }}</span>
+                    </div>
+                    <span class="shp-status-badge">{{ shp.status }}</span>
+                  </div>
+
+                  <div class="shp-tracking-row">
+                    <span class="awb-lbl">Tracking / AWB:</span>
+                    <span class="awb-code font-bold">{{ shp.trackingNumber }}</span>
+                    <button type="button" class="btn-copy-awb" (click)="showToast('Tracking link copied to clipboard', 'info')">
+                      <i class="bi bi-copy"></i>
+                    </button>
+                  </div>
+
+                  <div class="shp-meta-sub">
+                    <span>Dispatched on {{ shp.dispatchedAt }}</span>
+                    <span class="notify-badge" *ngIf="shp.notificationSent">
+                      <i class="bi bi-chat-check-fill text-success"></i> {{ shp.notificationChannel }} Sent
+                    </span>
+                  </div>
+
+                  <div class="shp-items-preview">
+                    <span class="shp-items-lbl">Shipped in this parcel:</span>
+                    <div class="shp-items-chips">
+                      <span class="shp-chip" *ngFor="let itm of shp.items">
+                        {{ itm.name }} ({{ itm.quantity }}x)
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty state when no orders match filter -->
+      <div class="empty-items-state" *ngIf="prioritizedFulfillmentOrders.length === 0">
+        <i class="bi bi-box2"></i>
+        <p>No orders found matching the {{ fulfillmentPriorityFilter }} priority criteria.</p>
+      </div>
+
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- SECTION 2: INVENTORY COMPARISON                                           -->
+    <!-- ========================================================================= -->
+    <div class="section-pane" *ngIf="activeSection === 'inventory'">
+      
+      <!-- Order Selector Switcher -->
+      <div class="order-switcher-bar" *ngIf="customer.recentOrders && customer.recentOrders.length > 0">
+        <span class="switcher-label">Target Order:</span>
+        <div class="order-chips-list">
+          <button 
+            type="button"
+            *ngFor="let ord of customer.recentOrders"
+            class="order-chip" 
+            [class.active]="ord.orderId === selectedOrderId"
+            (click)="selectedOrderId = ord.orderId"
+          >
+            <span class="chip-id">{{ ord.orderId }}</span>
+            <span class="chip-status" [ngClass]="'chip-' + ord.status.toLowerCase()">{{ ord.status }}</span>
+            <span class="chip-items-count">{{ ord.items.length }} items</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Current Order Context Header Card -->
+      <div class="current-order-card" *ngIf="currentOrder">
+        <div class="order-card-main">
+          <div class="order-card-id-block">
+            <span class="order-lbl">Order Reference</span>
+            <h3 class="order-code-title">{{ currentOrder.orderId }}</h3>
+            <span class="order-date-text">
+              <i class="bi bi-calendar3"></i> {{ currentOrder.date }} {{ currentOrder.time }}
+            </span>
+          </div>
+
+          <div class="order-card-meta-block">
+            <div class="meta-stat">
+              <span class="meta-stat-lbl">Order Total</span>
+              <span class="meta-stat-val">₹{{ currentOrder.amount.toLocaleString() }}</span>
+            </div>
+            <div class="meta-stat">
+              <span class="meta-stat-lbl">Payment</span>
+              <span class="meta-stat-val font-normal">{{ currentOrder.paymentMethod }}</span>
+            </div>
+            <div class="meta-stat">
+              <span class="meta-stat-lbl">Fulfillment Status</span>
+              <span class="status-badge" [ngClass]="'status-' + currentOrder.status.toLowerCase()">
+                {{ currentOrder.status }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inventory Audit Status Bar -->
+        <div class="order-inventory-summary-bar" [class.has-shortage]="currentOrderDeficitCount > 0">
+          <div class="inventory-summary-text">
+            <i class="bi" [ngClass]="currentOrderDeficitCount > 0 ? 'bi-exclamation-octagon-fill text-danger' : 'bi-check-circle-fill text-success'"></i>
+            <span *ngIf="currentOrderDeficitCount > 0">
+              <strong>{{ currentOrderDeficitCount }} product(s)</strong> have stock deficits in this order.
+            </span>
+            <span *ngIf="currentOrderDeficitCount === 0">
+              <strong>All order items</strong> have sufficient stock available for immediate fulfillment!
+            </span>
+          </div>
+
+          <!-- Bulk Send All Deficits to Procurement Button -->
+          <button 
+            type="button" 
+            class="btn-bulk-procure" 
+            *ngIf="currentOrderDeficitCount > 0"
+            (click)="sendAllDeficitsToProcurement()"
+          >
+            <i class="bi bi-send-fill"></i>
+            <span>Send All Missing to Procurement</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- INVENTORY COMPARISON CARDS LIST -->
+      <div class="inventory-comparison-container" *ngIf="currentOrder && currentOrderComparisons.length > 0">
+        <div class="section-title-line">
+          <h4>Stock Availability vs Ordered Quantities</h4>
+          <span class="comparison-count">{{ currentOrderComparisons.length }} item(s) inspected</span>
+        </div>
+
+        <div class="comparison-cards-list">
+          <div 
+            class="comparison-card" 
+            *ngFor="let comp of currentOrderComparisons"
+            [class.card-deficit]="comp.deficit > 0"
+            [class.card-procured]="comp.item.procurementStatus === 'Requested'"
+            [class.card-sufficient]="comp.deficit === 0"
+          >
+            <!-- Top Row: Product details & Badge -->
+            <div class="comp-header">
+              <div class="product-thumb-wrap">
+                <img 
+                  [src]="comp.item.image" 
+                  [alt]="comp.item.name" 
+                  (error)="$any($event.target).src = '/images/wellness/neem-bottle-nature.jpg'"
+                  class="product-thumb"
+                />
+              </div>
+
+              <div class="product-info-block">
+                <span class="product-brand">{{ comp.item.brand }} • {{ comp.item.category }}</span>
+                <h5 class="product-title">{{ comp.item.name }}</h5>
+                <div class="product-sku-location">
+                  <span class="sku-code">SKU: {{ comp.item.sku }}</span>
+                  <span class="dot">•</span>
+                  <span class="location-tag"><i class="bi bi-geo-alt"></i> {{ comp.item.warehouseLocation }}</span>
+                </div>
+              </div>
+
+              <!-- Status Flag / Pill -->
+              <div class="stock-status-tag-wrap">
+                <div class="status-flag deficit" *ngIf="comp.deficit > 0 && comp.item.procurementStatus !== 'Requested'">
+                  <i class="bi bi-exclamation-diamond-fill"></i>
+                  <span class="flag-text">Missing {{ comp.deficit }} unit{{ comp.deficit > 1 ? 's' : '' }}</span>
+                </div>
+
+                <div class="status-flag procured" *ngIf="comp.item.procurementStatus === 'Requested'">
+                  <i class="bi bi-truck"></i>
+                  <span class="flag-text">In Procurement: {{ comp.item.procurementPoNumber }}</span>
+                </div>
+
+                <div class="status-flag sufficient" *ngIf="comp.deficit === 0">
+                  <i class="bi bi-check-circle-fill"></i>
+                  <span class="flag-text">Stock Sufficient</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Middle Row: Stock Comparison Numbers & Gauge -->
+            <div class="comp-numbers-grid">
+              <div class="metric-box ordered-box">
+                <span class="metric-lbl">Customer Ordered</span>
+                <div class="metric-val">
+                  <span class="num">{{ comp.orderedQty }}</span>
+                  <span class="unit">units</span>
+                </div>
+                <span class="metric-sub">Required by customer</span>
+              </div>
+
+              <div class="metric-comparator">
+                <span class="comp-vs">vs</span>
+                <i class="bi bi-arrow-right"></i>
+              </div>
+
+              <div class="metric-box stock-box" [class.low-stock]="comp.inStock < comp.orderedQty">
+                <span class="metric-lbl">Warehouse Stock</span>
+                <div class="metric-val">
+                  <span class="num">{{ comp.inStock }}</span>
+                  <span class="unit">units in stock</span>
+                </div>
+                <span class="metric-sub">{{ comp.inStock === 0 ? 'Out of stock' : 'Live bin balance' }}</span>
+              </div>
+
+              <div class="metric-box deficit-box" [class.deficit-alert]="comp.deficit > 0">
+                <span class="metric-lbl">Stock Gap / Balance</span>
+                <div class="metric-val">
+                  <span class="num" *ngIf="comp.deficit > 0">-{{ comp.deficit }}</span>
+                  <span class="num" *ngIf="comp.deficit === 0">+{{ comp.inStock - comp.orderedQty }}</span>
+                  <span class="unit">{{ comp.deficit > 0 ? 'deficit' : 'remaining' }}</span>
+                </div>
+                <span class="metric-sub" *ngIf="comp.deficit > 0">Missing <strong>{{ comp.deficit }} unit{{ comp.deficit > 1 ? 's' : '' }}</strong></span>
+                <span class="metric-sub" *ngIf="comp.deficit === 0">Full quantity ready</span>
+              </div>
+            </div>
+
+            <!-- Visual Stock Fulfillment Health Bar -->
+            <div class="fulfillment-progress-wrap">
+              <div class="progress-labels">
+                <span class="prog-lbl">Fulfillment Rate</span>
+                <span class="prog-pct" [class.text-danger]="comp.fulfillmentPct < 100">{{ comp.fulfillmentPct }}% fulfilled ({{ comp.inStock }} of {{ comp.orderedQty }} units)</span>
+              </div>
+              <div class="progress-bar-track">
+                <div 
+                  class="progress-bar-fill" 
+                  [style.width.%]="comp.fulfillmentPct"
+                  [ngClass]="comp.fulfillmentPct >= 100 ? 'fill-success' : comp.fulfillmentPct > 0 ? 'fill-warning' : 'fill-danger'"
+                ></div>
+              </div>
+            </div>
+
+            <!-- Bottom Row: Direct Action & Procurement Status -->
+            <div class="comp-action-footer">
+              <div class="footer-msg">
+                <span *ngIf="comp.deficit > 0 && comp.item.procurementStatus !== 'Requested'" class="shortage-notice">
+                  <i class="bi bi-info-circle"></i> Customer orders <strong>{{ comp.orderedQty }} units</strong>, but warehouse only has <strong>{{ comp.inStock }}</strong>. Shortage of <strong>{{ comp.deficit }} unit{{ comp.deficit > 1 ? 's' : '' }}</strong> flagged.
+                </span>
+                <span *ngIf="comp.item.procurementStatus === 'Requested'" class="procured-notice">
+                  <i class="bi bi-check2-all"></i> Purchase Requisition <strong>{{ comp.item.procurementPoNumber }}</strong> active with <strong>{{ comp.item.procurementSupplier }}</strong> for <strong>{{ comp.item.procurementQty }} unit(s)</strong>.
+                </span>
+                <span *ngIf="comp.deficit === 0" class="ready-notice">
+                  <i class="bi bi-check-lg"></i> Inventory verified. All {{ comp.orderedQty }} units are allocated from {{ comp.item.warehouseLocation }}.
+                </span>
+              </div>
+
+              <div class="footer-buttons">
+                <button 
+                  type="button" 
+                  class="btn-send-procurement" 
+                  *ngIf="comp.deficit > 0 && comp.item.procurementStatus !== 'Requested'"
+                  (click)="openProcurementModal(comp.item, comp.orderId, $event)"
+                >
+                  <i class="bi bi-cart-plus-fill"></i>
+                  <span>Send to Procurement</span>
+                </button>
+
+                <div class="po-dispatched-pill" *ngIf="comp.item.procurementStatus === 'Requested'">
+                  <span class="po-tag">{{ comp.item.procurementPoNumber }}</span>
+                  <button 
+                    type="button" 
+                    class="btn-mini-link"
+                    (click)="activeSection = 'procurement'"
+                  >
+                    Track PO <i class="bi bi-arrow-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- SECTION 3: ORDERS & ORDER ITEMS ACCORDION                                -->
+    <!-- ========================================================================= -->
+    <div class="section-pane" *ngIf="activeSection === 'orders'">
+      <div class="orders-accordion-header-row">
+        <div class="orders-title-group">
+          <h4>Customer Order History</h4>
+          <span class="orders-count-text">{{ customer.recentOrders?.length || 0 }} total order(s) on file</span>
+        </div>
+        <div class="accordion-global-ctrls">
+          <button type="button" class="btn-ctrl-link btn-orders-admin-link" (click)="navigateToOrdersModule()" title="Filter all orders for this customer in Orders Admin">
+            <i class="bi bi-box-arrow-up-right"></i> Open in Orders Admin
+          </button>
+          <button type="button" class="btn-ctrl-link" (click)="expandAllOrders()">
+            <i class="bi bi-chevron-expand"></i> Expand All
+          </button>
+          <button type="button" class="btn-ctrl-link" (click)="collapseAllOrders()">
+            <i class="bi bi-chevron-contract"></i> Collapse All
+          </button>
+        </div>
+      </div>
+
+      <div class="orders-accordion-list" *ngIf="customer.recentOrders && customer.recentOrders.length > 0">
+        <div 
+          class="order-accordion-card" 
+          *ngFor="let ord of customer.recentOrders"
+          [class.expanded]="ord.isExpanded"
+        >
+          <div class="order-accordion-head" (click)="toggleOrderAccordion(ord)">
+            <div class="head-left">
+              <div class="accordion-icon-box" [ngClass]="'box-' + ord.status.toLowerCase()">
+                <i class="bi bi-box-seam"></i>
+              </div>
+              <div class="order-head-titles">
+                <div class="head-primary-line">
+                  <span class="order-number">{{ ord.orderId }}</span>
+                  <span class="status-badge" [ngClass]="'status-' + ord.status.toLowerCase()">
+                    {{ ord.status }}
+                  </span>
+                  <span class="badge-payment" [ngClass]="'pay-' + ord.paymentStatus.toLowerCase()">
+                    {{ ord.paymentStatus }}
+                  </span>
+                </div>
+                <div class="head-meta-line">
+                  <span class="meta-date"><i class="bi bi-clock"></i> {{ ord.date }} {{ ord.time }}</span>
+                  <span class="dot">•</span>
+                  <span class="meta-items-count">{{ ord.items.length }} line item(s)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="head-right">
+              <div class="order-amount-wrap">
+                <span class="amount-lbl">Total</span>
+                <span class="amount-val">₹{{ ord.amount.toLocaleString() }}</span>
+              </div>
+              <button
+                type="button"
+                class="btn-order-manage-chip"
+                (click)="navigateToOrdersModule(ord.orderId); $event.stopPropagation()"
+                title="Manage order in Orders module"
+              >
+                <i class="bi bi-box-arrow-up-right"></i> Manage
+              </button>
+              <button 
+                type="button" 
+                class="btn-accordion-chevron"
+                [attr.aria-expanded]="ord.isExpanded"
+                title="Toggle order details"
+              >
+                <i class="bi" [ngClass]="ord.isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="order-accordion-body" *ngIf="ord.isExpanded">
+            <div class="order-meta-info-strip">
+              <div class="strip-item">
+                <i class="bi bi-truck"></i>
+                <div>
+                  <span class="strip-lbl">Shipping Destination:</span>
+                  <span class="strip-val">{{ ord.shippingAddress }}</span>
+                </div>
+              </div>
+              <div class="strip-item">
+                <i class="bi bi-credit-card"></i>
+                <div>
+                  <span class="strip-lbl">Payment Mode:</span>
+                  <span class="strip-val">{{ ord.paymentMethod }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="order-items-table-wrap">
+              <table class="order-items-table">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>SKU</th>
+                    <th class="text-center">Ordered Qty</th>
+                    <th class="text-center">Stock Level</th>
+                    <th class="text-end">Price</th>
+                    <th class="text-end">Total</th>
+                    <th class="text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let itm of ord.items">
+                    <td class="td-item-title">
+                      <div class="item-cell">
+                        <img 
+                          [src]="itm.image" 
+                          [alt]="itm.name"
+                          (error)="$any($event.target).src = '/images/wellness/neem-bottle-nature.jpg'" 
+                          class="item-img"
+                        />
+                        <div class="item-name-meta">
+                          <span class="item-name">{{ itm.name }}</span>
+                          <span class="item-category">{{ itm.brand }} • {{ itm.category }}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="td-sku">{{ itm.sku }}</td>
+                    <td class="td-qty text-center font-bold">{{ itm.quantity }} units</td>
+                    <td class="td-stock text-center">
+                      <span 
+                        class="stock-pill" 
+                        [class.stock-deficit]="itm.inStock < itm.quantity"
+                        [class.stock-ok]="itm.inStock >= itm.quantity"
+                      >
+                        {{ itm.inStock }} in stock
+                        <span *ngIf="itm.inStock < itm.quantity" class="missing-sub">
+                          (Missing {{ itm.quantity - itm.inStock }})
+                        </span>
+                      </span>
+                    </td>
+                    <td class="td-price text-end">₹{{ itm.price }}</td>
+                    <td class="td-total text-end font-bold">₹{{ itm.price * itm.quantity }}</td>
+                    <td class="td-action text-center">
+                      <button 
+                        type="button" 
+                        class="btn-table-procure"
+                        *ngIf="itm.inStock < itm.quantity && itm.procurementStatus !== 'Requested'"
+                        (click)="openProcurementModal(itm, ord.orderId, $event)"
+                        title="Send missing units directly to procurement"
+                      >
+                        <i class="bi bi-cart-plus"></i> Procure
+                      </button>
+                      <span *ngIf="itm.procurementStatus === 'Requested'" class="badge-procured-mini">
+                        {{ itm.procurementPoNumber }}
+                      </span>
+                      <span *ngIf="itm.inStock >= itm.quantity" class="badge-ok-mini">
+                        <i class="bi bi-check"></i> Ready
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="order-accordion-footer">
+              <button 
+                type="button" 
+                class="btn-footer-link"
+                (click)="selectedOrderId = ord.orderId; activeSection = 'inventory'"
+              >
+                <i class="bi bi-layers-half"></i> Open Full Inventory Comparison for this order
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- SECTION 4: CUSTOMER PROFILE                                               -->
+    <!-- ========================================================================= -->
+    <div class="section-pane" *ngIf="activeSection === 'profile'">
+      <div class="profile-card">
+        <div class="profile-banner">
+          <div class="profile-avatar-large" [style.background-color]="customer.avatarBg || '#dbeafe'">
+            <span>{{ customer.avatarInitials }}</span>
+          </div>
+          <div class="profile-titles">
+            <h3>{{ customer.name }}</h3>
+            <span class="profile-email">{{ customer.email }}</span>
+          </div>
+        </div>
+
+        <div class="profile-attributes-grid">
+          <div class="attr-item">
+            <span class="attr-lbl"><i class="bi bi-telephone"></i> Phone</span>
+            <span class="attr-val">
+              <a [href]="'tel:' + customer.phone">{{ customer.phone }}</a>
+            </span>
+          </div>
+
+          <div class="attr-item">
+            <span class="attr-lbl"><i class="bi bi-envelope"></i> Email</span>
+            <span class="attr-val">
+              <a [href]="'mailto:' + customer.email">{{ customer.email }}</a>
+            </span>
+          </div>
+
+          <div class="attr-item">
+            <span class="attr-lbl"><i class="bi bi-geo-alt"></i> Location</span>
+            <span class="attr-val">{{ customer.location }}</span>
+          </div>
+
+          <div class="attr-item">
+            <span class="attr-lbl"><i class="bi bi-person-badge"></i> Customer Type</span>
+            <span class="type-pill" [ngClass]="'type-' + customer.customerType.toLowerCase()">
+              {{ customer.customerType }}
+            </span>
+          </div>
+
+          <div class="attr-item">
+            <span class="attr-lbl"><i class="bi bi-calendar-check"></i> Account Created</span>
+            <span class="attr-val">{{ customer.joinDate }} at {{ customer.joinTime }}</span>
+          </div>
+
+          <div class="attr-item">
+            <span class="attr-lbl"><i class="bi bi-shield-check"></i> Account Status</span>
+            <span class="status-badge" [ngClass]="'status-' + customer.status.toLowerCase()">
+              {{ customer.status }}
+            </span>
+          </div>
+        </div>
+
+        <div class="address-cards-row">
+          <div class="address-card">
+            <div class="address-head">
+              <i class="bi bi-house-door"></i>
+              <span>Default Shipping Address</span>
+            </div>
+            <p class="address-text">{{ customer.shippingAddress || customer.location }}</p>
+          </div>
+
+          <div class="address-card">
+            <div class="address-head">
+              <i class="bi bi-receipt"></i>
+              <span>Billing Address</span>
+            </div>
+            <p class="address-text">{{ customer.billingAddress || customer.shippingAddress || customer.location }}</p>
+          </div>
+        </div>
+
+        <div class="customer-stats-strip">
+          <div class="c-stat-box">
+            <span class="c-stat-lbl">Lifetime Orders</span>
+            <span class="c-stat-val">{{ customer.totalOrders }}</span>
+          </div>
+          <div class="c-stat-box">
+            <span class="c-stat-lbl">Total Revenue</span>
+            <span class="c-stat-val">₹{{ customer.totalSpent.toLocaleString() }}</span>
+          </div>
+          <div class="c-stat-box">
+            <span class="c-stat-lbl">Average Order Value</span>
+            <span class="c-stat-val">₹{{ customer.totalOrders > 0 ? (customer.totalSpent / customer.totalOrders | number:'1.0-0') : 0 }}</span>
+          </div>
+        </div>
+
+        <div class="profile-actions-strip">
+          <button type="button" class="btn-profile-act" (click)="sendEmail()">
+            <i class="bi bi-envelope-fill"></i>
+            <span>Send Email</span>
+          </button>
+          <button type="button" class="btn-profile-act" (click)="callPhone()">
+            <i class="bi bi-telephone-fill"></i>
+            <span>Direct Call</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- SECTION 5: PROCUREMENT REQUISITIONS LOG                                  -->
+    <!-- ========================================================================= -->
+    <div class="section-pane" *ngIf="activeSection === 'procurement'">
+      <div class="procurement-head-row">
+        <div>
+          <h4>Procurement Requisitions</h4>
+          <p class="sub-text">Purchase orders triggered for this customer's missing order quantities.</p>
+        </div>
+      </div>
+
+      <div class="procurement-list" *ngIf="customer.procurementRequisitions && customer.procurementRequisitions.length > 0">
+        <div 
+          class="procurement-card" 
+          *ngFor="let req of customer.procurementRequisitions"
+          [class.received]="req.status === 'Received & Restocked'"
+        >
+          <div class="req-header">
+            <div class="req-title-group">
+              <span class="po-badge">{{ req.id }}</span>
+              <span class="po-priority" [ngClass]="'prio-' + req.priority.toLowerCase()">{{ req.priority }}</span>
+              <span class="po-order-ref">For Order {{ req.orderId }}</span>
+            </div>
+            <span class="po-status" [ngClass]="{'status-dispatched': req.status !== 'Received & Restocked', 'status-received': req.status === 'Received & Restocked'}">
+              {{ req.status }}
+            </span>
+          </div>
+
+          <div class="req-body-grid">
+            <div class="req-field">
+              <span class="fld-lbl">Item Name:</span>
+              <span class="fld-val font-bold">{{ req.itemName }}</span>
+            </div>
+            <div class="req-field">
+              <span class="fld-lbl">SKU:</span>
+              <span class="fld-val">{{ req.itemSku }}</span>
+            </div>
+            <div class="req-field">
+              <span class="fld-lbl">Quantity Requisitioned:</span>
+              <span class="fld-val font-bold text-primary">{{ req.requestedQty }} unit(s)</span>
+            </div>
+            <div class="req-field">
+              <span class="fld-lbl">Supplier / Vendor:</span>
+              <span class="fld-val">{{ req.supplier }}</span>
+            </div>
+            <div class="req-field">
+              <span class="fld-lbl">Dispatched On:</span>
+              <span class="fld-val">{{ req.createdAt }}</span>
+            </div>
+            <div class="req-field">
+              <span class="fld-lbl">Est. Arrival Date:</span>
+              <span class="fld-val">{{ req.estimatedDelivery }}</span>
+            </div>
+          </div>
+
+          <div class="req-notes-strip" *ngIf="req.notes">
+            <i class="bi bi-chat-left-text"></i>
+            <span>{{ req.notes }}</span>
+          </div>
+
+          <div class="req-footer">
+            <button 
+              type="button" 
+              class="btn-receive-stock"
+              *ngIf="req.status !== 'Received & Restocked'"
+              (click)="markRequisitionReceived(req)"
+            >
+              <i class="bi bi-check2-circle"></i>
+              <span>Simulate Delivery & Restock Warehouse</span>
+            </button>
+            <span *ngIf="req.status === 'Received & Restocked'" class="restocked-tag">
+              <i class="bi bi-check-all"></i> Inventory restocked by +{{ req.requestedQty }} units! Deficit cleared.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty-items-state" *ngIf="!customer.procurementRequisitions || customer.procurementRequisitions.length === 0">
+        <i class="bi bi-clipboard2-check"></i>
+        <p>No procurement purchase orders have been triggered for this customer yet.</p>
+        <span class="sub">Items flagged with stock shortages in the Inventory Comparison tab can be dispatched directly to procurement.</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 5. DRAWER FOOTER BAR -->
+  <div class="drawer-footer">
+    <div class="footer-left">
+      <span class="footer-customer-lbl">Customer: <strong>{{ customer.name }}</strong> ({{ customer.id }})</span>
+    </div>
+    <div class="footer-right">
+      <button type="button" class="btn-footer-close" (click)="closeDrawer()">
+        Close
+      </button>
+    </div>
+  </div>
+
+</aside>
+
+<!-- ========================================================================= -->
+<!-- 6. MODAL: ONE-CLICK COURIER DISPATCH & TRACKING (PARTIAL / FULL)          -->
+<!-- ========================================================================= -->
+<div class="procurement-modal-backdrop" *ngIf="isDispatchModalOpen" (click)="closeDispatchModal()">
+  <div class="procurement-modal" (click)="$event.stopPropagation()" *ngIf="dispatchOrderTarget">
+    
+    <div class="modal-header">
+      <div class="modal-title-wrap">
+        <div class="modal-icon-badge" [ngClass]="dispatchType === 'Partial' ? 'badge-partial' : 'badge-full'">
+          <i class="bi" [ngClass]="dispatchType === 'Partial' ? 'bi-box-arrow-up-right' : 'bi-send-check-fill'"></i>
+        </div>
+        <div>
+          <h3 class="modal-title">
+            {{ dispatchType === 'Partial' ? 'Initiate Partial Dispatch' : 'Initiate Full Dispatch' }}
+          </h3>
+          <p class="modal-sub">Order {{ dispatchOrderTarget.orderId }} • Deliver to {{ dispatchOrderTarget.shippingAddress | slice:0:35 }}...</p>
+        </div>
+      </div>
+      <button type="button" class="btn-modal-close" (click)="closeDispatchModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Partial Dispatch Explanation Callout -->
+      <div class="partial-dispatch-callout" *ngIf="dispatchType === 'Partial'">
+        <i class="bi bi-info-circle-fill"></i>
+        <div>
+          <strong>Partial Fulfillment Strategy:</strong>
+          <span> All currently available inventory units will be packed and shipped in <strong>Shipment 1</strong> right now. Any short items (awaiting procurement) will remain queued for <strong>Shipment 2</strong> upon arrival.</span>
+        </div>
+      </div>
+
+      <!-- Courier Partner Selector -->
+      <div class="modal-form">
+        <div class="form-group">
+          <label class="form-label">Integrated Courier Partner <span class="req-asterisk">*</span></label>
+          <select class="form-select" [(ngModel)]="selectedCourier" (change)="onCourierChange()">
+            <option *ngFor="let c of customerService.couriers" [value]="c">{{ c }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Auto-Generated AWB / Tracking Number <span class="req-asterisk">*</span></label>
+          <div class="tracking-input-wrap">
+            <input type="text" class="form-control font-bold" [(ngModel)]="generatedTrackingNumber" />
+            <button type="button" class="btn-regen-tracking" (click)="onCourierChange()" title="Generate new tracking code">
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+          </div>
+          <span class="form-hint">Generated in accordance with {{ selectedCourier }} shipment API standards.</span>
+        </div>
+
+        <!-- SMS / Email Notification Trigger Section -->
+        <div class="notification-trigger-card">
+          <div class="notify-head">
+            <div class="notify-check-wrap">
+              <input 
+                type="checkbox" 
+                id="sendNotificationToggle" 
+                class="custom-check" 
+                [(ngModel)]="sendNotificationToCustomer" 
+              />
+              <label for="sendNotificationToggle" class="notify-lbl font-bold">
+                Send Automated Dispatch Notification to Customer
+              </label>
+            </div>
+            <select 
+              class="form-select-sm" 
+              [(ngModel)]="notificationChannel" 
+              [disabled]="!sendNotificationToCustomer"
+            >
+              <option value="SMS & Email">SMS & Email</option>
+              <option value="Email">Email Only</option>
+              <option value="SMS">SMS Only</option>
+            </select>
+          </div>
+
+          <div class="notify-preview-box" *ngIf="sendNotificationToCustomer">
+            <span class="notify-preview-title"><i class="bi bi-eye"></i> Live Message Preview:</span>
+            <p class="notify-preview-text">
+              "Hi <strong>{{ customer?.name }}</strong>, your order <strong>{{ dispatchOrderTarget.orderId }}</strong> was {{ dispatchType === 'Partial' ? 'partially ' : '' }}dispatched via <strong>{{ selectedCourier }}</strong> (AWB: <strong>{{ generatedTrackingNumber }}</strong>). {{ dispatchType === 'Partial' ? 'Available items are en route, and remaining items are being expedited.' : 'Your complete package is on the way!'}}"
+            </p>
+            <span class="notify-dest-tag">
+              Will send to: {{ customer?.phone }} & {{ customer?.email }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn-modal-cancel" (click)="closeDispatchModal()">
+        Cancel
+      </button>
+      <button 
+        type="button" 
+        class="btn-modal-confirm" 
+        [class.btn-confirm-partial]="dispatchType === 'Partial'"
+        (click)="confirmDispatch()"
+      >
+        <i class="bi bi-send-check-fill"></i>
+        <span>Confirm & Generate Shipping Label</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- 7. MODAL: SEND TO PROCUREMENT REQUISITION FORM                            -->
+<!-- ========================================================================= -->
+<div class="procurement-modal-backdrop" *ngIf="isProcureModalOpen" (click)="closeProcurementModal()">
+  <div class="procurement-modal" (click)="$event.stopPropagation()" *ngIf="procuringItem">
+    
+    <div class="modal-header">
+      <div class="modal-title-wrap">
+        <div class="modal-icon-badge">
+          <i class="bi bi-cart-plus-fill"></i>
+        </div>
+        <div>
+          <h3 class="modal-title">Send to Procurement</h3>
+          <p class="modal-sub">Create immediate purchase requisition for customer order deficit.</p>
+        </div>
+      </div>
+      <button type="button" class="btn-modal-close" (click)="closeProcurementModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-item-summary">
+        <img 
+          [src]="procuringItem.image" 
+          [alt]="procuringItem.name"
+          (error)="$any($event.target).src = '/images/wellness/neem-bottle-nature.jpg'"
+          class="modal-thumb"
+        />
+        <div class="modal-item-meta">
+          <span class="m-brand">{{ procuringItem.brand }}</span>
+          <h4 class="m-name">{{ procuringItem.name }}</h4>
+          <span class="m-sku">SKU: {{ procuringItem.sku }} • Location: {{ procuringItem.warehouseLocation }}</span>
+        </div>
+      </div>
+
+      <div class="modal-deficit-math-box">
+        <div class="math-col">
+          <span class="math-lbl">Ordered</span>
+          <span class="math-num">{{ procuringItem.quantity }} units</span>
+        </div>
+        <div class="math-op">-</div>
+        <div class="math-col">
+          <span class="math-lbl">In Stock</span>
+          <span class="math-num text-danger">{{ procuringItem.inStock }} units</span>
+        </div>
+        <div class="math-op">=</div>
+        <div class="math-col highlight">
+          <span class="math-lbl">Missing Deficit</span>
+          <span class="math-num font-bold text-danger">{{ procuringItem.quantity - procuringItem.inStock }} unit(s)</span>
+        </div>
+      </div>
+
+      <div class="modal-form">
+        <div class="form-group">
+          <label class="form-label">
+            Requisition Quantity (Units to Order)
+            <span class="req-asterisk">*</span>
+          </label>
+          <div class="qty-stepper-wrap">
+            <button 
+              type="button" 
+              class="btn-step" 
+              (click)="procureQuantity = procureQuantity > 1 ? procureQuantity - 1 : 1"
+            >
+              -
+            </button>
+            <input 
+              type="number" 
+              class="form-control text-center" 
+              [(ngModel)]="procureQuantity" 
+              min="1"
+            />
+            <button 
+              type="button" 
+              class="btn-step" 
+              (click)="procureQuantity = procureQuantity + 1"
+            >
+              +
+            </button>
+          </div>
+          <span class="form-hint">Defaults to exact missing quantity ({{ procuringItem.quantity - procuringItem.inStock }} units). Adjust if ordering standard pack sizes.</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Preferred Supplier / Vendor <span class="req-asterisk">*</span></label>
+          <select class="form-select" [(ngModel)]="selectedSupplier">
+            <option *ngFor="let s of customerService.suppliers" [value]="s">{{ s }}</option>
+          </select>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Priority Level</label>
+            <select class="form-select" [(ngModel)]="procurePriority">
+              <option value="Urgent">Urgent (Customer Order Waiting)</option>
+              <option value="High">High</option>
+              <option value="Normal">Normal</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Estimated Delivery Date</label>
+            <input 
+              type="date" 
+              class="form-control" 
+              [(ngModel)]="procureDeliveryDate"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Procurement Notes / Justification</label>
+          <textarea 
+            class="form-control" 
+            rows="2" 
+            [(ngModel)]="procureNotes"
+            placeholder="Add any specific delivery instructions or batch requirements..."
+          ></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn-modal-cancel" (click)="closeProcurementModal()">
+        Cancel
+      </button>
+      <button type="button" class="btn-modal-confirm" (click)="confirmProcurement()">
+        <i class="bi bi-send-fill"></i>
+        <span>Confirm & Dispatch to Procurement</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- 8. INTERACTIVE TOAST NOTIFICATION                                         -->
+<!-- ========================================================================= -->
+<div 
+  class="drawer-toast" 
+  *ngIf="toastMessage" 
+  [ngClass]="'toast-' + toastType"
+>
+  <i class="bi" [ngClass]="toastType === 'success' ? 'bi-check-circle-fill' : 'bi-info-circle-fill'"></i>
+  <span>{{ toastMessage }}</span>
+  <button type="button" class="toast-close" (click)="toastMessage = null">
+    <i class="bi bi-x"></i>
+  </button>
+</div>

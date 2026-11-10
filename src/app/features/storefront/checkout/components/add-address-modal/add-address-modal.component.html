@@ -1,0 +1,230 @@
+<div class="modal-backdrop-custom d-flex align-items-center justify-content-center p-3" (click)="onBackdropClick($event)">
+  <div class="modal-card bg-white rounded-4 shadow-lg border overflow-hidden w-100" style="max-width: 620px;">
+    
+    <!-- Modal Header -->
+    <div class="modal-header-custom p-4 border-bottom d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2.5">
+        <div class="header-icon-box rounded-circle d-flex align-items-center justify-content-center">
+          <i class="fa-solid fa-map-location-dot"></i>
+        </div>
+        <div>
+          <h5 class="modal-title fw-bold text-dark mb-0">
+            {{ addressToEdit ? 'Edit Delivery Address' : 'Add New Delivery Address' }}
+          </h5>
+          <span class="text-secondary small">Provide complete details to ensure accurate doorstep delivery</span>
+        </div>
+      </div>
+      <button type="button" class="btn-close-modal" (click)="close.emit()" aria-label="Close modal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Modal Form Body -->
+    <form (ngSubmit)="onSubmit()" class="p-4 overflow-y-auto" style="max-height: 72vh;">
+      
+      <!-- Contact Info Section -->
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-6">
+          <label class="form-label text-dark fw-bold small mb-1">
+            Full Name <span class="text-danger">*</span>
+          </label>
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0 text-secondary">
+              <i class="fa-solid fa-user"></i>
+            </span>
+            <input type="text" 
+                   class="form-control border-start-0 bg-light" 
+                   placeholder="e.g. Priya Sharma" 
+                   [(ngModel)]="name" 
+                   name="name" 
+                   required
+                   [class.is-invalid]="submitted && !name.trim()">
+          </div>
+          @if (submitted && !name.trim()) {
+            <div class="invalid-feedback d-block">Recipient name is required.</div>
+          }
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label class="form-label text-dark fw-bold small mb-1">
+            Mobile Number <span class="text-danger">*</span>
+          </label>
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0 text-secondary">
+              <i class="fa-solid fa-phone"></i>
+            </span>
+            <input type="tel" 
+                   class="form-control border-start-0 bg-light" 
+                   placeholder="10-digit mobile number" 
+                   [(ngModel)]="phone" 
+                   name="phone" 
+                   required
+                   [class.is-invalid]="submitted && !phone.trim()">
+          </div>
+          @if (submitted && !phone.trim()) {
+            <div class="invalid-feedback d-block">Phone number is required for delivery updates.</div>
+          }
+        </div>
+      </div>
+
+      <!-- House / Building & Street -->
+      <div class="mb-3">
+        <label class="form-label text-dark fw-bold small mb-1">
+          Flat, House No., Building, Apartment <span class="text-danger">*</span>
+        </label>
+        <input type="text" 
+               class="form-control bg-light" 
+               placeholder="e.g. Flat 402, Block C, Royal Palm Towers" 
+               [(ngModel)]="houseAddress" 
+               name="houseAddress" 
+               required
+               [class.is-invalid]="submitted && !houseAddress.trim()">
+        @if (submitted && !houseAddress.trim()) {
+          <div class="invalid-feedback d-block">House or apartment details required.</div>
+        }
+      </div>
+
+      <!-- Area / Locality / Street -->
+      <div class="mb-3">
+        <label class="form-label text-dark fw-bold small mb-1">
+          Area, Colony, Street, Sector <span class="text-danger">*</span>
+        </label>
+        <input type="text" 
+               class="form-control bg-light" 
+               placeholder="e.g. Sector 18, Near Central Park" 
+               [(ngModel)]="locality" 
+               name="locality" 
+               required
+               [class.is-invalid]="submitted && !locality.trim()">
+        @if (submitted && !locality.trim()) {
+          <div class="invalid-feedback d-block">Area or locality details required.</div>
+        }
+      </div>
+
+      <!-- Pincode, City, State Grid -->
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-4">
+          <label class="form-label text-dark fw-bold small mb-1">
+            Pincode <span class="text-danger">*</span>
+          </label>
+          <input type="text" 
+                 class="form-control bg-light" 
+                 placeholder="6-digit pincode" 
+                 [(ngModel)]="pincode" 
+                 name="pincode" 
+                 maxlength="6"
+                 (ngModelChange)="onPincodeChange()"
+                 required
+                 [class.is-invalid]="submitted && !pincode.trim()">
+          @if (submitted && !pincode.trim()) {
+            <div class="invalid-feedback d-block">Pincode required.</div>
+          }
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label class="form-label text-dark fw-bold small mb-1">
+            City / District <span class="text-danger">*</span>
+          </label>
+          <input type="text" 
+                 class="form-control bg-light" 
+                 placeholder="City" 
+                 [(ngModel)]="city" 
+                 name="city" 
+                 required
+                 [class.is-invalid]="submitted && !city.trim()">
+          @if (submitted && !city.trim()) {
+            <div class="invalid-feedback d-block">City required.</div>
+          }
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label class="form-label text-dark fw-bold small mb-1">
+            State <span class="text-danger">*</span>
+          </label>
+          <input list="stateOptions" 
+                 class="form-control bg-light" 
+                 placeholder="Select state" 
+                 [(ngModel)]="state" 
+                 name="state" 
+                 required
+                 [class.is-invalid]="submitted && !state.trim()">
+          <datalist id="stateOptions">
+            @for (st of stateList; track st) {
+              <option [value]="st">{{ st }}</option>
+            }
+          </datalist>
+          @if (submitted && !state.trim()) {
+            <div class="invalid-feedback d-block">State required.</div>
+          }
+        </div>
+      </div>
+
+      <!-- Landmark & Alternate Phone (Optional) -->
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-6">
+          <label class="form-label text-dark fw-bold small mb-1">
+            Landmark <span class="text-secondary fw-normal">(Optional)</span>
+          </label>
+          <input type="text" 
+                 class="form-control bg-light" 
+                 placeholder="e.g. Near Apollo Pharmacy" 
+                 [(ngModel)]="landmark" 
+                 name="landmark">
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label text-dark fw-bold small mb-1">
+            Alternate Phone <span class="text-secondary fw-normal">(Optional)</span>
+          </label>
+          <input type="tel" 
+                 class="form-control bg-light" 
+                 placeholder="Secondary phone" 
+                 [(ngModel)]="alternatePhone" 
+                 name="alternatePhone">
+        </div>
+      </div>
+
+      <!-- Address Type Selector -->
+      <div class="mb-4">
+        <label class="form-label text-dark fw-bold small mb-2 d-block">
+          Address Type <span class="text-danger">*</span>
+        </label>
+        <div class="d-flex gap-3">
+          <label class="address-type-pill flex-grow-1 p-2.5 rounded-3 border d-flex align-items-center justify-content-center gap-2"
+                 [class.active]="type === 'Home'">
+            <input type="radio" class="d-none" name="addrType" [(ngModel)]="type" value="Home">
+            <i class="fa-solid fa-house"></i>
+            <span class="fw-bold small">Home (7 AM - 9 PM)</span>
+          </label>
+          <label class="address-type-pill flex-grow-1 p-2.5 rounded-3 border d-flex align-items-center justify-content-center gap-2"
+                 [class.active]="type === 'Office'">
+            <input type="radio" class="d-none" name="addrType" [(ngModel)]="type" value="Office">
+            <i class="fa-solid fa-building"></i>
+            <span class="fw-bold small">Office (9 AM - 6 PM)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Set Default Checkbox -->
+      <div class="form-check mb-4">
+        <input class="form-check-input" type="checkbox" id="defaultAddressCheck" [(ngModel)]="isDefault" name="isDefault">
+        <label class="form-check-label text-dark small fw-semibold" for="defaultAddressCheck">
+          Make this my primary / default delivery address
+        </label>
+      </div>
+
+      <!-- Action Buttons Footer -->
+      <div class="d-flex align-items-center justify-content-end gap-2 pt-3 border-top">
+        <button type="button" class="btn btn-light rounded-pill px-4 fw-semibold" (click)="close.emit()">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold d-inline-flex align-items-center gap-2">
+          <i class="fa-solid fa-check"></i>
+          <span>{{ addressToEdit ? 'Save Changes' : 'Save & Deliver Here' }}</span>
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+

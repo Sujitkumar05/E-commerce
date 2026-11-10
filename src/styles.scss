@@ -1,0 +1,458 @@
+
+
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family:'Manrope', -apple-system, Roboto, sans-serif;
+}
+
+
+
+// Colors Variables
+
+$primary-blue: #1748D8;
+$dark-bg: #0f131a;
+$text-main: #1f2937;
+$white-color: #ffffff;
+$light-bg: #f9fafb;
+
+/* ==========================================================================
+   UNIVERSAL STOREFRONT PRODUCT CARD (EXPLORE ALL PRODUCTS REFERENCE DESIGN)
+   ========================================================================== */
+
+.product-explore-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.2s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 35px -5px rgba(15, 23, 42, 0.1), 0 10px 15px -5px rgba(15, 23, 42, 0.04);
+    border-color: #cbd5e1;
+
+    .card-product-image {
+      transform: scale(1.05);
+    }
+
+    .card-product-title {
+      color: #1748D8;
+    }
+  }
+
+  /* --- Image Container --- */
+  .card-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    background: #f8fafc;
+    overflow: hidden;
+    border-top-left-radius: 19px;
+    border-top-right-radius: 19px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .image-inner-stage {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .card-product-image {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Wishlist Heart Button (Top-Right) */
+    .card-wishlist-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+      cursor: pointer;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+      z-index: 5;
+
+      &:hover {
+        transform: scale(1.12);
+        background-color: #fff5f5;
+        color: #ef4444;
+      }
+
+      &.active {
+        color: #ef4444;
+        i {
+          color: #ef4444;
+        }
+      }
+    }
+
+    /* Stacked Floating Badges (Below Wishlist on Right) */
+    .card-floating-badges {
+      position: absolute;
+      top: 58px;
+      right: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      z-index: 4;
+
+      .badge-bestseller-gold {
+        background: #f59e0b;
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 5px 11px;
+        border-radius: 50rem;
+        box-shadow: 0 2px 6px rgba(245, 158, 11, 0.35);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        line-height: 1;
+
+        i {
+          font-size: 10px;
+        }
+      }
+
+      .badge-in-stock-green {
+        background: #ffffff;
+        color: #065f46;
+        border: 1px solid #d1fae5;
+        box-shadow: 0 2px 6px rgba(16, 185, 129, 0.15);
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 50rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        line-height: 1;
+
+        .stock-check-circle {
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          background-color: #10b981;
+          color: #ffffff;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 8px;
+        }
+      }
+    }
+
+    /* Carousel Pagination Dots (Bottom-Left) */
+    .carousel-dots-pill {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(4px);
+      border-radius: 20px;
+      padding: 4px 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      z-index: 4;
+      user-select: none;
+
+      .dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.55);
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &.active {
+          width: 14px;
+          border-radius: 4px;
+          background: #ffffff;
+        }
+
+        &:hover:not(.active) {
+          background: rgba(255, 255, 255, 0.85);
+        }
+      }
+    }
+  }
+
+  /* --- Card Body --- */
+  .card-content-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+
+    /* Category Pill */
+    .category-blue-pill {
+      background-color: #eff6ff;
+      color: #2563eb;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      display: inline-block;
+      line-height: 1.2;
+    }
+
+    /* Rating & Reviews Block */
+    .rating-block {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      line-height: 1.1;
+
+      .rating-score-num {
+        font-size: 16px;
+        font-weight: 800;
+        color: #111827;
+      }
+
+      .rating-stars {
+        display: inline-flex;
+        align-items: center;
+        gap: 1.5px;
+
+        .star-filled {
+          color: #f59e0b;
+          font-size: 13px;
+        }
+
+        .star-muted {
+          color: #d1d5db;
+          font-size: 13px;
+        }
+      }
+
+      .reviews-count-text {
+        font-size: 11.5px;
+        color: #6b7280;
+        font-weight: 500;
+        margin-top: 2px;
+      }
+    }
+
+    /* Product Title */
+    .card-product-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.3;
+      margin-top: 8px;
+      margin-bottom: 6px;
+      min-height: 46px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      transition: color 0.2s ease;
+    }
+
+    /* Product Subtitle / Description */
+    .card-product-description {
+      font-size: 13px;
+      color: #4b5563;
+      line-height: 1.45;
+      margin-bottom: 14px;
+      min-height: 38px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Bottom Actions Container */
+    .card-bottom-actions {
+      margin-top: auto;
+
+      /* Price & Discount Row */
+      .price-discount-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+
+        .price-main {
+          font-size: 26px;
+          font-weight: 800;
+          color: #0f172a;
+          letter-spacing: -0.5px;
+          line-height: 1;
+        }
+
+        .price-original {
+          font-size: 15px;
+          font-weight: 500;
+          color: #94a3b8;
+          text-decoration: line-through;
+          line-height: 1;
+        }
+
+        .discount-save-pill {
+          background-color: #fee2e2;
+          color: #dc2626;
+          font-size: 12.5px;
+          font-weight: 700;
+          padding: 4px 10px;
+          border-radius: 6px;
+          line-height: 1.2;
+          display: inline-block;
+        }
+      }
+
+      /* Unit Stepper & Add to Cart Row */
+      .unit-and-cart-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+
+        .unit-quantity-pill {
+          border: 1.5px solid #cbd5e1;
+          border-radius: 50rem;
+          padding: 6px 14px;
+          background: #ffffff;
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+
+          .unit-label {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #1e293b;
+            user-select: none;
+            min-width: 52px;
+          }
+
+          .unit-stepper-buttons {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+
+            .btn-unit-circle {
+              width: 22px;
+              height: 22px;
+              border-radius: 50%;
+              border: 1px solid #94a3b8;
+              background: transparent;
+              color: #64748b;
+              font-size: 12px;
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              padding: 0;
+              cursor: pointer;
+              transition: all 0.15s ease;
+
+              &:hover {
+                border-color: #2563eb;
+                color: #2563eb;
+                background-color: #eff6ff;
+              }
+
+              &:active {
+                transform: scale(0.92);
+              }
+            }
+          }
+        }
+
+        .btn-card-add-cart {
+          width: 72px;
+          height: 40px;
+          border-radius: 10px;
+          background-color: #5b8bf7;
+          border: none;
+          color: #ffffff;
+          font-size: 17px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s ease;
+          box-shadow: 0 2px 6px rgba(91, 139, 247, 0.3);
+
+          &:hover {
+            background-color: #3b82f6;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+          }
+
+          &:active {
+            transform: scale(0.96);
+          }
+
+          &.btn-added {
+            background-color: #10b981;
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+          }
+        }
+      }
+
+      /* BUY NOW Button */
+      .btn-card-buy-now {
+        width: 100%;
+        height: 46px;
+        border-radius: 12px;
+        background-color: #2563eb;
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+
+        &:hover {
+          background-color: #1d4ed8;
+          transform: translateY(-1px);
+          box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+        }
+
+        &:active {
+          transform: scale(0.98);
+        }
+      }
+    }
+  }
+}
+
+

@@ -1,0 +1,451 @@
+<div class="payment-method-container">
+
+  <div class="row g-4 align-items-start">
+    
+    <!-- Left Column: Selectable Payment Methods -->
+    <div class="col-12 col-lg-7 col-xl-8">
+      
+      <!-- Section Title -->
+      <div class="mb-4">
+        <h2 class="h4 fw-bold text-dark mb-1">
+          Select Payment Method
+        </h2>
+        <p class="text-secondary small mb-0">
+          All transactions are secured with 256-bit bank-grade encryption.
+        </p>
+      </div>
+
+      <div class="payment-options-stack d-flex flex-column gap-3 mb-4">
+        
+        <!-- ================= OPTION 1: UPI ================= -->
+        <div class="payment-card rounded-4 border bg-white overflow-hidden transition-all shadow-xs"
+             [class.card-selected]="selectedMethod === 'upi'">
+          
+          <!-- Card Header / Radio Toggle -->
+          <div class="payment-card-header p-3.5 d-flex align-items-center justify-content-between"
+               (click)="setPaymentMethod('upi')"
+               role="button"
+               tabindex="0">
+            <div class="d-flex align-items-center gap-3">
+              <div class="radio-indicator rounded-circle d-flex align-items-center justify-content-center"
+                   [class.radio-checked]="selectedMethod === 'upi'">
+                <div class="radio-dot rounded-circle"></div>
+              </div>
+              <div class="method-icon-box rounded-circle d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary">
+                <i class="fa-solid fa-bolt"></i>
+              </div>
+              <div>
+                <span class="fw-bold text-dark d-block">UPI (Google Pay, PhonePe, Paytm, BHIM)</span>
+                <span class="text-secondary small">Instant zero-fee payment directly from bank account</span>
+              </div>
+            </div>
+
+            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill fw-bold" style="font-size: 10px;">
+              Fastest
+            </span>
+          </div>
+
+          <!-- Expanded UPI Form -->
+          @if (selectedMethod === 'upi') {
+            <div class="payment-card-body p-4 border-top bg-light-subtle">
+              
+              <!-- Quick App Chips -->
+              <label class="form-label text-dark fw-bold small mb-2 d-block">Choose UPI App:</label>
+              <div class="row g-2 mb-3">
+                <div class="col-6 col-sm-3">
+                  <div class="upi-app-chip rounded-3 p-2.5 border text-center"
+                       [class.active]="selectedUpiApp === 'gpay'"
+                       (click)="setUpiApp('gpay')"
+                       role="button">
+                    <i class="fa-brands fa-google text-primary fs-5 d-block mb-1"></i>
+                    <span class="small fw-bold text-dark">Google Pay</span>
+                  </div>
+                </div>
+                <div class="col-6 col-sm-3">
+                  <div class="upi-app-chip rounded-3 p-2.5 border text-center"
+                       [class.active]="selectedUpiApp === 'phonepe'"
+                       (click)="setUpiApp('phonepe')"
+                       role="button">
+                    <i class="fa-solid fa-mobile-screen text-purple fs-5 d-block mb-1" style="color: #6d28d9;"></i>
+                    <span class="small fw-bold text-dark">PhonePe</span>
+                  </div>
+                </div>
+                <div class="col-6 col-sm-3">
+                  <div class="upi-app-chip rounded-3 p-2.5 border text-center"
+                       [class.active]="selectedUpiApp === 'paytm'"
+                       (click)="setUpiApp('paytm')"
+                       role="button">
+                    <i class="fa-solid fa-wallet text-info fs-5 d-block mb-1" style="color: #0284c7;"></i>
+                    <span class="small fw-bold text-dark">Paytm UPI</span>
+                  </div>
+                </div>
+                <div class="col-6 col-sm-3">
+                  <div class="upi-app-chip rounded-3 p-2.5 border text-center"
+                       [class.active]="selectedUpiApp === 'custom'"
+                       (click)="setUpiApp('custom')"
+                       role="button">
+                    <i class="fa-solid fa-at text-secondary fs-5 d-block mb-1"></i>
+                    <span class="small fw-bold text-dark">Other UPI ID</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Other UPI ID Input Field -->
+              @if (selectedUpiApp === 'custom') {
+                <div class="mt-3">
+                  <label class="form-label text-dark fw-bold small mb-1">Enter your UPI VPA / ID</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0 text-secondary">
+                      <i class="fa-solid fa-at"></i>
+                    </span>
+                    <input type="text" 
+                           class="form-control border-start-0" 
+                           placeholder="username@bank (e.g. mobile@okhdfcbank)" 
+                           [(ngModel)]="customUpiId" 
+                           (ngModelChange)="isUpiVerified = false; upiVerifyError = ''">
+                    <button type="button" class="btn btn-outline-primary fw-bold" (click)="verifyUpiId()">
+                      Verify
+                    </button>
+                  </div>
+                  @if (isUpiVerified) {
+                    <span class="text-success small fw-semibold mt-1 d-block">
+                      <i class="fa-solid fa-circle-check me-1"></i>UPI ID verified successfully
+                    </span>
+                  }
+                  @if (upiVerifyError) {
+                    <span class="text-danger small mt-1 d-block">{{ upiVerifyError }}</span>
+                  }
+                </div>
+              } @else {
+                <div class="alert alert-light border rounded-3 p-2.5 mb-0 small text-secondary d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-circle-info text-primary"></i>
+                  <span>A payment request will be sent to your selected UPI app upon clicking Pay Now.</span>
+                </div>
+              }
+
+            </div>
+          }
+        </div>
+
+        <!-- ================= OPTION 2: CREDIT / DEBIT CARD ================= -->
+        <div class="payment-card rounded-4 border bg-white overflow-hidden transition-all shadow-xs"
+             [class.card-selected]="selectedMethod === 'card'">
+          
+          <div class="payment-card-header p-3.5 d-flex align-items-center justify-content-between"
+               (click)="setPaymentMethod('card')"
+               role="button"
+               tabindex="0">
+            <div class="d-flex align-items-center gap-3">
+              <div class="radio-indicator rounded-circle d-flex align-items-center justify-content-center"
+                   [class.radio-checked]="selectedMethod === 'card'">
+                <div class="radio-dot rounded-circle"></div>
+              </div>
+              <div class="method-icon-box rounded-circle d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary">
+                <i class="fa-solid fa-credit-card"></i>
+              </div>
+              <div>
+                <span class="fw-bold text-dark d-block">Credit / Debit Card</span>
+                <span class="text-secondary small">Visa, MasterCard, RuPay, Maestro & American Express</span>
+              </div>
+            </div>
+
+            <!-- Card Brand Logos -->
+            <div class="d-flex align-items-center gap-1.5 text-secondary fs-5">
+              <i class="fa-brands fa-cc-visa" style="color: #1a1f71;"></i>
+              <i class="fa-brands fa-cc-mastercard" style="color: #eb001b;"></i>
+              <i class="fa-brands fa-cc-amex" style="color: #006fcf;"></i>
+            </div>
+          </div>
+
+          <!-- Expanded Card Form -->
+          @if (selectedMethod === 'card') {
+            <div class="payment-card-body p-4 border-top bg-light-subtle">
+              
+              <!-- Card Number -->
+              <div class="mb-3">
+                <label class="form-label text-dark fw-bold small mb-1 d-flex align-items-center justify-content-between">
+                  <span>Card Number</span>
+                  @if (getCardType()) {
+                    <span class="badge bg-primary rounded-pill">{{ getCardType() }}</span>
+                  }
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white border-end-0 text-secondary">
+                    <i class="fa-solid fa-credit-card"></i>
+                  </span>
+                  <input type="text" 
+                         class="form-control border-start-0 font-monospace" 
+                         placeholder="1234 5678 9012 3456" 
+                         [value]="cardNumber"
+                         (input)="onCardNumberInput($event)"
+                         maxlength="19">
+                </div>
+                @if (cardErrors['number']) {
+                  <span class="text-danger small mt-1 d-block">{{ cardErrors['number'] }}</span>
+                }
+              </div>
+
+              <!-- Cardholder Name -->
+              <div class="mb-3">
+                <label class="form-label text-dark fw-bold small mb-1">Name on Card</label>
+                <input type="text" 
+                       class="form-control" 
+                       placeholder="e.g. PRIYA SHARMA" 
+                       [(ngModel)]="cardHolder" 
+                       (input)="cardErrors['holder'] = ''">
+                @if (cardErrors['holder']) {
+                  <span class="text-danger small mt-1 d-block">{{ cardErrors['holder'] }}</span>
+                }
+              </div>
+
+              <!-- Expiry & CVV Row -->
+              <div class="row g-3 mb-3">
+                <div class="col-6">
+                  <label class="form-label text-dark fw-bold small mb-1">Expiry Date</label>
+                  <input type="text" 
+                         class="form-control font-monospace" 
+                         placeholder="MM/YY" 
+                         [value]="cardExpiry"
+                         (input)="onExpiryInput($event)"
+                         maxlength="5">
+                  @if (cardErrors['expiry']) {
+                    <span class="text-danger small mt-1 d-block">{{ cardErrors['expiry'] }}</span>
+                  }
+                </div>
+
+                <div class="col-6">
+                  <label class="form-label text-dark fw-bold small mb-1 d-flex align-items-center justify-content-between">
+                    <span>CVV / CVC</span>
+                    <i class="fa-solid fa-circle-question text-muted" title="3-digit security code on the back of your card"></i>
+                  </label>
+                  <input type="password" 
+                         class="form-control font-monospace" 
+                         placeholder="•••" 
+                         [(ngModel)]="cardCvv" 
+                         maxlength="4"
+                         (input)="cardErrors['cvv'] = ''">
+                  @if (cardErrors['cvv']) {
+                    <span class="text-danger small mt-1 d-block">{{ cardErrors['cvv'] }}</span>
+                  }
+                </div>
+              </div>
+
+              <!-- Save Card Checkbox -->
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="saveCardCheck" [(ngModel)]="saveCard">
+                <label class="form-check-label text-secondary small" for="saveCardCheck">
+                  Save card securely for faster checkout in accordance with RBI guidelines
+                </label>
+              </div>
+
+            </div>
+          }
+        </div>
+
+        <!-- ================= OPTION 3: NET BANKING ================= -->
+        <div class="payment-card rounded-4 border bg-white overflow-hidden transition-all shadow-xs"
+             [class.card-selected]="selectedMethod === 'netbanking'">
+          
+          <div class="payment-card-header p-3.5 d-flex align-items-center justify-content-between"
+               (click)="setPaymentMethod('netbanking')"
+               role="button"
+               tabindex="0">
+            <div class="d-flex align-items-center gap-3">
+              <div class="radio-indicator rounded-circle d-flex align-items-center justify-content-center"
+                   [class.radio-checked]="selectedMethod === 'netbanking'">
+                <div class="radio-dot rounded-circle"></div>
+              </div>
+              <div class="method-icon-box rounded-circle d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary">
+                <i class="fa-solid fa-building-columns"></i>
+              </div>
+              <div>
+                <span class="fw-bold text-dark d-block">Net Banking</span>
+                <span class="text-secondary small">Direct payment via 50+ national & retail banks</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Expanded Bank Grid -->
+          @if (selectedMethod === 'netbanking') {
+            <div class="payment-card-body p-4 border-top bg-light-subtle">
+              <label class="form-label text-dark fw-bold small mb-2 d-block">Popular Banks:</label>
+              <div class="row g-2 mb-3">
+                @for (bank of popularBanks; track bank.code) {
+                  <div class="col-6 col-sm-4">
+                    <div class="bank-pill rounded-3 p-2 border d-flex align-items-center gap-2"
+                         [class.active]="selectedBank === bank.name"
+                         (click)="selectedBank = bank.name"
+                         role="button">
+                      <i [class]="'fa-solid ' + bank.icon + ' text-secondary'"></i>
+                      <span class="small fw-semibold text-dark text-truncate">{{ bank.name }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <!-- Other Banks Select -->
+              <label class="form-label text-dark fw-bold small mb-1">Or Select Another Bank:</label>
+              <select class="form-select bg-white" [(ngModel)]="selectedBank">
+                @for (ob of otherBanks; track ob) {
+                  <option [value]="ob">{{ ob }}</option>
+                }
+              </select>
+            </div>
+          }
+        </div>
+
+        <!-- ================= OPTION 4: CASH ON DELIVERY (COD) ================= -->
+        <div class="payment-card rounded-4 border bg-white overflow-hidden transition-all shadow-xs"
+             [class.card-selected]="selectedMethod === 'cod'">
+          
+          <div class="payment-card-header p-3.5 d-flex align-items-center justify-content-between"
+               (click)="setPaymentMethod('cod')"
+               role="button"
+               tabindex="0">
+            <div class="d-flex align-items-center gap-3">
+              <div class="radio-indicator rounded-circle d-flex align-items-center justify-content-center"
+                   [class.radio-checked]="selectedMethod === 'cod'">
+                <div class="radio-dot rounded-circle"></div>
+              </div>
+              <div class="method-icon-box rounded-circle d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary">
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+              </div>
+              <div>
+                <span class="fw-bold text-dark d-block">Cash on Delivery (COD)</span>
+                <span class="text-secondary small">Pay in cash or via UPI when your package arrives</span>
+              </div>
+            </div>
+
+            <span class="badge bg-light text-secondary border rounded-pill small">
+              Doorstep
+            </span>
+          </div>
+
+          <!-- Expanded COD Captcha Security -->
+          @if (selectedMethod === 'cod') {
+            <div class="payment-card-body p-4 border-top bg-light-subtle">
+              <p class="text-secondary small mb-3">
+                To prevent automated orders and confirm your doorstep delivery intent, please enter the security code shown below:
+              </p>
+
+              <div class="d-flex align-items-center gap-3 mb-2 flex-wrap">
+                <!-- Captcha Badge -->
+                <div class="captcha-badge font-monospace fw-bold text-dark fs-5 px-3 py-1.5 rounded-3 border d-flex align-items-center gap-2">
+                  <span>{{ codCaptchaCode }}</span>
+                  <button type="button" class="btn btn-link text-secondary p-0" (click)="refreshCaptcha()" title="Generate new code">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                  </button>
+                </div>
+
+                <div class="flex-grow-1" style="max-width: 220px;">
+                  <input type="text" 
+                         class="form-control font-monospace" 
+                         placeholder="Enter 4-digit code" 
+                         [(ngModel)]="codCaptchaInput"
+                         maxlength="4"
+                         (input)="codCaptchaError = ''">
+                </div>
+              </div>
+
+              @if (codCaptchaError) {
+                <span class="text-danger small mt-1 d-block">{{ codCaptchaError }}</span>
+              }
+
+              <div class="alert alert-light border rounded-3 p-2.5 mt-3 mb-0 small text-secondary">
+                <i class="fa-solid fa-circle-check text-success me-1.5"></i>
+                <span>Our courier delivery executive accepts Cash as well as Google Pay/PhonePe QR on delivery.</span>
+              </div>
+            </div>
+          }
+        </div>
+
+      </div>
+
+      <!-- Back Link -->
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-link text-secondary text-decoration-none p-0 fw-semibold small" (click)="backToSummary()">
+          <i class="fa-solid fa-arrow-left me-1"></i>Back to Order Summary
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Final Sticky Checkout Summary & Pay Action -->
+    <div class="col-12 col-lg-5 col-xl-4">
+      <div class="payment-summary-card bg-white border rounded-4 p-4 shadow-xs position-sticky" style="top: 90px;">
+        
+        <h5 class="fw-bold text-dark mb-3 pb-2 border-bottom">
+          Payment Summary
+        </h5>
+
+        <!-- Selected Address Snippet -->
+        @if (checkoutService.selectedAddress(); as addr) {
+          <div class="address-snippet p-2.5 rounded-3 bg-light border mb-3">
+            <span class="text-uppercase fw-bold text-secondary d-block mb-1" style="font-size: 10.5px;">
+              DELIVERY DESTINATION
+            </span>
+            <span class="fw-bold text-dark small d-block">{{ addr.name }}</span>
+            <span class="text-secondary small text-truncate d-block">{{ addr.houseAddress }}, {{ addr.city }}</span>
+          </div>
+        }
+
+        <!-- Price Lines -->
+        <div class="d-flex flex-column gap-2 mb-3 pb-3 border-bottom small">
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="text-secondary">Subtotal</span>
+            <span class="text-dark fw-semibold">${{ checkoutService.priceBreakdown().subtotal | number: '1.2-2' }}</span>
+          </div>
+          @if (checkoutService.priceBreakdown().couponDiscount > 0) {
+            <div class="d-flex align-items-center justify-content-between text-success">
+              <span>Coupon Savings</span>
+              <span class="fw-semibold">-${{ checkoutService.priceBreakdown().couponDiscount | number: '1.2-2' }}</span>
+            </div>
+          }
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="text-secondary">Shipping</span>
+            @if (checkoutService.priceBreakdown().shipping === 0) {
+              <span class="text-success fw-bold">FREE</span>
+            } @else {
+              <span class="text-dark fw-semibold">${{ checkoutService.priceBreakdown().shipping | number: '1.2-2' }}</span>
+            }
+          </div>
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="text-secondary">Taxes & Fees</span>
+            <span class="text-dark fw-semibold">${{ checkoutService.priceBreakdown().tax | number: '1.2-2' }}</span>
+          </div>
+        </div>
+
+        <!-- Payable Amount -->
+        <div class="d-flex align-items-baseline justify-content-between mb-4">
+          <span class="fw-bold text-dark fs-5">Payable Amount</span>
+          <span class="fw-bold text-dark fs-4" style="color: #1748D8 !important;">
+            ${{ checkoutService.priceBreakdown().finalTotal | number: '1.2-2' }}
+          </span>
+        </div>
+
+        <!-- Pay Now Button -->
+        <button type="button" 
+                class="btn btn-primary w-100 rounded-pill py-3 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm pay-now-btn"
+                (click)="onPayNow()">
+          <i class="fa-solid fa-lock"></i>
+          <span>
+            @if (selectedMethod === 'cod') {
+              Confirm COD Order (${{ checkoutService.priceBreakdown().finalTotal | number: '1.2-2' }})
+            } @else {
+              Pay ${{ checkoutService.priceBreakdown().finalTotal | number: '1.2-2' }} Now
+            }
+          </span>
+        </button>
+
+        <div class="d-flex align-items-center justify-content-center gap-2 text-muted mt-3 pt-2" style="font-size: 11.5px;">
+          <i class="fa-solid fa-shield-halved text-success"></i>
+          <span>PCI-DSS Level 1 Compliant • 100% Secure</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+

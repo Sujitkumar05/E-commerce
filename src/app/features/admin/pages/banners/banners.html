@@ -1,0 +1,382 @@
+<div class="banners-page-container">
+
+  <!-- PAGE HEADER & BREADCRUMBS -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">Banners</h1>
+      <div class="breadcrumbs">
+        <span>Dashboard</span>
+        <i class="bi bi-chevron-right"></i>
+        <span class="active-crumb">Banners</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 STATS CARDS -->
+  <div class="stats-grid">
+    <!-- Total Banners -->
+    <div class="stat-card">
+      <div class="stat-icon-wrapper bg-blue-soft">
+        <i class="bi bi-image"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Total Banners</span>
+        <h3 class="stat-value">{{ totalBanners }}</h3>
+        <div class="stat-trend positive">
+          <i class="bi bi-arrow-up-short"></i>
+          <span>2%</span>
+          <span class="trend-sub">from last month</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Banners -->
+    <div class="stat-card">
+      <div class="stat-icon-wrapper bg-emerald-soft">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Active Banners</span>
+        <h3 class="stat-value">{{ activeBanners }}</h3>
+        <div class="stat-trend positive">
+          <i class="bi bi-arrow-up-short"></i>
+          <span>1%</span>
+          <span class="trend-sub">from last month</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inactive Banners -->
+    <div class="stat-card">
+      <div class="stat-icon-wrapper bg-amber-soft">
+        <i class="bi bi-dash-circle-fill"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Inactive Banners</span>
+        <h3 class="stat-value">{{ inactiveBanners }}</h3>
+        <div class="stat-trend neutral">
+          <i class="bi bi-arrow-down-short"></i>
+          <span>0%</span>
+          <span class="trend-sub">from last month</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BANNER SECTIONS OVERVIEW (Cards across the entire store with 'Add New Banner' button) -->
+  <div class="sections-panel-card">
+    <div class="panel-header-row">
+      <div>
+        <h2 class="panel-section-title">Active Banner Sections Across Storefront (8 Sections)</h2>
+        <p class="panel-section-sub">All detected banner placement slots currently rendered across home, catalog, homeopathy, product details, header, and footer.</p>
+      </div>
+    </div>
+
+    <div class="sections-cards-grid">
+      <div class="section-summary-card" *ngFor="let sec of bannerSections">
+        <div class="card-top-row">
+          <span class="sec-badge" [ngClass]="sec.badgeClass">{{ sec.name }}</span>
+          <span class="badge-count-pill">{{ getCountForSection(sec.key) }} Active</span>
+        </div>
+        <p class="sec-description">{{ sec.description }}</p>
+        <div class="sec-meta-row">
+          <span class="meta-item"><i class="bi bi-geo-alt"></i> {{ sec.location }}</span>
+          <span class="meta-item"><i class="bi bi-aspect-ratio"></i> {{ sec.recommendedSize }}</span>
+        </div>
+        <button class="btn-add-section-banner" (click)="addBannerForSection(sec.key)">
+          <i class="bi bi-plus-circle"></i>
+          <span>Add Banner to this Section</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN 2-COLUMN LAYOUT: Banners Table (Left) + Add New Banner Form (Right) -->
+  <div class="banners-layout-grid">
+
+    <!-- LEFT COLUMN: All Banners Table Panel -->
+    <div class="table-card">
+
+      <!-- Filter Toolbar -->
+      <div class="table-toolbar">
+        <div class="search-wrapper">
+          <i class="bi bi-search"></i>
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            placeholder="Search banners by title or section..."
+            class="search-input"
+          />
+        </div>
+
+        <div class="toolbar-actions">
+          <!-- Status Dropdown -->
+          <div class="select-wrapper">
+            <span class="field-label-tiny">Status</span>
+            <select [(ngModel)]="statusFilter" class="custom-select">
+              <option value="All Status">All Status</option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+
+          <!-- Section Dropdown -->
+          <div class="select-wrapper">
+            <span class="field-label-tiny">Section</span>
+            <select [(ngModel)]="sectionFilter" class="custom-select">
+              <option value="All Sections">All Sections</option>
+              <option *ngFor="let sec of bannerSections" [value]="sec.key">{{ sec.name }}</option>
+            </select>
+          </div>
+
+          <!-- Add New Banner Primary Button -->
+          <button class="btn-primary-add" (click)="addBannerForSection('Home Hero Carousel')">
+            <i class="bi bi-plus"></i>
+            <span>Add New Banner</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Banners Data Table -->
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="th-checkbox">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="selectAll"
+                  (change)="toggleSelectAll()"
+                  class="custom-checkbox"
+                />
+              </th>
+              <th class="th-hash">#</th>
+              <th class="th-banner-img">Image</th>
+              <th class="th-title">Title</th>
+              <th class="th-section">Section</th>
+              <th class="th-status">Status</th>
+              <th class="th-order">Sort Order</th>
+              <th class="th-actions text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let banner of filteredBanners; let i = index">
+              <td class="td-checkbox">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="banner.selected"
+                  (change)="checkIndividualSelection()"
+                  class="custom-checkbox"
+                />
+              </td>
+              <td class="td-hash">{{ banner.id }}</td>
+              <td class="td-banner-img">
+                <div class="banner-preview-box">
+                  <img [src]="banner.image" [alt]="banner.title" />
+                </div>
+              </td>
+              <td class="td-title">
+                <div class="title-meta">
+                  <span class="banner-title-text">{{ banner.title }}</span>
+                  <span class="banner-sub-text">{{ banner.subtitle }}</span>
+                </div>
+              </td>
+              <td class="td-section">
+                <span class="section-pill sec-category">
+                  {{ banner.section }}
+                </span>
+              </td>
+              <td class="td-status">
+                <span class="status-pill" [ngClass]="banner.status === 'Active' ? 'status-active' : 'status-inactive'">
+                  {{ banner.status }}
+                </span>
+              </td>
+              <td class="td-order">{{ banner.sortOrder }}</td>
+              <td class="td-actions text-center">
+                <div class="action-buttons-group">
+                  <button class="action-btn btn-view" (click)="viewBanner(banner)" title="View Details">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button class="action-btn btn-edit" (click)="editBanner(banner)" title="Edit Banner">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="action-btn btn-delete" (click)="deleteBanner(banner)" title="Delete Banner">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <tr *ngIf="filteredBanners.length === 0">
+              <td colspan="8" class="no-records-cell">
+                <div class="empty-state">
+                  <i class="bi bi-images"></i>
+                  <p>No banners found matching your criteria.</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Table Footer / Pagination -->
+      <div class="table-footer">
+        <span class="results-count">
+          Showing 1 to {{ filteredBanners.length }} of {{ banners.length }} banners
+        </span>
+        <div class="pagination-controls">
+          <button class="page-arrow" disabled>
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <button class="page-number active">1</button>
+          <button class="page-arrow">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Banner Tips Banner at Bottom -->
+      <div class="banner-tips-card">
+        <div class="tips-icon">
+          <i class="bi bi-lightbulb"></i>
+        </div>
+        <div class="tips-content">
+          <h4 class="tips-title">Banner Tips</h4>
+          <ul class="tips-list">
+            <li>Use high-quality images (recommended sizes specified in the sections above).</li>
+            <li>Keep titles short and clear.</li>
+            <li>Use relevant sections for better organization.</li>
+            <li>You can drag and drop to change the sort order.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: Add New Banner Form Panel -->
+    <div class="form-card">
+      <div class="form-header-row">
+        <h2 class="panel-title form-header-title">Add New Banner</h2>
+        <button class="btn-close-form" (click)="resetForm()" title="Reset Form">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+
+      <div class="form-body">
+        
+        <!-- Banner Title -->
+        <div class="form-group">
+          <label class="form-label">Banner Title <span class="required">*</span></label>
+          <input
+            type="text"
+            [(ngModel)]="newBanner.title"
+            placeholder="Enter banner title"
+            class="form-control"
+          />
+        </div>
+
+        <!-- Section Selector -->
+        <div class="form-group">
+          <label class="form-label">Storefront Section <span class="required">*</span></label>
+          <div class="select-wrapper-full">
+            <select [(ngModel)]="newBanner.section" class="form-control form-select">
+              <option *ngFor="let sec of bannerSections" [value]="sec.key">
+                {{ sec.name }} ({{ sec.recommendedSize }})
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Banner Image Upload Box -->
+        <div class="form-group">
+          <label class="form-label">Banner Image <span class="required">*</span></label>
+          
+          <input
+            type="file"
+            id="bannerImageInput"
+            style="display: none;"
+            accept="image/*"
+            (change)="onImageSelected($event)"
+          />
+
+          <div class="upload-dropzone" (click)="triggerImageUpload()">
+            <div class="upload-placeholder">
+              <div class="cloud-icon-circle">
+                <i class="bi bi-cloud-arrow-up"></i>
+              </div>
+              <p class="upload-title"><strong>Click to upload image</strong></p>
+              <p class="upload-sub">or drag and drop</p>
+              <span class="upload-formats">Supports JPG, PNG (Max 2MB)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Link (Optional) -->
+        <div class="form-group">
+          <label class="form-label">Link (Optional)</label>
+          <input
+            type="text"
+            [(ngModel)]="newBanner.link"
+            placeholder="Enter link (e.g. /shop, /products?category=...)"
+            class="form-control"
+          />
+        </div>
+
+        <!-- Status Segmented Buttons -->
+        <div class="form-group">
+          <label class="form-label">Status <span class="required">*</span></label>
+          <div class="status-toggle-group">
+            <button
+              type="button"
+              class="toggle-btn"
+              [class.active]="newBanner.status === 'Active'"
+              (click)="newBanner.status = 'Active'"
+            >
+              Active
+            </button>
+            <button
+              type="button"
+              class="toggle-btn"
+              [class.active]="newBanner.status === 'Inactive'"
+              (click)="newBanner.status = 'Inactive'"
+            >
+              Inactive
+            </button>
+          </div>
+        </div>
+
+        <!-- Sort Order -->
+        <div class="form-group">
+          <label class="form-label">Sort Order <span class="required">*</span></label>
+          <input
+            type="number"
+            [(ngModel)]="newBanner.sortOrder"
+            placeholder="Enter sort order (e.g. 1)"
+            class="form-control"
+          />
+        </div>
+
+        <!-- Live Visual Preview of Banner Card -->
+        <div class="form-group">
+          <label class="form-label">Live Preview (Selected Section: {{ newBanner.section }})</label>
+          <div class="banner-live-card">
+            <img [src]="newBanner.imagePreview" alt="Live Preview" class="preview-hero-img" />
+            <div class="preview-overlay">
+              <h3 class="preview-heading">{{ newBanner.title || 'Natural Care for a Better You' }}</h3>
+              <p class="preview-sub">{{ newBanner.section }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Save Banner Button -->
+        <button type="button" class="btn-submit-save" (click)="saveBanner()">
+          <i class="bi bi-save"></i>
+          <span>Save Banner to {{ newBanner.section }}</span>
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,553 @@
+<app-storefront-header></app-storefront-header>
+
+<app-hero-banner></app-hero-banner>
+
+
+
+
+
+<section class="category-section py-5 bg-white">
+  <div class="container-fluid px-3 px-lg-5">
+    
+    <!-- Section Header Row -->
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+      <div>
+        <!-- Micro Tag -->
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="rounded-circle" style="width: 7px; height: 7px; background-color: #1748D8;"></span>
+          <span class="text-uppercase fw-bold text-secondary" style="font-size: 11.5px; letter-spacing: 1px;">
+            SHOP BY CATEGORY
+          </span>
+        </div>
+        
+        <!-- Main Title -->
+        <h2 class="display-6 fw-bold text-dark mb-1" style="font-weight: 800; letter-spacing: -0.5px;">
+          Explore by <span style="color: #1748D8;">Category</span>
+        </h2>
+        
+        <!-- Subtitle Description -->
+        <p class="text-secondary mb-0" style="font-size: 14.5px;">
+          Discover global brands and everyday essentials across your favourite categories.
+        </p>
+      </div>
+
+      <!-- View All Categories Pill Button -->
+      <div>
+        <a [routerLink]="['/products']" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2 view-all-btn">
+          <span>View all categories</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- 7 Pastel Category Cards -->
+    <div class="category-cards-wrapper gap-3 no-scrollbar pb-2 mb-0">
+      @for (cat of categories; track cat.id) {
+        <a [routerLink]="['/products']" 
+           [queryParams]="cat.id === 'ayurveda' || cat.id === 'beauty' ? { category: 'wellness' } : cat.id === 'food-pantry' ? { category: 'pantry' } : cat.id === 'home-living' ? { category: 'craft-living' } : null"
+           class="category-card rounded-4 p-3 d-flex flex-column justify-content-between text-decoration-none shadow-sm"
+           [style.background]="cat.bgGradient">
+          
+          <!-- Category Product Image Box -->
+          <div class="cat-img-box d-flex align-items-center justify-content-center my-auto">
+            <img [src]="cat.image" [alt]="cat.title" class="img-fluid cat-card-image" loading="lazy" decoding="async">
+          </div>
+
+          <!-- Bottom Info & Arrow -->
+          <div class="d-flex align-items-end justify-content-between mt-auto pt-2 w-100">
+            <div class="cat-text-content d-flex flex-column text-start lh-sm pe-2">
+              <span class="text-dark cat-title mb-1" [title]="cat.title">{{ cat.title }}</span>
+              <span class="cat-subtitle text-muted" [title]="cat.subtitle">{{ cat.subtitle }}</span>
+            </div>
+            
+            <span class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 cat-arrow-pill"
+                  [style.background-color]="cat.arrowBg"
+                  [style.color]="cat.arrowColor">
+              <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
+            </span>
+          </div>
+
+        </a>
+      }
+    </div>
+
+  </div>
+</section>
+<!-- Trust Features Banner -->
+<section class="trust-features-section py-4 bg-white">
+  <div class="container-fluid px-3 px-lg-5">
+    <div class="trust-features-bar bg-white rounded-4 border p-3 p-lg-4 shadow-sm">
+      <div class="row g-3 g-lg-4 align-items-center justify-content-between">
+        @for (feature of trustFeatures; track feature.id; let i = $index; let last = $last) {
+          <div class="col-12 col-sm-6 col-lg d-flex align-items-center gap-3 feature-item-col" 
+               [class.border-end-divider]="!last">
+            <span class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 trust-icon-circle"
+                  style="width: 44px; height: 44px; background-color: #eff6ff; color: #1748D8;">
+              <i [class]="feature.icon" style="font-size: 18px;"></i>
+            </span>
+            <div class="d-flex flex-column lh-sm text-start">
+              <span class="fw-bold text-dark mb-1 feature-title">{{ feature.title }}</span>
+              <span class="text-secondary feature-subtitle">{{ feature.subtitle }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Trending / Featured Products Section -->
+<app-featured-products></app-featured-products>
+
+<!-- Live Storefront Products Section (DummyJSON API) -->
+<section class="storefront-products-section py-5 bg-white position-relative" id="storefrontProductsSection">
+  <div class="container-fluid px-3 px-lg-5">
+    
+    <!-- Section Header Row -->
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+      <div>
+        <!-- Micro Tag -->
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="rounded-circle pulse-dot" style="width: 8px; height: 8px; background-color: #1748D8;"></span>
+          <span class="text-uppercase fw-bold text-secondary" style="font-size: 11.5px; letter-spacing: 1px;">
+            DUMMYJSON API • STOREFRONT PRODUCTS
+          </span>
+          <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-0.5" style="font-size: 10px;">
+            <i class="fa-solid fa-cloud-arrow-down me-1"></i>Live Data
+          </span>
+        </div>
+        
+        <!-- Main Title -->
+        <h2 class="display-6 fw-bold text-dark mb-1" style="font-weight: 800; letter-spacing: -0.6px;">
+          Storefront <span style="color: #1748D8;">Products</span>
+        </h2>
+        
+        <!-- Subtitle -->
+        <p class="text-secondary mb-0" style="font-size: 14.5px;">
+          Explore all products fetched dynamically in real-time from the DummyJSON API.
+        </p>
+      </div>
+
+      <!-- Quick Action / Total Count -->
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-light text-dark border px-3 py-2 rounded-pill fw-semibold" style="font-size: 13px;">
+          <i class="fa-solid fa-boxes-stacked me-1.5 text-primary"></i>
+          {{ filteredProducts.length }} Products Available
+        </span>
+        <a [routerLink]="['/products']" class="btn btn-outline-primary rounded-pill px-3.5 py-1.5 fw-semibold d-inline-flex align-items-center gap-2" style="font-size: 13px;">
+          <span>Full Catalog</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Category Filter Pills Strip -->
+    @if (categoriesList.length > 1) {
+      <div class="category-filter-pills d-flex align-items-center gap-2 overflow-x-auto no-scrollbar pb-3 mb-3">
+        @for (cat of categoriesList; track cat.id) {
+          <button type="button" 
+                  class="btn category-pill-btn rounded-pill d-inline-flex align-items-center gap-2 px-3.5 py-1.5 text-nowrap transition-all shadow-xs"
+                  [class.active]="selectedCategory === cat.id"
+                  (click)="setCategory(cat.id)">
+            <span class="fw-semibold">{{ cat.name }}</span>
+            <span class="badge rounded-pill pill-count">{{ cat.count }}</span>
+          </button>
+        }
+      </div>
+    }
+
+    <!-- Loading Skeleton State -->
+    @if (isLoading) {
+      <div class="row g-4 storefront-skeleton-grid">
+        @for (sk of [1, 2, 3, 4, 5, 6, 7, 8]; track sk) {
+          <div class="col-12 col-sm-6 col-md-4 col-xl-3">
+            <div class="card h-100 rounded-4 border bg-white p-3 shadow-xs skeleton-card">
+              <div class="skeleton-shimmer skeleton-img rounded-4 mb-3" style="height: 200px; background: #f1f5f9;"></div>
+              <div class="skeleton-shimmer skeleton-line w-25 mb-2" style="height: 12px; background: #e2e8f0; border-radius: 4px;"></div>
+              <div class="skeleton-shimmer skeleton-line w-75 mb-2" style="height: 16px; background: #e2e8f0; border-radius: 4px;"></div>
+              <div class="skeleton-shimmer skeleton-line w-50 mb-3" style="height: 12px; background: #e2e8f0; border-radius: 4px;"></div>
+              <div class="skeleton-shimmer skeleton-line w-100 mt-auto" style="height: 40px; background: #f1f5f9; border-radius: 8px;"></div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Error State Alert with Retry -->
+    @if (errorMessage) {
+      <div class="alert alert-warning border border-warning-subtle rounded-4 p-4 my-4 d-flex align-items-center justify-content-between flex-wrap gap-3 shadow-xs">
+        <div class="d-flex align-items-center gap-3">
+          <div class="rounded-circle d-flex align-items-center justify-content-center bg-warning bg-opacity-25 text-warning-emphasis" style="width: 44px; height: 44px;">
+            <i class="fa-solid fa-triangle-exclamation fs-5"></i>
+          </div>
+          <div>
+            <h6 class="fw-bold text-dark mb-1">Failed to fetch API products</h6>
+            <p class="text-secondary mb-0 small">{{ errorMessage }}</p>
+          </div>
+        </div>
+        <button type="button" 
+                class="btn btn-dark rounded-pill px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2 shadow-xs"
+                (click)="retryLoad()">
+          <i class="fa-solid fa-rotate-right"></i>
+          <span>Retry</span>
+        </button>
+      </div>
+    }
+
+    <!-- Real Product Cards Grid (Fetched dynamically from DummyJSON) -->
+    @if (!isLoading && filteredProducts.length > 0) {
+      <div class="row g-4 storefront-cards-grid">
+        @for (prod of filteredProducts; track prod.id) {
+          <div class="col-12 col-sm-6 col-md-4 col-xl-3">
+            <div class="product-explore-card card h-100 bg-white border d-flex flex-column justify-content-between position-relative"
+                 [routerLink]="['/product', prod.id]"
+                 role="button"
+                 style="cursor: pointer;">
+              
+              <!-- Top Image Container with Wishlist, Badges, and Carousel Dots -->
+              <div class="card-image-wrapper position-relative overflow-hidden">
+                <!-- Wishlist Heart Button (Top-Right) -->
+                <button type="button" 
+                        class="card-wishlist-btn position-absolute rounded-circle bg-white d-flex align-items-center justify-content-center p-0"
+                        [class.active]="isInWishlist(prod.id)"
+                        (click)="toggleWishlist(prod, $event)"
+                        [attr.aria-label]="isInWishlist(prod.id) ? 'Remove from wishlist' : 'Add to wishlist'">
+                  <i [class]="isInWishlist(prod.id) ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></i>
+                </button>
+
+                <!-- Stacked Floating Badges (Top-Right below Wishlist) -->
+                <div class="card-floating-badges position-absolute d-flex flex-column align-items-end">
+                  <!-- Best Seller Pill Badge -->
+                  @if (prod.isBestSeller || (prod.rating >= 4.4) || (prod.reviewCount && prod.reviewCount > 40)) {
+                    <span class="badge badge-bestseller-gold rounded-pill">
+                      <i class="fa-solid fa-crown"></i>
+                      <span>Best Seller</span>
+                    </span>
+                  }
+
+                  <!-- In Stock Pill Badge -->
+                  <span class="badge badge-in-stock-green rounded-pill">
+                    <span class="stock-check-circle">
+                      <i class="fa-solid fa-check"></i>
+                    </span>
+                    <span>{{ (prod.stock !== undefined && prod.stock <= 5) ? ('Only ' + prod.stock + ' left') : (prod.availabilityStatus || 'In Stock') }}</span>
+                  </span>
+                </div>
+
+                <!-- Product Image -->
+                <div class="image-inner-stage d-flex align-items-center justify-content-center">
+                  <img [src]="getActiveImage(prod)" 
+                       [alt]="prod.name" 
+                       class="img-fluid card-product-image" 
+                       loading="lazy" 
+                       decoding="async"
+                       (error)="onImageError($event)">
+                </div>
+
+                <!-- Carousel Dots Indicator (Bottom-Left) -->
+                <div class="carousel-dots-pill position-absolute" (click)="$event.stopPropagation()">
+                  <span class="dot" 
+                        [class.active]="getActiveImageIndex(prod.id) === 0"
+                        (click)="setImageIndex(prod.id, 0, $event)"></span>
+                  <span class="dot" 
+                        [class.active]="getActiveImageIndex(prod.id) === 1"
+                        (click)="setImageIndex(prod.id, 1, $event)"></span>
+                  <span class="dot" 
+                        [class.active]="getActiveImageIndex(prod.id) === 2"
+                        (click)="setImageIndex(prod.id, 2, $event)"></span>
+                  <span class="dot" 
+                        [class.active]="getActiveImageIndex(prod.id) === 3"
+                        (click)="setImageIndex(prod.id, 3, $event)"></span>
+                </div>
+              </div>
+
+              <!-- Product Card Content Body -->
+              <div class="card-content-body p-3.5 d-flex flex-column flex-grow-1 justify-content-between">
+                <div>
+                  <!-- Row 1: Category Tag (Left) + Rating & Reviews (Right) -->
+                  <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                    <span class="category-blue-pill text-uppercase fw-bold">
+                      {{ (prod.categoryTag || prod.category || 'GROCERIES') | uppercase }}
+                    </span>
+
+                    <div class="rating-block text-end">
+                      <div class="d-flex align-items-center gap-1">
+                        <span class="rating-score-num">{{ prod.rating | number: '1.1-1' }}</span>
+                        <div class="rating-stars">
+                          <i class="fa-solid fa-star star-filled"></i>
+                          <i [class]="prod.rating >= 1.8 ? 'fa-solid fa-star star-filled' : 'fa-solid fa-star star-muted'"></i>
+                          <i [class]="prod.rating >= 2.8 ? 'fa-solid fa-star star-filled' : 'fa-solid fa-star star-muted'"></i>
+                          <i [class]="prod.rating >= 3.8 ? 'fa-solid fa-star star-filled' : 'fa-solid fa-star star-muted'"></i>
+                          <i [class]="prod.rating >= 4.6 ? 'fa-solid fa-star star-filled' : 'fa-solid fa-star star-muted'"></i>
+                        </div>
+                      </div>
+                      <span class="reviews-count-text">
+                        ({{ prod.reviewCount || 5 }} reviews)
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Row 2: Product Title -->
+                  <a [routerLink]="['/product', prod.id]" (click)="$event.stopPropagation()" class="text-decoration-none">
+                    <h3 class="card-product-title" [title]="prod.name">
+                      {{ prod.name }}
+                    </h3>
+                  </a>
+
+                  <!-- Row 3: Product Description / Subtitle -->
+                  <p class="card-product-description" [title]="prod.subtitle || prod.aboutText">
+                    {{ prod.subtitle || prod.aboutText || 'Deeply hydrates skin, reduces fine lines, improves texture and enhances natural glow for soft, smooth, youthful skin.' }}
+                  </p>
+                </div>
+
+                <!-- Bottom Actions Container -->
+                <div class="card-bottom-actions">
+                  <!-- Row 4: Price & Save Discount Pill -->
+                  <div class="price-discount-row">
+                    <div class="d-flex align-items-baseline gap-2">
+                      <span class="price-main">
+                        ${{ prod.price | number: '1.2-2' }}
+                      </span>
+                      @if (prod.originalPrice) {
+                        <span class="price-original">
+                          ${{ prod.originalPrice | number: '1.2-2' }}
+                        </span>
+                      } @else {
+                        <span class="price-original">
+                          ${{ prod.price | number: '1.2-2' }}
+                        </span>
+                      }
+                    </div>
+
+                    <span class="discount-save-pill">
+                      Save {{ prod.discountPercentage ? (prod.discountPercentage | number: '1.0-0') : '10' }}%
+                    </span>
+                  </div>
+
+                  <!-- Row 5: Unit / Quantity Stepper Pill & Add to Cart Icon Button -->
+                  <div class="unit-and-cart-row">
+                    <!-- Unit Stepper Pill -->
+                    <div class="unit-quantity-pill" (click)="$event.stopPropagation()">
+                      <span class="unit-label">Unit {{ getQuantity(prod.id) }}</span>
+                      <div class="unit-stepper-buttons">
+                        <button type="button" 
+                                class="btn-unit-circle" 
+                                (click)="increaseQuantity(prod.id, $event)"
+                                title="Increase quantity"
+                                aria-label="Increase quantity">
+                          <i class="fa-solid fa-plus"></i>
+                        </button>
+                        <button type="button" 
+                                class="btn-unit-circle" 
+                                (click)="decreaseQuantity(prod.id, $event)"
+                                title="Decrease quantity"
+                                aria-label="Decrease quantity">
+                          <i class="fa-solid fa-minus"></i>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Add to Cart Icon Button (Rounded Blue Rectangle) -->
+                    <button type="button" 
+                            class="btn-card-add-cart"
+                            [class.btn-added]="addedToCartMap[prod.id]"
+                            (click)="onAddToCart(prod, $event)"
+                            title="Add to Cart"
+                            aria-label="Add to Cart">
+                      @if (addedToCartMap[prod.id]) {
+                        <i class="fa-solid fa-check"></i>
+                      } @else {
+                        <i class="fa-solid fa-cart-plus"></i>
+                      }
+                    </button>
+                  </div>
+
+                  <!-- Row 6: BUY NOW Full-Width Button -->
+                  <button type="button" 
+                          class="btn-card-buy-now"
+                          (click)="onBuyNow(prod, $event)">
+                    BUY NOW
+                  </button>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</section>
+
+<!-- Bento Grid Showcase Section -->
+<app-bento-showcase></app-bento-showcase>
+
+<!-- Regional Specialities Showcase Section -->
+<app-speciality-showcase></app-speciality-showcase>
+
+<!-- Wellness Products Showcase Section (Directly below Top Brands) -->
+<section class="wellness-section py-5 bg-white position-relative overflow-hidden">
+  <div class="container-fluid px-3 px-lg-5">
+    
+    <!-- Outer Row: Left Promotional Banner + Right Product Cards Showcase -->
+    <div class="row g-4 align-items-stretch">
+      
+      <!-- Left Promotional Banner: "Wellness" -->
+      <div class="col-12 col-lg-5 col-xl-4">
+        <div class="wellness-banner h-100 rounded-4 overflow-hidden position-relative shadow-sm d-flex flex-column justify-content-between p-4"
+             style="background-image: url('/images/wellness/wellness-banner.jpg'); background-size: cover; background-position: center;">
+          
+          <!-- Banner Title: "Wellness" -->
+          <div class="position-relative z-2">
+            <h2 class="wellness-banner-title fw-bold m-0">
+              Wellness
+            </h2>
+          </div>
+
+          <!-- Bottom subtle badge -->
+          <div class="position-relative z-2 mt-auto pt-5">
+            <div class="store-badge-pill d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill bg-white shadow-sm">
+              <span class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 26px; height: 26px; background-color: #1748D8;">
+                <i class="fa-solid fa-bag-shopping" style="font-size: 11px;"></i>
+              </span>
+              <span class="fw-bold text-dark" style="font-size: 12.5px;">Authentic Ayurveda & Care</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Right Column: "See All" Header + Carousel of Cards -->
+      <div class="col-12 col-lg-7 col-xl-8 d-flex flex-column justify-content-between">
+        
+        <!-- Header Row with "See All" on the right -->
+        <div class="d-flex align-items-center justify-content-between mb-3 ">  
+          <div class="d-flex align-items-center gap-2">
+            <span class="rounded-circle" style="width: 7px; height: 7px; background-color: #1748D8;"></span>
+            <span class="text-uppercase fw-bold text-secondary" style="font-size: 11.5px; letter-spacing: 1px;">
+              HERBAL ESSENTIALS & SUPPLEMENTS
+            </span>
+          </div>
+
+          <a [routerLink]="['/products']" [queryParams]="{ category: 'wellness' }" class="see-all-link text-decoration-underline fw-bold text-dark" style="font-size: 14.5px;">
+            See All
+          </a>
+        </div>
+
+        <!-- Carousel Container with Navigation Arrow -->
+        <div class="position-relative">
+          <div class="box-products-grid wellness-cards-grid d-flex gap-3 overflow-x-auto no-scrollbar pb-2" id="wellnessCardsGrid">
+            @for (prod of wellnessProducts; track prod.id) {
+              <div class="product-item-wrapper d-flex flex-column text-start"
+                   [routerLink]="['/product', prod.id]"
+                   role="button"
+                   style="cursor: pointer;">
+                
+                <!-- Box-Style Image Card (Consistent with existing card design) -->
+                <div class="box-card position-relative rounded-4 overflow-hidden d-flex align-items-center justify-content-center shadow-sm mb-3"
+                     [style.background]="prod.bgGradient">
+                  
+                  <!-- Best Seller Badge -->
+                  @if (prod.isBestSeller) {
+                    <div class="badge-bestseller position-absolute top-0 start-0 m-2 px-2 py-0.5 rounded-1 fw-bold">
+                      Best Seller
+                    </div>
+                  }
+
+                  <!-- Wishlist Heart Button -->
+                  <button type="button" 
+                          class="btn wishlist-btn position-absolute rounded-circle shadow-sm d-flex align-items-center justify-content-center p-0"
+                          [class.active]="wishlistService.isInWishlist(prod.id)"
+                          (click)="toggleWellnessFavorite(prod, $event)"
+                          aria-label="Add to Wishlist">
+                    <i [class]="wishlistService.isInWishlist(prod.id) ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart text-danger'"></i>
+                  </button>
+
+                  <!-- Product Image (Click to View Details) -->
+                  <a [routerLink]="['/product', prod.id]" class="d-flex align-items-center justify-content-center w-100 h-100 text-decoration-none">
+                    <img [src]="prod.image" [alt]="prod.name" class="img-fluid box-product-image" loading="lazy" decoding="async" (error)="onImageError($event)">
+                  </a>
+                </div>
+
+                <!-- Neat Product Details Below Image (Product Name & Brand Name) -->
+                <div class="box-details text-start d-flex flex-column flex-grow-1">
+                  
+                  <!-- Rating Bar (Stars + Count) -->
+                  <div class="rating-bar d-flex align-items-center gap-1 mb-1">
+                    <div class="stars d-inline-flex align-items-center gap-0.5 text-dark">
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star-half-stroke"></i>
+                    </div>
+                    <span class="rating-score fw-bold text-dark ms-1">({{ prod.reviewCount }})</span>
+                  </div>
+
+                  <!-- Product Name (Click to View Details) -->
+                  <a [routerLink]="['/product', prod.id]" class="text-decoration-none">
+                    <h3 class="product-name fw-bold mb-1" [title]="prod.name">
+                      {{ prod.name }}
+                    </h3>
+                  </a>
+
+                  <!-- Brand Name Neatly Displayed Below with Proper Spacing -->
+                  <span class="product-brand text-uppercase fw-bold text-secondary mb-1 d-block text-truncate" [title]="prod.brand">
+                    {{ prod.brand }}
+                  </span>
+
+                  <!-- Price Line -->
+                  <div class="d-flex align-items-baseline gap-2 mb-2">
+                    @if (prod.originalPrice) {
+                      <span class="text-muted text-decoration-line-through small">${{ prod.originalPrice | number: '1.2-2' }} USD</span>
+                      <span class="text-danger fw-bold small">-{{ prod.discountPercent }}%</span>
+                    }
+                    <span class="product-price fw-bold text-dark">${{ prod.price | number: '1.2-2' }} USD</span>
+                  </div>
+
+                  <!-- Pack / Variant Option Dropdown -->
+                  <div class="variant-select-box mb-2 mt-auto">
+                    <select class="form-select variant-select shadow-none" 
+                            (click)="$event.stopPropagation()"
+                            (change)="prod.selectedVariant = $any($event.target).value">
+                      @for (variant of prod.variants; track variant) {
+                        <option [value]="variant" [selected]="variant === prod.selectedVariant">{{ variant }}</option>
+                      }
+                    </select>
+                  </div>
+
+                  <!-- Add to Cart Button -->
+                  <button type="button" 
+                          class="btn btn-outline-dark w-100 fw-bold py-2 add-to-cart-btn text-uppercase shadow-none"
+                          (click)="addToCart(prod, $event)">
+                    ADD TO CART
+                  </button>
+
+                </div>
+
+              </div>
+            }
+          </div>
+
+          <!-- Carousel Right Navigation Chevron Button -->
+          <button type="button" 
+                  class="carousel-nav-btn position-absolute top-50 translate-middle-y end-0 d-flex align-items-center justify-content-center shadow-sm"
+                  (click)="scrollWellness('right')"
+                  aria-label="Scroll right">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- Indian Homeopathic Products Showcase Section -->
+<app-homeopathy-showcase></app-homeopathy-showcase>
+
+<app-footer></app-footer>

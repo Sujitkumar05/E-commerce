@@ -1,0 +1,87 @@
+.selected-address-banner {
+  border-color: #dbeafe;
+  background-color: #f8faff !important;
+
+  .banner-icon-box {
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+  }
+}
+
+.item-row {
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: #fcfdfe;
+  }
+}
+
+.item-img-container {
+  width: 74px;
+  height: 74px;
+
+  .item-thumb {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+  }
+}
+
+.item-name {
+  font-size: 14.5px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.item-stepper {
+  .btn-step {
+    border: none;
+    background: transparent;
+    color: #475569;
+    font-size: 11px;
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.15s ease;
+
+    &:hover {
+      background-color: #eff6ff;
+      color: #1748D8;
+    }
+  }
+
+  .step-qty {
+    font-size: 13px;
+  }
+}
+
+.btn-coupon-chip {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  color: #1748D8;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: #eff6ff;
+    border-color: #1748D8;
+  }
+}
+
+.btn-remove-coupon {
+  border: none;
+  background: transparent;
+  color: #dc2626;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+}
+

@@ -1,0 +1,570 @@
+// Home Page Styles
+
+.trust-features-section {
+  .trust-features-bar {
+    border: 1px solid #e5e7eb !important;
+
+    .feature-item-col {
+      transition: transform 0.2s ease;
+
+      .trust-icon-circle {
+        transition: transform 0.2s ease;
+      }
+
+      &:hover .trust-icon-circle {
+        transform: scale(1.08);
+      }
+    }
+
+    @media (min-width: 992px) {
+      .border-end-divider {
+        border-right: 1px solid #e5e7eb;
+      }
+    }
+  }
+}
+
+// Category Section SCSS
+
+.category-section {
+  position: relative;
+  background-color: #ffffff;
+
+  .view-all-btn {
+    border: 1.5px solid #1748D8 !important;
+    color: #1748D8 !important;
+    background-color: transparent;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #1748D8 !important;
+      color: #ffffff !important;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(23, 72, 216, 0.25) !important;
+    }
+  }
+
+  // 7 Pastel Category Cards
+  .category-cards-wrapper {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 0.75rem;
+
+    .category-card {
+      flex: 0 0 180px;
+      width: 180px;
+      min-width: 180px;
+      max-width: 180px;
+      height: 275px;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      cursor: pointer;
+      box-sizing: border-box;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+
+      .cat-img-box {
+        height: 145px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .cat-card-image {
+          max-height: 120px;
+          max-width: 100%;
+          width: auto;
+          height: auto;
+          object-fit: contain;
+          filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.07));
+          transition: transform 0.25s ease;
+        }
+      }
+
+      .cat-text-content {
+        min-width: 0;
+        flex: 1;
+        overflow: hidden;
+
+        .cat-title {
+          font-size: 14.5px;
+          font-weight: 700;
+          letter-spacing: -0.2px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: block;
+        }
+
+        .cat-subtitle {
+          font-size: 11.5px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: block;
+        }
+      }
+
+      .cat-arrow-pill {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        min-height: 32px;
+        flex-shrink: 0;
+        transition: transform 0.2s ease, filter 0.2s ease;
+      }
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 14px 25px -5px rgba(0, 0, 0, 0.08) !important;
+
+        .cat-card-image {
+          transform: scale(1.06);
+        }
+
+        .cat-arrow-pill {
+          transform: scale(1.1);
+          filter: brightness(0.95);
+        }
+      }
+    }
+
+    @media (min-width: 1200px) {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      overflow-x: visible;
+
+      .category-card {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        flex: unset;
+      }
+    }
+  }
+
+  // Smooth scrollbar hiding
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+// Wellness Products Showcase Section
+.wellness-section {
+  background-color: #ffffff;
+  border-top: 1px solid #f3f4f6;
+
+  .wellness-banner {
+    min-height: 480px;
+    border-radius: 20px !important;
+    position: relative;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.35) 100%);
+      pointer-events: none;
+    }
+
+    .wellness-banner-title {
+      font-size: 2.75rem;
+      font-weight: 800;
+      color: #3b5317;
+      font-family: Georgia, 'Times New Roman', serif;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+
+    .store-badge-pill {
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      backdrop-filter: blur(8px);
+    }
+  }
+
+  .see-all-link {
+    color: #111827;
+    text-underline-offset: 4px;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #1748D8;
+    }
+  }
+
+  // Wellness Carousel & Cards Grid
+  .wellness-cards-grid {
+    display: flex;
+    gap: 1.25rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding-bottom: 0.5rem;
+
+    .product-item-wrapper {
+      flex: 0 0 240px;
+      width: 240px;
+      min-width: 240px;
+      max-width: 240px;
+      transition: transform 0.25s ease;
+
+      // Box-Style Image Card (Consistent with Speciality Picks)
+      .box-card {
+        width: 100%;
+        height: 220px;
+        aspect-ratio: 1 / 1;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        border-radius: 18px !important;
+        cursor: pointer;
+        box-sizing: border-box;
+        background-color: #fafafa;
+        transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+
+        .badge-bestseller {
+          background-color: #eab308;
+          color: #1c1917;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.2px;
+          border-radius: 4px;
+          z-index: 2;
+        }
+
+        .wishlist-btn {
+          top: 9px;
+          right: 9px;
+          width: 30px;
+          height: 30px;
+          background: #ffffff;
+          border: 1px solid rgba(0, 0, 0, 0.06);
+          z-index: 2;
+          transition: transform 0.2s ease, background 0.2s ease;
+
+          i {
+            font-size: 12px;
+            color: #ef4444;
+          }
+
+          &:hover {
+            transform: scale(1.12);
+            background: #fff5f5;
+          }
+
+          &.active i {
+            color: #dc2626;
+          }
+        }
+
+        .box-product-image {
+          width: 82%;
+          height: 82%;
+          object-fit: contain;
+          filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.08));
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+          z-index: 1;
+        }
+
+        &:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 14px 28px rgba(0, 0, 0, 0.07) !important;
+
+          .box-product-image {
+            transform: scale(1.06);
+          }
+        }
+      }
+
+      // Details Below Image Card
+      .box-details {
+        .rating-bar {
+          .stars {
+            gap: 2px;
+            i {
+              font-size: 11px;
+              color: #111827;
+            }
+          }
+
+          .rating-score {
+            font-size: 12px;
+            color: #4b5563;
+          }
+        }
+
+        .product-name {
+          font-size: 14.5px;
+          font-weight: 700;
+          letter-spacing: -0.2px;
+          color: #111827;
+          line-height: 1.35;
+          min-height: 40px;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          transition: color 0.2s ease;
+        }
+
+        .product-brand {
+          font-size: 11px;
+          letter-spacing: 0.8px;
+          color: #64748b;
+          font-weight: 700;
+          line-height: 1.2;
+        }
+
+        .product-price {
+          font-size: 16px;
+          font-weight: 700;
+          color: #111827;
+        }
+
+        .variant-select-box {
+          .variant-select {
+            font-size: 12.5px;
+            padding: 7px 12px;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            background-color: #ffffff;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+
+            &:focus {
+              border-color: #1748D8;
+            }
+          }
+        }
+
+        .add-to-cart-btn {
+          border: 1.5px solid #111827;
+          color: #111827;
+          background-color: transparent;
+          font-size: 12px;
+          letter-spacing: 0.6px;
+          border-radius: 6px;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background-color: #111827;
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+          }
+        }
+
+        &:hover .product-name {
+          color: #1748D8;
+        }
+      }
+    }
+  }
+
+  // Right Arrow Carousel Button
+  .carousel-nav-btn {
+    width: 36px;
+    height: 64px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    font-size: 13px;
+    z-index: 5;
+    transition: all 0.2s ease;
+    cursor: pointer;
+
+    &:hover {
+      background: #ffffff;
+      color: #111827;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+      transform: translateY(-50%) scale(1.05);
+    }
+  }
+
+  // Smooth scrollbar hiding
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+// ==================== STOREFRONT PRODUCTS SECTION (DummyJSON API) ====================
+.storefront-products-section {
+  background-color: #fafbfd;
+  border-top: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+
+  .pulse-dot {
+    animation: pulse 2s infinite ease-in-out;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(0.95); opacity: 0.7; }
+    50% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.7; }
+  }
+
+  // Category Filter Pills Strip
+  .category-filter-pills {
+    .category-pill-btn {
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+      color: #475569;
+      font-size: 13px;
+      transition: all 0.2s ease;
+
+      .pill-count {
+        background-color: #f1f5f9;
+        color: #64748b;
+        font-size: 11px;
+        transition: all 0.2s ease;
+      }
+
+      &:hover {
+        border-color: #1748D8;
+        color: #1748D8;
+        background-color: #f8faff;
+      }
+
+      &.active {
+        background-color: #1748D8;
+        border-color: #1748D8;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(23, 72, 216, 0.25);
+
+        .pill-count {
+          background-color: rgba(255, 255, 255, 0.25);
+          color: #ffffff;
+        }
+      }
+    }
+  }
+
+  // Storefront Product Card
+  .storefront-product-card {
+    border: 1px solid #e2e8f0 !important;
+    background: #ffffff;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.2s ease;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08) !important;
+      border-color: #cbd5e1 !important;
+
+      .storefront-img {
+        transform: scale(1.05);
+      }
+
+      .product-card-title {
+        color: #1748D8 !important;
+      }
+    }
+
+    .card-top-badges {
+      pointer-events: none;
+
+      .pointer-events-auto {
+        pointer-events: auto;
+      }
+
+      .wishlist-card-btn {
+        width: 34px;
+        height: 34px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s ease, background 0.2s ease;
+
+        i {
+          font-size: 14px;
+        }
+
+        &:hover {
+          transform: scale(1.15);
+          background-color: #fff5f5;
+        }
+
+        &.active i {
+          color: #dc2626 !important;
+        }
+      }
+    }
+
+    .product-image-container {
+      background-color: #f8fafc;
+
+      .storefront-img {
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+    }
+
+    .product-card-title {
+      font-size: 15px;
+      letter-spacing: -0.2px;
+      color: #111827;
+      min-height: 40px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      transition: color 0.2s ease;
+    }
+
+    .product-brand-tag {
+      letter-spacing: 0.6px;
+      color: #64748b;
+    }
+
+    .stars {
+      gap: 2px;
+      i {
+        font-size: 11.5px;
+      }
+    }
+
+    .add-cart-storefront-btn {
+      font-size: 13px;
+      letter-spacing: 0.3px;
+      transition: all 0.2s ease;
+
+      &.btn-primary {
+        background-color: #1748D8;
+        border-color: #1748D8;
+
+        &:hover {
+          background-color: #0f34a4;
+          border-color: #0f34a4;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(23, 72, 216, 0.3);
+        }
+      }
+
+      &.btn-success {
+        background-color: #10b981;
+        border-color: #10b981;
+      }
+    }
+  }
+
+  // Skeleton Loader Styles
+  .skeleton-card {
+    border: 1px solid #e2e8f0 !important;
+  }
+
+  .skeleton-shimmer {
+    animation: shimmer 1.5s infinite linear;
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+}
+
+

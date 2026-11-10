@@ -1,0 +1,126 @@
+<section class="trending-section py-5 position-relative overflow-hidden bg-white">
+  <!-- Subtle decorative background glow in top right -->
+  <div class="glow-bg-accent"></div>
+
+  <div class="container-fluid px-3 px-lg-5 position-relative">
+    
+    <!-- Header Row -->
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+      <div>
+        <!-- Micro Tag -->
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="rounded-circle pulse-dot" style="width: 8px; height: 8px; background-color: #1748D8;"></span>
+          <span class="text-uppercase fw-bold text-secondary" style="font-size: 11.5px; letter-spacing: 1px;">
+            TRENDING PRODUCTS
+          </span>
+        </div>
+        
+        <!-- Main Title -->
+        <h2 class="display-6 fw-bold text-dark mb-1" style="font-weight: 800; letter-spacing: -0.6px;">
+          Trending <span style="color: #1748D8;">now</span>
+        </h2>
+        
+        <!-- Subtitle -->
+        <p class="text-secondary mb-0" style="font-size: 14.5px;">
+          Popular products, customer favourites and top picks from around the world.
+        </p>
+      </div>
+
+      <!-- Shop Trending Link with Decorative Doodle / Sparkle -->
+      <div class="d-flex align-items-center gap-2 position-relative">
+        <svg class="sparkle-doodle" width="34" height="34" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 4C20.5 12 25 16 33 16.5C25 17 20.5 21 20 29C19.5 21 15 17 7 16.5C15 16 19.5 12 20 4Z" fill="#3b82f6" fill-opacity="0.9"/>
+          <path d="M12 28C18 34 26 31 32 26" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+
+        <a [routerLink]="['/products']" [queryParams]="{ filter: 'bestseller' }" class="shop-trending-link text-decoration-none fw-bold d-inline-flex align-items-center gap-2">
+          <span>Shop trending</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- 4 Trending Product Cards Grid -->
+    <div class="row g-4 trending-cards-row">
+      @for (prod of products; track prod.id) {
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="product-card h-100 rounded-4 p-3 d-flex flex-column justify-content-between shadow-sm bg-white border"
+               [routerLink]="['/product', prod.id]"
+               role="button"
+               style="cursor: pointer;">
+            
+            <!-- Image Frame with Verified Badge and Wishlist Heart -->
+            <div class="product-img-box position-relative rounded-4 d-flex align-items-center justify-content-center overflow-hidden"
+                 [style.background]="prod.bgGradient">
+              
+              <!-- Wishlist Heart Button -->
+              <button type="button" 
+                      class="btn wishlist-btn position-absolute rounded-circle shadow-sm d-flex align-items-center justify-content-center p-0"
+                      [class.active]="wishlistService.isInWishlist(prod.id)"
+                      (click)="toggleFavorite(prod, $event)"
+                      aria-label="Add to Wishlist">
+                <i [class]="wishlistService.isInWishlist(prod.id) ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart text-danger'"></i>
+              </button>
+
+              <!-- Product Image -->
+              <img [src]="prod.image" [alt]="prod.title" class="img-fluid product-image" loading="lazy" decoding="async" (error)="onImageError($event)">
+
+              <!-- Verified Brand Pill Badge -->
+              @if (prod.isVerified) {
+                <div class="verified-badge position-absolute d-inline-flex align-items-center gap-1 px-2 py-1 rounded-pill shadow-sm bg-white">
+                  <span class="badge-icon rounded-circle d-inline-flex align-items-center justify-content-center">
+                    <i class="fa-solid fa-check"></i>
+                  </span>
+                  <span class="badge-text fw-bold">VERIFIED BRAND</span>
+                </div>
+              }
+            </div>
+
+            <!-- Product Details Section -->
+            <div class="product-details pt-3 d-flex flex-column flex-grow-1 justify-content-between">
+              
+              <div>
+                <!-- Title -->
+                <h3 class="product-title fw-bold text-dark mb-1 text-truncate" [title]="prod.title">
+                  {{ prod.title }}
+                </h3>
+
+                <!-- Meta Line (Rating & Shipping) -->
+                <div class="d-flex align-items-center gap-2 mb-3 meta-line">
+                  <span class="d-inline-flex align-items-center gap-1 rating-text">
+                    <i class="fa-solid fa-star text-warning" style="font-size: 11px;"></i>
+                    <span class="fw-semibold text-secondary" style="font-size: 12.5px;">{{ prod.rating }}</span>
+                  </span>
+
+                  <span class="meta-divider text-muted">|</span>
+
+                  <span class="d-inline-flex align-items-center gap-1 shipping-text text-secondary" style="font-size: 12px;">
+                    <i class="fa-solid fa-globe text-primary" style="font-size: 11px;"></i>
+                    <span>Ships internationally</span>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Price & Add Button Row -->
+              <div class="d-flex align-items-center justify-content-between mt-auto pt-2">
+                <span class="product-price fw-bold text-dark fs-5">
+                  ${{ prod.price | number: '1.2-2' }}
+                </span>
+
+                <button type="button" 
+                        class="btn btn-primary add-cart-btn rounded-pill px-3 py-1 fw-semibold d-inline-flex align-items-center gap-1 shadow-sm"
+                        (click)="addToCart(prod, $event)">
+                  <i class="fa-solid fa-plus" style="font-size: 10px;"></i>
+                  <span>Add</span>
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      }
+    </div>
+
+  </div>
+</section>

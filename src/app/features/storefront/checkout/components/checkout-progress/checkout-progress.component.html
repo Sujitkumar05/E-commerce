@@ -1,0 +1,40 @@
+<div class="checkout-stepper-wrapper bg-white border rounded-4 p-3 p-md-4 shadow-xs mb-4">
+  <div class="stepper-track d-flex align-items-center justify-content-between position-relative">
+    
+    @for (step of steps; track step.id; let i = $index; let last = $last) {
+      <!-- Step Node -->
+      <div class="step-node d-flex flex-column align-items-center position-relative z-2"
+           [class.step-active]="isCurrent(step.id)"
+           [class.step-completed]="isCompleted(step.id)"
+           [class.step-clickable]="canNavigate(step.id)"
+           (click)="onStepClick(step.id)"
+           [attr.role]="canNavigate(step.id) ? 'button' : null"
+           [attr.tabindex]="canNavigate(step.id) ? 0 : -1">
+        
+        <!-- Step Icon Circle -->
+        <div class="step-circle rounded-circle d-flex align-items-center justify-content-center shadow-xs transition-all">
+          @if (isCompleted(step.id)) {
+            <i class="fa-solid fa-check check-icon"></i>
+          } @else {
+            <i [class]="'fa-solid ' + step.icon"></i>
+          }
+        </div>
+
+        <!-- Step Label -->
+        <span class="step-label text-nowrap fw-semibold mt-2 text-center">
+          {{ step.label }}
+        </span>
+      </div>
+
+      <!-- Connecting Line between steps -->
+      @if (!last) {
+        <div class="step-connector flex-grow-1 position-relative z-1"
+             [class.connector-completed]="isCompleted(steps[i + 1].id) || isCurrent(steps[i + 1].id)">
+          <div class="connector-bar"></div>
+        </div>
+      }
+    }
+
+  </div>
+</div>
+

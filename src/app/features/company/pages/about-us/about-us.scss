@@ -1,0 +1,25 @@
+.about-us-page {
+  font-family: inherit;
+
+  .about-hero {
+    .about-hero-card {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+  }
+
+  .hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+    }
+  }
+
+  .milestone-card {
+    transition: transform 0.2s ease;
+    &:hover {
+      transform: translateY(-3px);
+    }
+  }
+}

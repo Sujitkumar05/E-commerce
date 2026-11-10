@@ -1,0 +1,834 @@
+<div class="order-detail-page" *ngIf="order">
+  <!-- Top Navigation Bar & Action Buttons -->
+  <div class="detail-header-row">
+    <div class="header-left">
+      <button type="button" class="btn-back" (click)="navigateBack()" title="Back to All Orders">
+        <i class="bi bi-arrow-left"></i>
+        <span>Back to Orders</span>
+      </button>
+
+      <div class="order-title-wrapper">
+        <div class="title-status-line">
+          <h1 class="order-title">Order Details – {{ order.id }}</h1>
+          <span class="status-chip" [ngClass]="getStatusClass(order.orderStatus)">
+            <span class="status-dot"></span>
+            <span>{{ order.orderStatus }}</span>
+          </span>
+        </div>
+        <p class="order-subtitle">
+          Placed on {{ order.date }}, {{ order.time }} &nbsp;|&nbsp; Order Value:
+          <strong class="text-dark">₹{{ order.totalAmount.toLocaleString() }}</strong>
+        </p>
+      </div>
+    </div>
+
+    <div class="header-right-actions">
+      <button type="button" class="btn-action-outline" (click)="printInvoice()" title="Print tax invoice">
+        <i class="bi bi-printer"></i>
+        <span>Print Invoice</span>
+      </button>
+
+      <button type="button" class="btn-action-outline" (click)="downloadPdf()" title="Download invoice summary">
+        <i class="bi bi-download"></i>
+        <span>Download PDF</span>
+      </button>
+
+      <div class="more-actions-dropdown">
+        <button type="button" class="btn-action-outline dropdown-toggle-btn" (click)="toggleMoreActions($event)">
+          <span>More Actions</span>
+          <i class="bi bi-chevron-down caret-sm" [class.rotated]="moreActionsOpen"></i>
+        </button>
+
+        @if (moreActionsOpen) {
+          <div class="more-actions-menu" (click)="$event.stopPropagation()">
+            <button type="button" class="menu-item" (click)="downloadPdf(); moreActionsOpen = false">
+              <i class="bi bi-file-earmark-text text-primary"></i>
+              <span>Export Packing Slip</span>
+            </button>
+            <button type="button" class="menu-item" (click)="showToast('Invoice sent to ' + order.customerEmail); moreActionsOpen = false">
+              <i class="bi bi-envelope text-success"></i>
+              <span>Email Confirmation</span>
+            </button>
+            <button type="button" class="menu-item" (click)="openProcurementModal(); moreActionsOpen = false">
+              <i class="bi bi-box-seam text-warning"></i>
+              <span>Generate Procurement PO</span>
+            </button>
+            <div class="dropdown-divider"></div>
+            <button type="button" class="menu-item text-danger" (click)="cancelOrder(); moreActionsOpen = false">
+              <i class="bi bi-x-circle text-danger"></i>
+              <span>Cancel Order</span>
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 KPI Summary Cards -->
+  <div class="kpi-grid">
+    <!-- 1. Total Amount -->
+    <div class="kpi-card">
+      <div class="kpi-icon-box bg-blue">
+        <i class="bi bi-cart-fill"></i>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-label">Total Amount</span>
+        <h3 class="kpi-value">₹{{ order.totalAmount.toLocaleString() }}</h3>
+      </div>
+    </div>
+
+    <!-- 2. Payment Status -->
+    <div class="kpi-card">
+      <div class="kpi-icon-box bg-green">
+        <i class="bi bi-credit-card-fill"></i>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-label">Payment Status</span>
+        <div class="kpi-status-row">
+          <span class="status-indicator-dot bg-success"></span>
+          <h3 class="kpi-value">{{ order.paymentStatus }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Customer -->
+    <div class="kpi-card">
+      <div class="kpi-icon-box bg-purple">
+        <i class="bi bi-person-fill"></i>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-label">Customer</span>
+        <h3 class="kpi-value truncate">{{ order.customerName }}</h3>
+      </div>
+    </div>
+
+    <!-- 4. Order Date -->
+    <div class="kpi-card">
+      <div class="kpi-icon-box bg-slate">
+        <i class="bi bi-calendar-event-fill"></i>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-label">Order Date</span>
+        <h3 class="kpi-value date-text">{{ order.date }}, {{ order.time }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- Horizontal Tabs Navigation -->
+  <div class="detail-nav-tabs">
+    <button
+      type="button"
+      class="detail-tab-btn"
+      [class.active]="activeTab === 'overview'"
+      (click)="switchTab('overview')"
+    >
+      <i class="bi bi-house-door-fill"></i>
+      <span>Overview</span>
+    </button>
+
+    <button
+      type="button"
+      class="detail-tab-btn"
+      [class.active]="activeTab === 'items'"
+      (click)="switchTab('items')"
+    >
+      <i class="bi bi-bag-fill"></i>
+      <span>Order Items</span>
+      <span class="tab-badge">{{ order.items.length }}</span>
+    </button>
+
+    <button
+      type="button"
+      class="detail-tab-btn"
+      [class.active]="activeTab === 'shipping'"
+      (click)="switchTab('shipping')"
+    >
+      <i class="bi bi-truck"></i>
+      <span>Shipping & Delivery</span>
+    </button>
+
+    <button
+      type="button"
+      class="detail-tab-btn"
+      [class.active]="activeTab === 'payment'"
+      (click)="switchTab('payment')"
+    >
+      <i class="bi bi-credit-card"></i>
+      <span>Payment Details</span>
+    </button>
+
+    <button
+      type="button"
+      class="detail-tab-btn"
+      [class.active]="activeTab === 'timeline'"
+      (click)="switchTab('timeline')"
+    >
+      <i class="bi bi-clock-history"></i>
+      <span>Activity Timeline</span>
+    </button>
+  </div>
+
+  <!-- ==================== TAB: OVERVIEW (EXACT REFERENCE IMAGE LAYOUT) ==================== -->
+  @if (activeTab === 'overview') {
+    <div class="content-columns-grid">
+
+      <!-- LEFT COLUMN (Main Order Body) -->
+      <div class="column-left">
+
+        <!-- 1. Order Items Card -->
+        <section class="content-card" id="section-order-items">
+          <div class="card-header-row">
+            <div class="card-title-group">
+              <i class="bi bi-bag-fill text-primary"></i>
+              <h2 class="card-title">Order Items ({{ order.items.length }} Products)</h2>
+            </div>
+            <button type="button" class="card-link-action" (click)="switchTab('items')">
+              <span>View All Items</span>
+              <i class="bi bi-arrow-right"></i>
+            </button>
+          </div>
+
+          <div class="items-list">
+            @for (item of order.items; track item.id) {
+              <div class="order-item-row">
+                <div class="item-img-box">
+                  <img [src]="item.image" [alt]="item.name" onerror="this.src='/images/wellness/neem-bottle-nature.jpg'" />
+                </div>
+                <div class="item-meta">
+                  <div class="item-name">{{ item.name }}</div>
+                  <div class="item-sub-info">
+                    <span class="sku-tag">SKU: {{ item.sku }}</span>
+                    <span class="sep">|</span>
+                    <span class="qty-tag">Qty: {{ item.quantity }}</span>
+                    @if (item.quantity > item.inStock) {
+                      <span class="deficit-chip">Stock Shortage ({{ item.quantity - item.inStock }} needed)</span>
+                    }
+                  </div>
+                </div>
+                <div class="item-total-price">
+                  ₹{{ (item.price * item.quantity).toLocaleString() }}
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- 2. Order Status Progress Stepper -->
+        <section class="content-card">
+          <div class="card-header-row">
+            <div class="card-title-group">
+              <i class="bi bi-lightning-charge-fill text-primary"></i>
+              <h2 class="card-title">Order Status Progress</h2>
+            </div>
+          </div>
+
+          <div class="stepper-container">
+            <!-- Step 1: Order Placed -->
+            <div class="stepper-step completed">
+              <div class="step-circle">
+                <i class="bi bi-check-lg"></i>
+              </div>
+              <div class="step-info">
+                <span class="step-label">Order Placed</span>
+                <span class="step-sub">{{ order.date }}, {{ order.time }}</span>
+              </div>
+            </div>
+            <div class="step-connector filled"></div>
+
+            <!-- Step 2: Payment Confirmed -->
+            <div class="stepper-step completed">
+              <div class="step-circle">
+                <i class="bi bi-check-lg"></i>
+              </div>
+              <div class="step-info">
+                <span class="step-label">Payment Confirmed</span>
+                <span class="step-sub">{{ order.date }}, 10:26 AM</span>
+              </div>
+            </div>
+            <div class="step-connector filled"></div>
+
+            <!-- Step 3: Processing / Inventory Check -->
+            <div class="stepper-step in-progress">
+              <div class="step-circle">
+                <div class="spinner-dot"></div>
+              </div>
+              <div class="step-info">
+                <span class="step-label">Processing</span>
+                <span class="step-sub">Inventory Check</span>
+              </div>
+            </div>
+            <div class="step-connector"></div>
+
+            <!-- Step 4: Shipped -->
+            <div class="stepper-step pending">
+              <div class="step-circle">
+                <i class="bi bi-bullseye"></i>
+              </div>
+              <div class="step-info">
+                <span class="step-label">Shipped</span>
+                <span class="step-sub">Not Shipped</span>
+              </div>
+            </div>
+            <div class="step-connector"></div>
+
+            <!-- Step 5: Delivered -->
+            <div class="stepper-step pending">
+              <div class="step-circle">
+                <i class="bi bi-arrow-right-short"></i>
+              </div>
+              <div class="step-info">
+                <span class="step-label">Delivered</span>
+                <span class="step-sub">Pending</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Sub-grid: Shipping Information & Procurement Details Side-by-Side -->
+        <div class="two-subcards-row">
+          <!-- Sub-card A: Shipping Information -->
+          <section class="content-card subcard">
+            <div class="card-header-row">
+              <div class="card-title-group">
+                <i class="bi bi-truck text-primary"></i>
+                <h2 class="card-title">Shipping Information</h2>
+              </div>
+              <button type="button" class="btn-edit-chip" (click)="openEditShippingModal()">
+                <i class="bi bi-pencil-fill"></i>
+                <span>Edit</span>
+              </button>
+            </div>
+
+            <div class="shipping-info-body">
+              <div class="recipient-line">
+                <i class="bi bi-geo-alt-fill text-primary"></i>
+                <strong>{{ order.customerName }}</strong>
+              </div>
+              <p class="address-text">{{ order.shippingAddress }}</p>
+
+              <div class="estimate-delivery-alert">
+                <i class="bi bi-info-circle-fill"></i>
+                <span>Estimated Delivery: {{ editEstimatedDelivery }}</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Sub-card B: Procurement Details -->
+          <section class="content-card subcard">
+            <div class="card-header-row">
+              <div class="card-title-group">
+                <i class="bi bi-box-seam text-primary"></i>
+                <h2 class="card-title">Procurement Details</h2>
+              </div>
+            </div>
+
+            <div class="procurement-body">
+              <div class="alert-shortage-box">
+                <i class="bi bi-exclamation-triangle-fill text-warning"></i>
+                <span>Stock shortage for 1 product. Purchase Order required.</span>
+              </div>
+
+              <div class="procure-action-row">
+                <div class="procure-product-meta">
+                  <span class="meta-label">Product:</span>
+                  <span class="meta-val">
+                    {{ getDeficitItem()?.name || 'Natural Face Wash' }} (Qty: {{ procureQty }})
+                  </span>
+                </div>
+                <button type="button" class="btn-create-po" (click)="openProcurementModal()">
+                  <span>Create PO</span>
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- 4. Order Activity Timeline -->
+        <section class="content-card" id="section-timeline">
+          <div class="card-header-row">
+            <div class="card-title-group">
+              <i class="bi bi-clock-history text-primary"></i>
+              <h2 class="card-title">Order Activity Timeline</h2>
+            </div>
+            <button type="button" class="card-link-action" (click)="switchTab('timeline')">
+              <span>View All</span>
+              <i class="bi bi-arrow-right"></i>
+            </button>
+          </div>
+
+          <div class="timeline-trail">
+            @for (event of order.timeline.slice(0, 3); track event.id) {
+              <div class="timeline-step">
+                <div class="timeline-bullet"></div>
+                <div class="timeline-info">
+                  <span class="timeline-timestamp">{{ event.time }}</span>
+                  <span class="timeline-dash">–</span>
+                  <span class="timeline-text">{{ event.title }}</span>
+                </div>
+              </div>
+            }
+            @if (order.timeline.length === 0) {
+              <div class="timeline-step">
+                <div class="timeline-bullet"></div>
+                <div class="timeline-info">
+                  <span class="timeline-timestamp">{{ order.date }}, {{ order.time }}</span>
+                  <span class="timeline-dash">–</span>
+                  <span class="timeline-text">Order Placed by {{ order.customerName }}</span>
+                </div>
+              </div>
+              <div class="timeline-step">
+                <div class="timeline-bullet"></div>
+                <div class="timeline-info">
+                  <span class="timeline-timestamp">{{ order.date }}, 10:26 AM</span>
+                  <span class="timeline-dash">–</span>
+                  <span class="timeline-text">Payment Confirmed (Paid)</span>
+                </div>
+              </div>
+              <div class="timeline-step">
+                <div class="timeline-bullet"></div>
+                <div class="timeline-info">
+                  <span class="timeline-timestamp">{{ order.date }}, 11:15 AM</span>
+                  <span class="timeline-dash">–</span>
+                  <span class="timeline-text">Processing Started</span>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+
+      </div>
+
+      <!-- RIGHT COLUMN (Customer, Summary, Actions) -->
+      <div class="column-right">
+
+        <!-- 1. Customer Details Card -->
+        <section class="content-card">
+          <div class="card-header-row">
+            <div class="card-title-group">
+              <i class="bi bi-person-fill text-primary"></i>
+              <h2 class="card-title">Customer Details</h2>
+            </div>
+            <button type="button" class="card-link-action" (click)="viewCustomerProfile()">
+              <span>View Profile</span>
+              <i class="bi bi-arrow-right"></i>
+            </button>
+          </div>
+
+          <div class="customer-info-box">
+            <div class="customer-avatar-circle">
+              {{ getCustomerInitial() }}
+            </div>
+            <div class="customer-meta-fields">
+              <h4 class="cust-name-heading">{{ order.customerName }}</h4>
+              <div class="cust-contact-item">
+                <i class="bi bi-envelope"></i>
+                <span>{{ order.customerEmail }}</span>
+              </div>
+              <div class="cust-contact-item">
+                <i class="bi bi-telephone"></i>
+                <span>{{ order.customerPhone }}</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Order Summary Card -->
+        <section class="content-card">
+          <div class="card-header-row">
+            <div class="card-title-group">
+              <i class="bi bi-receipt text-primary"></i>
+              <h2 class="card-title">Order Summary</h2>
+            </div>
+          </div>
+
+          <div class="summary-breakdown">
+            <div class="summary-line">
+              <span class="summary-label">Subtotal</span>
+              <span class="summary-val">₹{{ order.subtotal.toLocaleString() }}</span>
+            </div>
+            <div class="summary-line">
+              <span class="summary-label">Shipping</span>
+              <span class="summary-val">₹{{ order.shippingCharge.toFixed(2) }}</span>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-line total-line">
+              <span class="total-label">Total Amount</span>
+              <span class="total-val">₹{{ order.totalAmount.toLocaleString() }}</span>
+            </div>
+
+            <div class="payment-badge-center">
+              <span class="paid-pill-badge">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>Payment: {{ order.paymentStatus }}</span>
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Order Address Card -->
+        <section class="content-card">
+          <div class="card-header-row">
+            <div class="card-title-group">
+              <i class="bi bi-geo-alt-fill text-primary"></i>
+              <h2 class="card-title">Order Address</h2>
+            </div>
+            <button type="button" class="btn-copy-chip" (click)="copyAddress()" title="Copy shipping address">
+              <span>{{ copiedToast ? 'Copied!' : 'Copy' }}</span>
+            </button>
+          </div>
+
+          <div class="address-box-body">
+            <p class="address-street">{{ order.shippingAddress }}</p>
+          </div>
+        </section>
+
+        <!-- 4. Quick Actions Card -->
+        <section class="content-card quick-actions-card">
+          <div class="card-header-row">
+            <div class="card-title-group">
+              <i class="bi bi-lightning-charge-fill text-primary"></i>
+              <h2 class="card-title">Quick Actions</h2>
+            </div>
+          </div>
+
+          <div class="actions-stack">
+            <!-- Primary Action: Mark Ready to Ship -->
+            <button type="button" class="btn-primary-action" (click)="markReadyToShip()">
+              <i class="bi bi-truck"></i>
+              <span>Mark Ready to Ship</span>
+            </button>
+
+            <!-- Secondary Actions in a Row -->
+            <div class="actions-row">
+              <button type="button" class="btn-outline-danger-action" (click)="cancelOrder()">
+                <i class="bi bi-x-circle"></i>
+                <span>Cancel Order</span>
+              </button>
+
+              <button type="button" class="btn-outline-purple-action" (click)="openRefundModal()">
+                <i class="bi bi-arrow-return-left"></i>
+                <span>Refund Order</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  }
+
+  <!-- ==================== TAB: ORDER ITEMS (FULL DETAILED VIEW) ==================== -->
+  @if (activeTab === 'items') {
+    <section class="content-card tab-view-card">
+      <div class="card-header-row">
+        <div class="card-title-group">
+          <i class="bi bi-bag-fill text-primary"></i>
+          <h2 class="card-title">All Products & Warehouse Picking Specifications</h2>
+        </div>
+        <button type="button" class="btn-action-outline btn-sm" (click)="switchTab('overview')">
+          <i class="bi bi-arrow-left"></i> Back to Overview
+        </button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table-custom">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>SKU</th>
+              <th>Unit Price</th>
+              <th>Quantity</th>
+              <th>Warehouse Location</th>
+              <th>Stock Status</th>
+              <th class="text-end">Total Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of order.items; track item.id) {
+              <tr>
+                <td>
+                  <div class="table-prod-info">
+                    <img [src]="item.image" class="prod-thumb" onerror="this.src='/images/wellness/neem-bottle-nature.jpg'" />
+                    <div>
+                      <div class="fw-bold text-dark">{{ item.name }}</div>
+                      <small class="text-muted">{{ item.brand }} | {{ item.category }}</small>
+                    </div>
+                  </div>
+                </td>
+                <td class="font-mono">{{ item.sku }}</td>
+                <td>₹{{ item.price }}</td>
+                <td><span class="badge bg-light text-dark border">x{{ item.quantity }}</span></td>
+                <td>
+                  <span class="badge bg-secondary-subtle text-secondary">
+                    <i class="bi bi-geo-alt"></i> {{ item.warehouseLocation || 'Central Warehouse - Shelf A3' }}
+                  </span>
+                </td>
+                <td>
+                  @if (item.quantity > item.inStock) {
+                    <span class="badge bg-danger">Shortage ({{ item.inStock }} in stock)</span>
+                  } @else {
+                    <span class="badge bg-success">In Stock ({{ item.inStock }} available)</span>
+                  }
+                </td>
+                <td class="text-end fw-bold">₹{{ (item.price * item.quantity).toLocaleString() }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+
+  <!-- ==================== TAB: SHIPPING & DELIVERY ==================== -->
+  @if (activeTab === 'shipping') {
+    <section class="content-card tab-view-card">
+      <div class="card-header-row">
+        <div class="card-title-group">
+          <i class="bi bi-truck text-primary"></i>
+          <h2 class="card-title">Shipping & Logistics Consignments</h2>
+        </div>
+        <button type="button" class="btn-action-outline btn-sm" (click)="switchTab('overview')">
+          <i class="bi bi-arrow-left"></i> Back to Overview
+        </button>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="p-3 bg-light rounded-3 border">
+            <h6 class="fw-bold mb-2">Delivery Address</h6>
+            <p class="mb-1 text-dark fw-semibold">{{ order.customerName }}</p>
+            <p class="text-muted mb-2">{{ order.shippingAddress }}</p>
+            <div class="badge bg-info-subtle text-info border">
+              <i class="bi bi-clock"></i> Estimated Delivery: {{ editEstimatedDelivery }}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="p-3 bg-light rounded-3 border">
+            <h6 class="fw-bold mb-2">Carrier Dispatch Status</h6>
+            <p class="mb-1"><strong>Shipment Status:</strong> <span class="badge bg-primary">{{ order.shipmentStatus }}</span></p>
+            <p class="text-muted mb-3">Partner couriers: BlueDart, Delhivery, DTDC, FedEx</p>
+            <button type="button" class="btn-action-outline btn-sm" (click)="openEditShippingModal()">
+              <i class="bi bi-pencil"></i> Update Shipping Address
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- ==================== TAB: PAYMENT DETAILS ==================== -->
+  @if (activeTab === 'payment') {
+    <section class="content-card tab-view-card">
+      <div class="card-header-row">
+        <div class="card-title-group">
+          <i class="bi bi-credit-card text-primary"></i>
+          <h2 class="card-title">Payment & Settlement Information</h2>
+        </div>
+        <button type="button" class="btn-action-outline btn-sm" (click)="switchTab('overview')">
+          <i class="bi bi-arrow-left"></i> Back to Overview
+        </button>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="p-3 border rounded-3 bg-light text-center">
+            <span class="text-muted small">Payment Method</span>
+            <h5 class="fw-bold text-dark mt-1">{{ order.paymentMethod }}</h5>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 border rounded-3 bg-light text-center">
+            <span class="text-muted small">Payment Status</span>
+            <h5 class="fw-bold text-success mt-1"><i class="bi bi-check-circle-fill"></i> {{ order.paymentStatus }}</h5>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 border rounded-3 bg-light text-center">
+            <span class="text-muted small">Total Settlement</span>
+            <h5 class="fw-bold text-primary mt-1">₹{{ order.totalAmount.toLocaleString() }}</h5>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 pt-3 border-top d-flex gap-2">
+        <button type="button" class="btn-action-outline" (click)="printInvoice()">
+          <i class="bi bi-printer"></i> Print Invoice
+        </button>
+        <button type="button" class="btn-action-outline" (click)="downloadPdf()">
+          <i class="bi bi-download"></i> Download Invoice
+        </button>
+        <button type="button" class="btn-outline-purple-action" (click)="openRefundModal()">
+          <i class="bi bi-arrow-return-left"></i> Initiate Refund
+        </button>
+      </div>
+    </section>
+  }
+
+  <!-- ==================== TAB: ACTIVITY TIMELINE ==================== -->
+  @if (activeTab === 'timeline') {
+    <section class="content-card tab-view-card">
+      <div class="card-header-row">
+        <div class="card-title-group">
+          <i class="bi bi-clock-history text-primary"></i>
+          <h2 class="card-title">Complete Order Activity Audit Trail</h2>
+        </div>
+        <button type="button" class="btn-action-outline btn-sm" (click)="switchTab('overview')">
+          <i class="bi bi-arrow-left"></i> Back to Overview
+        </button>
+      </div>
+
+      <div class="timeline-trail pt-2">
+        @for (event of order.timeline; track event.id) {
+          <div class="timeline-step">
+            <div class="timeline-bullet"></div>
+            <div class="timeline-info">
+              <span class="timeline-timestamp">{{ event.time }}</span>
+              <span class="timeline-dash">–</span>
+              <span class="timeline-text">{{ event.title }}</span>
+              <small class="text-muted ms-2" *ngIf="event.notes">({{ event.notes }})</small>
+            </div>
+          </div>
+        }
+        @if (order.timeline.length === 0) {
+          <div class="timeline-step">
+            <div class="timeline-bullet"></div>
+            <div class="timeline-info">
+              <span class="timeline-timestamp">{{ order.date }}, {{ order.time }}</span>
+              <span class="timeline-dash">–</span>
+              <span class="timeline-text">Order Placed by {{ order.customerName }}</span>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="timeline-bullet"></div>
+            <div class="timeline-info">
+              <span class="timeline-timestamp">{{ order.date }}, 10:26 AM</span>
+              <span class="timeline-dash">–</span>
+              <span class="timeline-text">Payment Confirmed (Paid)</span>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="timeline-bullet"></div>
+            <div class="timeline-info">
+              <span class="timeline-timestamp">{{ order.date }}, 11:15 AM</span>
+              <span class="timeline-dash">–</span>
+              <span class="timeline-text">Processing Started</span>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Toast Notification Feedback -->
+  @if (toastMessage) {
+    <div class="toast-popup">
+      <i class="bi bi-check-circle-fill"></i>
+      <span>{{ toastMessage }}</span>
+    </div>
+  }
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Procurement PO Modal -->
+  @if (isProcureModalOpen) {
+    <div class="modal-backdrop-overlay" (click)="closeProcurementModal()">
+      <div class="modal-dialog-box" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h5 class="modal-title">Create Purchase Order (PO)</h5>
+          <button type="button" class="btn-close" (click)="closeProcurementModal()"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted small">Generate an urgent restock PO with your partner supplier to resolve inventory deficit.</p>
+          <div class="form-group mb-3">
+            <label class="form-label">Supplier Partner</label>
+            <select class="form-select" [(ngModel)]="procureSupplier">
+              <option value="Himalaya Herbal Supplies Ltd">Himalaya Herbal Supplies Ltd</option>
+              <option value="Biotique Botanicals Distribution">Biotique Botanicals Distribution</option>
+              <option value="Dabur Direct Logistics">Dabur Direct Logistics</option>
+              <option value="Patanjali Wholesale Enterprise">Patanjali Wholesale Enterprise</option>
+            </select>
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">Restock Quantity Needed</label>
+            <input type="number" class="form-control" [(ngModel)]="procureQty" min="1" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeProcurementModal()">Cancel</button>
+          <button type="button" class="btn btn-primary" (click)="submitPO()">Generate PO</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Refund Modal -->
+  @if (isRefundModalOpen) {
+    <div class="modal-backdrop-overlay" (click)="closeRefundModal()">
+      <div class="modal-dialog-box" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h5 class="modal-title">Process Order Refund</h5>
+          <button type="button" class="btn-close" (click)="closeRefundModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group mb-3">
+            <label class="form-label">Refund Amount (₹)</label>
+            <input type="number" class="form-control" [(ngModel)]="refundAmount" />
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">Reason</label>
+            <input type="text" class="form-control" [(ngModel)]="refundReason" />
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">Transaction Reference</label>
+            <input type="text" class="form-control" [(ngModel)]="refundTxnRef" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeRefundModal()">Cancel</button>
+          <button type="button" class="btn btn-danger" (click)="submitRefund()">Execute Refund</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Edit Shipping Modal -->
+  @if (isEditShippingModalOpen) {
+    <div class="modal-backdrop-overlay" (click)="closeEditShippingModal()">
+      <div class="modal-dialog-box" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Shipping Information</h5>
+          <button type="button" class="btn-close" (click)="closeEditShippingModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group mb-3">
+            <label class="form-label">Recipient Full Name</label>
+            <input type="text" class="form-control" [(ngModel)]="editRecipientName" />
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">Delivery Address</label>
+            <textarea class="form-control" rows="3" [(ngModel)]="editShippingAddress"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeEditShippingModal()">Cancel</button>
+          <button type="button" class="btn btn-primary" (click)="saveShipping()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>
+
+<!-- Fallback if no order is found -->
+<div class="empty-order-card text-center p-5 bg-white rounded-3 shadow-sm my-4 mx-3" *ngIf="!order">
+  <div class="empty-icon-box mb-3">
+    <i class="bi bi-inbox text-muted" style="font-size: 3.5rem;"></i>
+  </div>
+  <h3 class="fw-bold text-dark mb-2">No Order Selected</h3>
+  <p class="text-muted mb-4">Please select an order from the orders table to view its full details and lifecycle actions.</p>
+  <button type="button" class="btn btn-primary px-4 py-2" (click)="navigateBack()">
+    <i class="bi bi-arrow-left me-2"></i>Back to All Orders
+  </button>
+</div>

@@ -1,0 +1,386 @@
+<app-storefront-header></app-storefront-header>
+
+<main class="homeopathy-catalog-page py-4 bg-light min-vh-100">
+  <div class="container-fluid px-3 px-lg-5">
+
+    <!-- Breadcrumb Row -->
+    <nav aria-label="breadcrumb" class="mb-3">
+      <ol class="breadcrumb" style="font-size: 13.5px;">
+        <li class="breadcrumb-item">
+          <a routerLink="/" class="text-decoration-none text-secondary">
+            <i class="fa-solid fa-house me-1"></i>Home
+          </a>
+        </li>
+        <li class="breadcrumb-item">
+          <a routerLink="/products" class="text-decoration-none text-secondary">
+            Catalog
+          </a>
+        </li>
+        <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page" style="color: #0f766e !important;">
+          Indian Homeopathic Products
+        </li>
+      </ol>
+    </nav>
+
+    <!-- Homeopathy Hero Banner Header -->
+    <section class="homeopathy-hero-card rounded-4 p-4 p-md-5 mb-4 position-relative overflow-hidden shadow-sm"
+             style="background: linear-gradient(135deg, #042f2e 0%, #0f766e 60%, #115e59 100%);">
+      
+      <div class="position-relative z-2 row align-items-center g-4">
+        <div class="col-12 col-lg-8">
+          
+          <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill bg-white bg-opacity-15 border border-white border-opacity-25 text-white mb-3 shadow-xs">
+            <i class="fa-solid fa-leaf text-warning" style="font-size: 12px;"></i>
+            <span class="fw-bold" style="font-size: 11.5px; letter-spacing: 0.8px;">CERTIFIED INDIAN HOMEOPATHY &amp; HEALTHCARE</span>
+          </div>
+
+          <h1 class="display-5 fw-bold text-white mb-2" style="letter-spacing: -0.5px;">
+            Indian Homeopathic Remedies
+          </h1>
+
+          <p class="text-white text-opacity-80 mb-4" style="max-width: 680px; font-size: 15px; line-height: 1.6;">
+            Discover authentic homeopathic formulations from India’s leading trusted laboratories: Dr. Reckeweg, SBL Homeopathy, Dr. Willmar Schwabe, Bakson's, and Wheezal. Sealed, seal-intact dilutions, biochemic salts, mother tinctures, and specialized healthcare items.
+          </p>
+
+          <!-- 4 Feature Trust Badges -->
+          <div class="d-flex flex-wrap align-items-center gap-3 gap-md-4 text-white" style="font-size: 13px;">
+            <div class="d-flex align-items-center gap-2">
+              <i class="fa-solid fa-circle-check text-warning"></i>
+              <span>100% Genuine Potencies</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <i class="fa-solid fa-shield-halved text-warning"></i>
+              <span>Direct Manufacturer Supply</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <i class="fa-solid fa-plane-departure text-warning"></i>
+              <span>Global Temperature-Safe Shipping</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="col-12 col-lg-4 text-lg-end d-none d-lg-block">
+          <img src="/images/homeopathy/reckeweg-r1.jpg" alt="Homeopathic Bottles" class="img-fluid rounded-4 shadow-lg border border-white border-opacity-25" style="max-height: 220px; object-fit: contain; background-color: #ffffff;">
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Subcategory Navigation Pills Bar -->
+    <div class="subcategory-tabs-bar bg-white rounded-4 border p-2 mb-4 shadow-sm overflow-x-auto no-scrollbar">
+      <div class="d-flex align-items-center gap-2 text-nowrap">
+        @for (tab of subCategories; track tab.id) {
+          <button type="button" 
+                  class="btn subcat-tab-btn rounded-pill px-3.5 py-2 fw-semibold d-inline-flex align-items-center gap-2 shadow-none transition-all"
+                  [class.active]="selectedSubCategory === tab.id"
+                  (click)="selectSubCategory(tab.id)">
+            <i [class]="'fa-solid ' + tab.icon" style="font-size: 13px;"></i>
+            <span>{{ tab.name }}</span>
+            <span class="badge rounded-pill subcat-badge">{{ tab.count }}</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Main Content Row: Sidebar Filter + Catalog Grid -->
+    <div class="row g-4">
+      
+      <!-- Left Filter Sidebar (Desktop) -->
+      <aside class="col-12 col-lg-3 d-none d-lg-block">
+        <div class="filter-sidebar-card bg-white rounded-4 border p-4 shadow-sm position-sticky" style="top: 20px;">
+          
+          <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+            <h5 class="fw-bold text-dark m-0 d-flex align-items-center gap-2" style="font-size: 16px;">
+              <i class="fa-solid fa-filter text-secondary" style="font-size: 14px;"></i>
+              <span>Filters</span>
+            </h5>
+            @if (hasActiveFilters()) {
+              <button type="button" class="btn btn-link text-danger p-0 text-decoration-none small fw-semibold" (click)="resetFilters()">
+                Reset All
+              </button>
+            }
+          </div>
+
+          <!-- 1. Search Box Filter -->
+          <div class="mb-4">
+            <label class="form-label text-secondary fw-bold small text-uppercase mb-2" style="letter-spacing: 0.6px;">Search Remedies</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0 text-secondary">
+                <i class="fa-solid fa-magnifying-glass" style="font-size: 13px;"></i>
+              </span>
+              <input type="text" 
+                     class="form-control bg-light border-start-0 shadow-none ps-0" 
+                     placeholder="e.g. R1, Scalptone, Arnica..." 
+                     [(ngModel)]="searchQuery" 
+                     (keyup)="syncQueryParams()"
+                     style="font-size: 13.5px;">
+              @if (searchQuery.trim()) {
+                <button type="button" class="btn btn-light border" (click)="searchQuery = ''; syncQueryParams()">
+                  <i class="fa-solid fa-xmark text-secondary"></i>
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- 2. Health Concern Filter -->
+          <div class="mb-4">
+            <label class="form-label text-secondary fw-bold small text-uppercase mb-2" style="letter-spacing: 0.6px;">Health Concern</label>
+            <div class="d-flex flex-column gap-1.5">
+              @for (concern of healthConcerns; track concern.id) {
+                <label class="d-flex align-items-center justify-content-between py-1 px-2 rounded-2 hover-bg-light cursor-pointer" role="button">
+                  <div class="form-check d-flex align-items-center gap-2 mb-0">
+                    <input class="form-check-input mt-0 shadow-none" 
+                           type="radio" 
+                           name="healthConcernRadio"
+                           [id]="'concern_' + concern.id"
+                           [checked]="selectedConcern === concern.id"
+                           (change)="selectedConcern = concern.id; syncQueryParams()">
+                    <span class="form-check-label text-dark small fw-medium">
+                      {{ concern.label }}
+                    </span>
+                  </div>
+                </label>
+              }
+            </div>
+          </div>
+
+          <!-- 3. Brand Filter -->
+          <div class="mb-4">
+            <label class="form-label text-secondary fw-bold small text-uppercase mb-2" style="letter-spacing: 0.6px;">Brand</label>
+            <div class="d-flex flex-column gap-1.5" style="max-height: 200px; overflow-y: auto;">
+              @for (brand of brandFilters; track brand.name) {
+                <label class="d-flex align-items-center justify-content-between py-1 px-2 rounded-2 hover-bg-light cursor-pointer" role="button">
+                  <div class="form-check d-flex align-items-center gap-2 mb-0">
+                    <input class="form-check-input mt-0 shadow-none" 
+                           type="checkbox" 
+                           [id]="'brand_' + brand.name"
+                           [checked]="isBrandSelected(brand.name)"
+                           (change)="toggleBrand(brand.name)">
+                    <span class="form-check-label text-dark small fw-medium text-truncate" style="max-width: 140px;">
+                      {{ brand.name }}
+                    </span>
+                  </div>
+                  <span class="badge bg-light text-secondary border small">{{ brand.count }}</span>
+                </label>
+              }
+            </div>
+          </div>
+
+          <!-- 4. Price Range Filter -->
+          <div class="mb-4">
+            <label class="form-label text-secondary fw-bold small text-uppercase mb-2" style="letter-spacing: 0.6px;">Price Range</label>
+            <div class="d-flex flex-column gap-1.5">
+              <label class="d-flex align-items-center gap-2 py-1 px-2 rounded-2 hover-bg-light cursor-pointer" role="button">
+                <input class="form-check-input mt-0 shadow-none" type="radio" name="priceRange" [checked]="selectedPriceRange === 'all'" (change)="selectedPriceRange = 'all'; syncQueryParams()">
+                <span class="small text-dark fw-medium">All Prices</span>
+              </label>
+              <label class="d-flex align-items-center gap-2 py-1 px-2 rounded-2 hover-bg-light cursor-pointer" role="button">
+                <input class="form-check-input mt-0 shadow-none" type="radio" name="priceRange" [checked]="selectedPriceRange === 'under-10'" (change)="selectedPriceRange = 'under-10'; syncQueryParams()">
+                <span class="small text-dark fw-medium">Under $10 USD</span>
+              </label>
+              <label class="d-flex align-items-center gap-2 py-1 px-2 rounded-2 hover-bg-light cursor-pointer" role="button">
+                <input class="form-check-input mt-0 shadow-none" type="radio" name="priceRange" [checked]="selectedPriceRange === '10-15'" (change)="selectedPriceRange = '10-15'; syncQueryParams()">
+                <span class="small text-dark fw-medium">$10 - $15 USD</span>
+              </label>
+              <label class="d-flex align-items-center gap-2 py-1 px-2 rounded-2 hover-bg-light cursor-pointer" role="button">
+                <input class="form-check-input mt-0 shadow-none" type="radio" name="priceRange" [checked]="selectedPriceRange === '15-20'" (change)="selectedPriceRange = '15-20'; syncQueryParams()">
+                <span class="small text-dark fw-medium">$15 - $20 USD</span>
+              </label>
+              <label class="d-flex align-items-center gap-2 py-1 px-2 rounded-2 hover-bg-light cursor-pointer" role="button">
+                <input class="form-check-input mt-0 shadow-none" type="radio" name="priceRange" [checked]="selectedPriceRange === 'above-20'" (change)="selectedPriceRange = 'above-20'; syncQueryParams()">
+                <span class="small text-dark fw-medium">Above $20 USD</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- 5. Best Seller Quick Toggle -->
+          <div class="pt-3 border-top">
+            <div class="form-check form-switch d-flex align-items-center justify-content-between p-0 mb-0">
+              <label class="form-check-label text-dark fw-semibold small cursor-pointer" for="bestSellersSwitch">
+                Best Sellers Only
+              </label>
+              <input class="form-check-input ms-auto shadow-none" 
+                     type="checkbox" 
+                     role="switch" 
+                     id="bestSellersSwitch"
+                     [(ngModel)]="onlyBestSellers"
+                     (change)="syncQueryParams()">
+            </div>
+          </div>
+
+        </div>
+      </aside>
+
+      <!-- Right Column: Products Grid -->
+      <section class="col-12 col-lg-9">
+        
+        <!-- Controls Bar: Results Count + Sort Dropdown -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 bg-white rounded-4 border p-3 shadow-xs">
+          
+          <div class="d-flex align-items-center gap-2">
+            <span class="fw-bold text-dark" style="font-size: 14.5px;">
+              Showing {{ filteredProducts.length }} {{ filteredProducts.length === 1 ? 'Homeopathic product' : 'Homeopathic products' }}
+            </span>
+            @if (hasActiveFilters()) {
+              <span class="badge rounded-pill bg-light text-secondary border small">Filtered</span>
+            }
+          </div>
+
+          <!-- Sort Dropdown -->
+          <div class="d-flex align-items-center gap-2">
+            <label for="sortSelect" class="text-secondary small fw-medium text-nowrap">Sort by:</label>
+            <select id="sortSelect" 
+                    class="form-select form-select-sm shadow-none rounded-pill border" 
+                    [(ngModel)]="sortBy" 
+                    (change)="syncQueryParams()"
+                    style="width: 170px; font-size: 13px;">
+              <option value="featured">Featured First</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="rating">Highest Rated</option>
+              <option value="bestsellers">Most Popular</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Empty Filter Results State -->
+        @if (filteredProducts.length === 0) {
+          <div class="bg-white rounded-4 border p-5 text-center shadow-xs my-3">
+            <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center bg-light" style="width: 64px; height: 64px; color: #0f766e;">
+              <i class="fa-solid fa-prescription-bottle fs-3"></i>
+            </div>
+            <h4 class="fw-bold text-dark mb-2">No matching homeopathic products found</h4>
+            <p class="text-secondary small mb-4" style="max-width: 420px; margin: 0 auto;">
+              Try loosening your search keywords or resetting active brand and concern filters.
+            </p>
+            <button type="button" class="btn btn-outline-teal rounded-pill px-4 py-2 fw-semibold" (click)="resetFilters()">
+              Reset All Filters
+            </button>
+          </div>
+        }
+
+        <!-- Products Grid: 3 or 4 Columns -->
+        <div class="row g-3 g-md-4">
+          @for (prod of filteredProducts; track prod.id) {
+            <div class="col-12 col-sm-6 col-md-4 col-xl-4">
+              <div class="card homeopathy-product-card h-100 rounded-4 border p-3 shadow-xs bg-white d-flex flex-column justify-content-between position-relative"
+                   (click)="navigateToProduct(prod.id)"
+                   role="button"
+                   style="cursor: pointer;">
+                
+                <!-- Product Thumb Frame -->
+                <div class="product-thumb-frame position-relative rounded-3 overflow-hidden d-flex align-items-center justify-content-center mb-3 p-3"
+                     style="background: linear-gradient(180deg, #f0fdfa 0%, #e6f9f5 100%); height: 210px; border: 1px solid #ccfbf1;">
+                  
+                  <!-- Best Seller / Dilution Badge -->
+                  @if (prod.isBestSeller) {
+                    <div class="badge-bestseller position-absolute top-0 start-0 m-2 px-2 py-0.5 rounded-1 fw-bold text-white shadow-xs"
+                         style="background-color: #0f766e; font-size: 10px; letter-spacing: 0.5px;">
+                      Best Seller
+                    </div>
+                  } @else {
+                    <div class="badge-bestseller position-absolute top-0 start-0 m-2 px-2 py-0.5 rounded-1 fw-bold text-white shadow-xs"
+                         style="background-color: #0284c7; font-size: 10px; letter-spacing: 0.5px;">
+                      Verified Potency
+                    </div>
+                  }
+
+                  <!-- Wishlist Heart Button -->
+                  <button type="button" 
+                          class="card-wishlist-btn position-absolute top-0 end-0 m-2 rounded-circle bg-white d-flex align-items-center justify-content-center p-0 shadow-xs"
+                          [class.active]="isInWishlist(prod.id)"
+                          (click)="toggleWishlist(prod, $event)"
+                          aria-label="Wishlist"
+                          style="width: 32px; height: 32px; border: 1px solid #e5e7eb;">
+                    <i [class]="isInWishlist(prod.id) ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart text-secondary'" style="font-size: 13px;"></i>
+                  </button>
+
+                  <a [routerLink]="['/product', prod.id]" (click)="$event.stopPropagation()" class="d-flex align-items-center justify-content-center w-100 h-100">
+                    <img [src]="prod.image" [alt]="prod.name" class="img-fluid homeopathy-card-img" loading="lazy" decoding="async" style="max-height: 160px; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(15, 118, 110, 0.12)); transition: transform 0.3s ease;">
+                  </a>
+                </div>
+
+                <!-- Product Content Info -->
+                <div class="d-flex flex-column flex-grow-1">
+                  
+                  <!-- Rating Stars & Review Count -->
+                  <div class="d-flex align-items-center gap-1 mb-1">
+                    <div class="stars d-inline-flex align-items-center text-warning" style="font-size: 11px;">
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                    </div>
+                    <span class="text-secondary small fw-medium">({{ prod.reviewCount }})</span>
+                  </div>
+
+                  <!-- Product Name -->
+                  <a [routerLink]="['/product', prod.id]" (click)="$event.stopPropagation()" class="text-decoration-none">
+                    <h3 class="card-prod-title fw-bold text-dark mb-1 text-truncate" [title]="prod.name" style="font-size: 14.5px;">
+                      {{ prod.name }}
+                    </h3>
+                  </a>
+
+                  <!-- Brand Name -->
+                  <span class="card-brand-label text-uppercase fw-bold mb-2" style="font-size: 10.5px; letter-spacing: 0.8px; color: #0f766e;">
+                    {{ prod.brand }}
+                  </span>
+
+                  <!-- Price -->
+                  <span class="card-price-value fw-bold text-dark mb-2" style="font-size: 15.5px;">
+                    ${{ getVariantPrice(prod) | number: '1.2-2' }} USD
+                  </span>
+
+                  <!-- Pack Selector -->
+                  <div class="mb-3 mt-auto">
+                    <select class="form-select form-select-sm pack-dropdown shadow-none" 
+                            (click)="$event.stopPropagation()"
+                            (change)="onVariantChange(prod.id, $any($event.target).value)"
+                            style="font-size: 12px; border-radius: 8px;">
+                      @for (v of prod.variants; track v.label) {
+                        <option [value]="v.label + ' ' + v.subLabel" [selected]="(v.label + ' ' + v.subLabel) === selectedVariants[prod.id]">
+                          {{ v.label }} {{ v.subLabel }}
+                        </option>
+                      }
+                    </select>
+                  </div>
+
+                  <!-- Action Buttons: Add to Cart & Buy Now -->
+                  <div class="d-flex gap-2">
+                    <button type="button" 
+                            class="btn add-to-cart-pill-btn flex-grow-1 rounded-pill py-2 fw-bold d-flex align-items-center justify-content-center gap-1.5 shadow-none"
+                            [class.btn-success]="addedToCartMap[prod.id]"
+                            (click)="addToCart(prod, $event)"
+                            style="font-size: 12px;">
+                      <i [class]="addedToCartMap[prod.id] ? 'fa-solid fa-check' : 'fa-solid fa-cart-shopping'"></i>
+                      <span>{{ addedToCartMap[prod.id] ? 'Added!' : 'Add to Cart' }}</span>
+                    </button>
+
+                    <button type="button" 
+                            class="btn buy-now-pill-btn rounded-pill px-3 py-2 fw-bold d-flex align-items-center justify-content-center gap-1 shadow-none"
+                            (click)="buyNow(prod, $event)"
+                            title="Instant Checkout"
+                            style="font-size: 12px;">
+                      <i class="fa-solid fa-bolt" style="font-size: 11px;"></i>
+                      <span>Buy</span>
+                    </button>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+          }
+        </div>
+
+      </section>
+
+    </div>
+
+  </div>
+</main>
+
+<app-footer></app-footer>

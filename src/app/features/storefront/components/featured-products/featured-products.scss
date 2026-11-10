@@ -1,0 +1,172 @@
+// Trending Products Section SCSS
+
+.trending-section {
+  background-color: #ffffff;
+  position: relative;
+
+  // Background subtle blue glow on the right
+  .glow-bg-accent {
+    position: absolute;
+    top: -50px;
+    right: -40px;
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, rgba(23, 72, 216, 0.07) 0%, rgba(255, 255, 255, 0) 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  // Header "Shop trending" link
+  .shop-trending-link {
+    color: #1748D8;
+    font-size: 14.5px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: #0f34a4;
+      transform: translateX(3px);
+    }
+  }
+
+  .sparkle-doodle {
+    animation: gentle-sparkle 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes gentle-sparkle {
+    0% {
+      transform: rotate(0deg) scale(0.95);
+      opacity: 0.8;
+    }
+    100% {
+      transform: rotate(8deg) scale(1.05);
+      opacity: 1;
+    }
+  }
+
+  // Cards
+  .product-card {
+    border: 1px solid #edf2f7 !important;
+    background: #ffffff;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.07) !important;
+
+      .product-img-box .product-image {
+        transform: scale(1.04);
+      }
+    }
+
+    // Image Box
+    .product-img-box {
+      height: 200px;
+      width: 100%;
+      border-radius: 14px;
+
+      .product-image {
+        max-height: 180px;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+      }
+
+      // Wishlist Heart Button
+      .wishlist-btn {
+        top: 10px;
+        right: 10px;
+        width: 32px;
+        height: 32px;
+        background: #ffffff;
+        border: none;
+        z-index: 2;
+        transition: transform 0.2s ease, background 0.2s ease;
+
+        i {
+          font-size: 13px;
+          color: #ef4444;
+        }
+
+        &:hover {
+          transform: scale(1.12);
+          background: #fff5f5;
+        }
+
+        &.active i {
+          color: #dc2626;
+        }
+      }
+
+      // Verified Brand Pill Badge
+      .verified-badge {
+        bottom: 10px;
+        left: 10px;
+        background: #ffffff;
+        z-index: 2;
+        border: 1px solid rgba(0, 0, 0, 0.04);
+
+        .badge-icon {
+          width: 14px;
+          height: 14px;
+          background: #1748D8;
+          color: #ffffff;
+          font-size: 8px;
+        }
+
+        .badge-text {
+          color: #1748D8;
+          font-size: 9px;
+          letter-spacing: 0.4px;
+        }
+      }
+    }
+
+    // Details Section
+    .product-details {
+      .product-title {
+        font-size: 15.5px;
+        letter-spacing: -0.3px;
+        color: #111827;
+      }
+
+      .meta-line {
+        .meta-divider {
+          font-size: 11px;
+          opacity: 0.6;
+        }
+
+        .rating-text i {
+          color: #f59e0b;
+        }
+
+        .shipping-text i {
+          color: #1748D8;
+        }
+      }
+
+      .product-price {
+        font-size: 18px;
+        letter-spacing: -0.5px;
+        color: #0f172a;
+      }
+
+      // Add to Cart Button
+      .add-cart-btn {
+        background-color: #1748D8;
+        border-color: #1748D8;
+        font-size: 13px;
+        padding: 5px 16px;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background-color: #123bb0;
+          border-color: #123bb0;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 10px rgba(23, 72, 216, 0.3);
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,1384 @@
+<div class="procurement-shell">
+  <!-- Toast Notification -->
+  @if (toastMessage) {
+    <div class="procurement-toast" [class.toast-success]="toastMessage.type === 'success'" [class.toast-error]="toastMessage.type === 'error'" [class.toast-info]="toastMessage.type === 'info'">
+      <i class="bi" [class.bi-check-circle-fill]="toastMessage.type === 'success'" [class.bi-exclamation-triangle-fill]="toastMessage.type === 'error'" [class.bi-info-circle-fill]="toastMessage.type === 'info'"></i>
+      <span>{{ toastMessage.text }}</span>
+      <button type="button" class="toast-close" (click)="toastMessage = null">&times;</button>
+    </div>
+  }
+
+  <!-- Header Section -->
+  <header class="page-header">
+    <div class="header-left">
+      <div class="title-row">
+        <h1 class="page-title">Procurement Management</h1>
+        <span class="status-badge live-indicator">
+          <span class="pulse-dot"></span> Live Procurement
+        </span>
+      </div>
+      <p class="page-subtitle">
+        Review customer order shortages, verify line item specs, and confirm procurement to advance orders to Ready to Ship.
+      </p>
+    </div>
+
+    @if (selectedOrder) {
+      <div class="header-actions">
+        <button type="button" class="btn-outline-back" (click)="clearSelectedOrder()">
+          <i class="bi bi-arrow-left"></i>
+          <span>Back to Procurement Lists</span>
+        </button>
+      </div>
+    }
+  </header>
+
+  <!-- Metrics Summary Bar -->
+  <div class="metrics-grid">
+    <div class="metric-card warning-accent">
+      <div class="metric-icon">
+        <i class="bi bi-box-arrow-in-down"></i>
+      </div>
+      <div class="metric-info">
+        <span class="metric-label">Needs Procurement</span>
+        <span class="metric-value">{{ procurementOrders.length }}</span>
+        <span class="metric-hint">Orders awaiting verification</span>
+      </div>
+    </div>
+
+    <div class="metric-card amber-accent">
+      <div class="metric-icon">
+        <i class="bi bi-people-fill"></i>
+      </div>
+      <div class="metric-info">
+        <span class="metric-label">Customers Awaiting</span>
+        <span class="metric-value">{{ customerGroups.length }}</span>
+        <span class="metric-hint">Customer procurement batches</span>
+      </div>
+    </div>
+
+    <div class="metric-card success-accent">
+      <div class="metric-icon">
+        <i class="bi bi-truck"></i>
+      </div>
+      <div class="metric-info">
+        <span class="metric-label">Ready to Ship</span>
+        <span class="metric-value">{{ readyToShipOrders.length }}</span>
+        <span class="metric-hint">Procurement confirmed orders</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT: EITHER LIST VIEW OR ORDER DETAIL VIEW -->
+  @if (!selectedOrder) {
+    <!-- SECTION TABS (Task 1) -->
+    <div class="section-tabs-bar">
+      <div class="nav-tabs">
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="activeSection === 'all'"
+          (click)="setSection('all')"
+        >
+          <i class="bi bi-view-list"></i>
+          <span>All Procurement Orders</span>
+          <span class="tab-count">{{ procurementOrders.length }}</span>
+        </button>
+
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="activeSection === 'customer'"
+          (click)="setSection('customer')"
+        >
+          <i class="bi bi-person-lines-fill"></i>
+          <span>Customer-wise Procurement</span>
+          <span class="tab-count">{{ customerGroups.length }}</span>
+        </button>
+
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="activeSection === 'ready_to_ship'"
+          (click)="setSection('ready_to_ship')"
+        >
+          <i class="bi bi-check2-all"></i>
+          <span>Ready to Ship Orders</span>
+          <span class="tab-count">{{ readyToShipOrders.length }}</span>
+        </button>
+      </div>
+
+      <!-- Search Input -->
+      <div class="search-filter-wrapper">
+        <div class="search-box">
+          <i class="bi bi-search search-icon"></i>
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            placeholder="Search by order ID, customer name, SKU..."
+            aria-label="Search procurement records"
+          />
+          @if (searchTerm) {
+            <button type="button" class="btn-clear-search" (click)="searchTerm = ''" title="Clear search">
+              <i class="bi bi-x"></i>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- 1. SECTION: ALL PROCUREMENT ORDERS (Task 1.1) -->
+    @if (activeSection === 'all') {
+      <div class="content-panel">
+        @if (filteredAllOrders.length === 0) {
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="bi bi-clipboard-check"></i>
+            </div>
+            <h3>No Pending Procurement Orders</h3>
+            <p>All incoming customer orders currently have sufficient stock or have already been confirmed.</p>
+            @if (searchTerm) {
+              <button type="button" class="btn-secondary" (click)="searchTerm = ''">Clear Search Filter</button>
+            }
+          </div>
+        } @else {
+          <div class="table-responsive">
+            <table class="procurement-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Order Date</th>
+                  <th>Total Products</th>
+                  <th>Procurement Status</th>
+                  <th>Verification Status</th>
+                  <th class="text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (order of filteredAllOrders; track order.id) {
+                  @let progress = getProgress(order.id);
+                  <tr class="order-row" (click)="selectOrder(order)">
+                    <td>
+                      <span class="order-id-badge">{{ order.id }}</span>
+                    </td>
+                    <td>
+                      <div class="customer-info-cell">
+                        <span class="cust-name">{{ order.customerName }}</span>
+                        <span class="cust-meta">{{ order.customerEmail || 'No email' }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="date-text">{{ order.date }}</span>
+                    </td>
+                    <td>
+                      <div class="products-count-badge">
+                        <i class="bi bi-boxes"></i>
+                        <span>{{ order.items.length }} {{ order.items.length === 1 ? 'Product' : 'Products' }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="status-pill status-required">
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                        {{ order.procurementStatus }}
+                      </span>
+                    </td>
+                    <td>
+                      <div class="verification-progress-cell">
+                        <div class="progress-bar-track">
+                          <div
+                            class="progress-bar-fill"
+                            [style.width.%]="progress.percentage"
+                            [class.fill-complete]="progress.isFullyVerified"
+                          ></div>
+                        </div>
+                        <span class="progress-label" [class.label-complete]="progress.isFullyVerified">
+                          {{ progress.verifiedCount }}/{{ progress.totalCount }} Verified
+                        </span>
+                      </div>
+                    </td>
+                    <td class="text-right">
+                      <button
+                        type="button"
+                        class="btn-action-primary"
+                        (click)="selectOrder(order); $event.stopPropagation()"
+                        title="View and verify order items"
+                      >
+                        <span>View Details</span>
+                        <i class="bi bi-arrow-right"></i>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- 2. SECTION: CUSTOMER-WISE PROCUREMENT (Task 1.2) -->
+    @if (activeSection === 'customer') {
+      <div class="content-panel">
+        @if (filteredCustomerGroups.length === 0) {
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="bi bi-people"></i>
+            </div>
+            <h3>No Customer Procurement Batches</h3>
+            <p>No customer currently has orders pending procurement verification.</p>
+          </div>
+        } @else {
+          <div class="customer-cards-grid">
+            @for (group of filteredCustomerGroups; track group.customerId) {
+              <div class="customer-batch-card">
+                <div class="batch-header">
+                  <div class="customer-avatar">
+                    <i class="bi bi-person-fill"></i>
+                  </div>
+                  <div class="batch-title-area">
+                    <h3 class="batch-cust-name">{{ group.customerName }}</h3>
+                    <span class="batch-cust-id">{{ group.customerId }} • {{ group.customerPhone || group.customerEmail }}</span>
+                  </div>
+                  <div class="batch-badge">
+                    <i class="bi bi-box-seam"></i>
+                    <span>{{ group.totalProductsCount }} Total Units</span>
+                  </div>
+                </div>
+
+                <div class="batch-details">
+                  <div class="batch-meta-row">
+                    <span class="meta-item">
+                      <i class="bi bi-receipt"></i>
+                      <strong>{{ group.orders.length }}</strong> {{ group.orders.length === 1 ? 'Order' : 'Orders' }}
+                    </span>
+                    <span class="meta-item">
+                      <i class="bi bi-tags"></i>
+                      <strong>{{ group.totalItemsCount }}</strong> Product SKU{{ group.totalItemsCount === 1 ? '' : 's' }}
+                    </span>
+                    <span class="meta-item" [class.text-danger]="group.pendingVerificationCount > 0">
+                      <i class="bi bi-hourglass-split"></i>
+                      <strong>{{ group.pendingVerificationCount }}</strong> Pending Verification
+                    </span>
+                  </div>
+
+                  <!-- Order Chips List -->
+                  <div class="batch-orders-list">
+                    <span class="orders-list-label">Customer Orders:</span>
+                    <div class="order-chips">
+                      @for (ord of group.orders; track ord.id) {
+                        @let prog = getProgress(ord.id);
+                        <button
+                          type="button"
+                          class="order-chip-btn"
+                          [class.chip-verified]="prog.isFullyVerified"
+                          (click)="selectOrder(ord)"
+                          title="Click to view complete product list for {{ ord.id }}"
+                        >
+                          <span class="chip-id">{{ ord.id }}</span>
+                          <span class="chip-count">({{ ord.items.length }} {{ ord.items.length === 1 ? 'item' : 'items' }})</span>
+                          @if (prog.isFullyVerified) {
+                            <i class="bi bi-check-circle-fill text-success"></i>
+                          } @else {
+                            <i class="bi bi-clock-fill text-warning"></i>
+                          }
+                        </button>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <div class="batch-footer">
+                  <button
+                    type="button"
+                    class="btn-view-customer-order"
+                    (click)="selectOrder(group.orders[0])"
+                  >
+                    <span>Open Customer Order Details</span>
+                    <i class="bi bi-arrow-right"></i>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- 3. SECTION: READY TO SHIP ORDERS (Task 6 Inspection) -->
+    @if (activeSection === 'ready_to_ship') {
+      <div class="content-panel">
+        <div class="section-notice">
+          <i class="bi bi-info-circle-fill text-primary"></i>
+          <span>These customer orders have completed procurement verification and have been moved to Ready to Ship status.</span>
+        </div>
+
+        @if (filteredReadyToShipOrders.length === 0) {
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="bi bi-truck"></i>
+            </div>
+            <h3>No Orders in Ready to Ship</h3>
+            <p>Verify customer orders and click "Confirm Procurement" to move them here.</p>
+          </div>
+        } @else {
+          <div class="table-responsive">
+            <table class="procurement-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Order Date</th>
+                  <th>Total Products</th>
+                  <th>Procurement Status</th>
+                  <th>Order Status</th>
+                  <th class="text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (order of filteredReadyToShipOrders; track order.id) {
+                  <tr>
+                    <td>
+                      <span class="order-id-badge">{{ order.id }}</span>
+                    </td>
+                    <td>
+                      <div class="customer-info-cell">
+                        <span class="cust-name">{{ order.customerName }}</span>
+                        <span class="cust-meta">{{ order.customerEmail || 'No email' }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="date-text">{{ order.date }}</span>
+                    </td>
+                    <td>
+                      <div class="products-count-badge">
+                        <i class="bi bi-boxes"></i>
+                        <span>{{ order.items.length }} Items</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="status-pill status-completed">
+                        <i class="bi bi-check-circle-fill"></i>
+                        {{ order.procurementStatus }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="status-pill status-ready-ship">
+                        <i class="bi bi-box-seam-fill"></i>
+                        {{ order.orderStatus }}
+                      </span>
+                    </td>
+                    <td class="text-right">
+                      <a [routerLink]="['/admin/orders', order.id]" class="btn-action-secondary" title="View in Order Management">
+                        <span>Order Details</span>
+                        <i class="bi bi-box-arrow-up-right"></i>
+                      </a>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    }
+  }
+
+  <!-- DETAIL VIEW: CUSTOMER ORDER PROCUREMENT DETAILS (Tasks 2, 3, 4, 5, 6) -->
+  @if (selectedOrder) {
+    @let progress = getProgress(selectedOrder.id);
+    <div class="order-procurement-view">
+      <!-- Order Summary Card -->
+      <div class="order-header-card">
+        <div class="order-header-top">
+          <div class="order-main-meta">
+            <div class="order-title-line">
+              <span class="order-badge-large">{{ selectedOrder.id }}</span>
+              <span class="status-pill status-required">
+                <i class="bi bi-hourglass-split"></i> Procurement {{ selectedOrder.procurementStatus }}
+              </span>
+              <span class="status-pill status-order-pending">
+                {{ selectedOrder.orderStatus }}
+              </span>
+            </div>
+            <div class="order-customer-sub">
+              <span><strong>Customer:</strong> {{ selectedOrder.customerName }} ({{ selectedOrder.customerId || 'ID: C-GUEST' }})</span>
+              <span>•</span>
+              <span><strong>Date:</strong> {{ selectedOrder.date }}</span>
+              <span>•</span>
+              <span><strong>Contact:</strong> {{ selectedOrder.customerPhone || selectedOrder.customerEmail }}</span>
+            </div>
+            <div class="order-address-sub">
+              <i class="bi bi-geo-alt-fill"></i>
+              <span>{{ selectedOrder.shippingAddress }}</span>
+            </div>
+          </div>
+
+          <div class="order-header-right">
+            <button type="button" class="btn-secondary-sm" (click)="clearSelectedOrder()">
+              <i class="bi bi-arrow-left"></i>
+              <span>Change Order</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Verification Progress Indicator (Task 4) -->
+        <div class="verification-progress-banner" [class.banner-complete]="progress.isFullyVerified">
+          <div class="progress-banner-header">
+            <div class="progress-text-group">
+              <span class="progress-title">
+                <i class="bi" [class.bi-check-circle-fill]="progress.isFullyVerified" [class.bi-patch-check]="!progress.isFullyVerified"></i>
+                Product Verification Progress
+              </span>
+              <span class="progress-subtitle">
+                <strong>{{ progress.verifiedCount }} of {{ progress.totalCount }}</strong> products verified •
+                @if (progress.pendingCount > 0) {
+                  <span class="text-pending"><strong>{{ progress.pendingCount }}</strong> product{{ progress.pendingCount === 1 ? '' : 's' }} pending verification</span>
+                } @else {
+                  <span class="text-success font-semibold">All products individually verified! Ready for confirmation.</span>
+                }
+              </span>
+            </div>
+            <div class="progress-percentage-pill" [class.pill-success]="progress.isFullyVerified">
+              {{ progress.percentage }}% Verified
+            </div>
+          </div>
+
+          <div class="progress-track-large">
+            <div
+              class="progress-fill-large"
+              [style.width.%]="progress.percentage"
+              [class.fill-success]="progress.isFullyVerified"
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRODUCTS TABLE & VERIFICATION LIST (Tasks 2, 3, 4) -->
+      <div class="products-section-card">
+        <div class="card-header-bar">
+          <div class="header-left">
+            <h2 class="card-title">Order Line Items & Product Verification</h2>
+            <p class="card-subtitle">
+              Verify that each product matches the customer's ordered specs. Check the manual verification box for each item.
+            </p>
+          </div>
+          <div class="header-counter">
+            <span class="counter-badge">{{ selectedOrder.items.length }} Product{{ selectedOrder.items.length === 1 ? '' : 's' }} in Order</span>
+          </div>
+        </div>
+
+        <div class="products-grid">
+          @for (item of selectedOrder.items; track item.id) {
+            @let isVerified = isItemVerified(selectedOrder.id, item.id);
+            @let hasShortage = needsProcurement(item);
+            <div
+              class="product-procurement-card"
+              [class.card-verified]="isVerified"
+              [class.card-shortage]="hasShortage"
+              (click)="inspectProduct(item)"
+            >
+              <!-- Shortage Warning Banner (Task 3) -->
+              @if (hasShortage) {
+                <div class="shortage-flag-banner">
+                  <i class="bi bi-exclamation-triangle-fill"></i>
+                  <span><strong>Needs Procurement:</strong> Inventory deficit of {{ getDeficit(item) }} unit{{ getDeficit(item) === 1 ? '' : 's' }} (Stock: {{ item.inStock }}, Ordered: {{ item.quantity }})</span>
+                </div>
+              }
+
+              <div class="product-card-body">
+                <!-- Product Image (Task 2) -->
+                <div class="product-image-container">
+                  <img
+                    [src]="item.image"
+                    [alt]="item.name"
+                    class="product-thumb"
+                    (error)="onImageError($event)"
+                  />
+                  @if (isVerified) {
+                    <span class="image-verified-badge" title="Product verified">
+                      <i class="bi bi-check-lg"></i>
+                    </span>
+                  }
+                </div>
+
+                <!-- Product Details (Task 2) -->
+                <div class="product-info-col">
+                  <div class="product-name-row">
+                    <h3 class="product-name">{{ item.name }}</h3>
+                    <span class="product-sku-chip">SKU: {{ item.sku }}</span>
+                  </div>
+
+                  <div class="product-specs-row">
+                    <!-- Variant (Task 2) -->
+                    @if (item.variant || item.size || item.color) {
+                      <div class="variant-chips-group">
+                        @if (item.variant) {
+                          <span class="spec-chip">
+                            <i class="bi bi-layers"></i> {{ item.variant }}
+                          </span>
+                        }
+                        @if (item.size) {
+                          <span class="spec-chip">
+                            <i class="bi bi-aspect-ratio"></i> Size: {{ item.size }}
+                          </span>
+                        }
+                        @if (item.color) {
+                          <span class="spec-chip">
+                            <i class="bi bi-palette"></i> Color: {{ item.color }}
+                          </span>
+                        }
+                      </div>
+                    }
+
+                    <div class="quantity-price-group">
+                      <span class="qty-badge">
+                        Ordered Qty: <strong>{{ item.quantity }}</strong>
+                      </span>
+                      <span class="price-text">
+                        {{ formatCurrency(item.price) }} each • Total: <strong>{{ formatCurrency(item.price * item.quantity) }}</strong>
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Procurement Status & Stock Info -->
+                  <div class="inventory-status-row">
+                    <span class="stock-info-text">
+                      <i class="bi bi-shop"></i> In Warehouse Stock: <strong>{{ item.inStock }}</strong>
+                    </span>
+                    <span class="status-indicator-tag" [class.tag-warning]="hasShortage" [class.tag-neutral]="!hasShortage">
+                      <i class="bi" [class.bi-exclamation-circle-fill]="hasShortage" [class.bi-check-circle-fill]="!hasShortage"></i>
+                      {{ hasShortage ? 'Procurement Required' : 'Stock Allocated' }}
+                    </span>
+                    @if (item.imageVerified) {
+                      <span class="status-indicator-tag tag-verified-sm">
+                        <i class="bi bi-image-fill"></i> Image Verified
+                      </span>
+                    }
+                    @if (item.sizeConfirmed) {
+                      <span class="status-indicator-tag tag-verified-sm">
+                        <i class="bi bi-patch-check-fill"></i> Size: {{ item.confirmedSize || item.size }}
+                      </span>
+                    }
+                    @if (item.procurementComments && item.procurementComments.length > 0) {
+                      <span class="status-indicator-tag tag-comments-sm">
+                        <i class="bi bi-chat-left-dots-fill"></i> {{ item.procurementComments.length }} Note(s)
+                      </span>
+                    }
+                  </div>
+                </div>
+
+                <!-- Product Verification Action Column (Task 4) -->
+                <div class="product-verification-col">
+                  <!-- Manual Verification Checkbox (Task 4) -->
+                  <label class="verification-checkbox-wrapper" (click)="$event.stopPropagation()">
+                    <input
+                      type="checkbox"
+                      [checked]="isVerified"
+                      (change)="toggleItemVerification(item, $event)"
+                      class="custom-check-input"
+                    />
+                    <span class="checkbox-visual">
+                      <i class="bi bi-check-lg check-icon"></i>
+                    </span>
+                    <span class="checkbox-label-text">
+                      <strong>I have verified this product.</strong>
+                    </span>
+                  </label>
+
+                  <!-- Verification Status Badge -->
+                  <div class="verification-status-badge">
+                    @if (isVerified) {
+                      <span class="badge-verified">
+                        <i class="bi bi-check-circle-fill"></i> Verified
+                      </span>
+                    } @else {
+                      <span class="badge-pending">
+                        <i class="bi bi-clock"></i> Pending Verification
+                      </span>
+                    }
+                  </div>
+
+                  <!-- Inspect Checklist Link (Task 3) -->
+                  <button
+                    type="button"
+                    class="btn-inspect-link"
+                    (click)="inspectProduct(item, $event)"
+                  >
+                    <i class="bi bi-clipboard-check"></i>
+                    <span>Inspect Specs Checklist</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- FINAL PROCUREMENT CONFIRMATION ACTION BAR (Task 5 & Task 6) -->
+        <div class="confirmation-action-bar">
+          <div class="bar-summary">
+            <div class="summary-status-icon" [class.status-icon-ready]="progress.isFullyVerified">
+              <i class="bi" [class.bi-check-circle-fill]="progress.isFullyVerified" [class.bi-shield-exclamation]="!progress.isFullyVerified"></i>
+            </div>
+            <div class="summary-text">
+              @if (progress.isFullyVerified) {
+                <h4 class="summary-title ready-title">All Products Verified Successfully</h4>
+                <p class="summary-desc">Every product in customer order {{ selectedOrder.id }} has been individually checked. Ready to authorize procurement and transition to Ready to Ship.</p>
+              } @else {
+                <h4 class="summary-title pending-title">Verification Incomplete</h4>
+                <p class="summary-desc">
+                  {{ progress.verifiedCount }} of {{ progress.totalCount }} verified. You must verify every product with the manual checkbox before procurement can be confirmed.
+                </p>
+              }
+            </div>
+          </div>
+
+          <div class="bar-action">
+            <button
+              type="button"
+              class="btn-confirm-procurement"
+              [disabled]="!canConfirmProcurement(selectedOrder)"
+              (click)="openConfirmModal()"
+            >
+              <i class="bi bi-check2-circle"></i>
+              <span>Confirm Procurement</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- PRODUCT SPECIFICATION INSPECTION MODAL (Fully Interactive & Functional) -->
+  @if (inspectedProduct && selectedOrder) {
+    @let isVerified = isItemVerified(selectedOrder.id, inspectedProduct.id);
+    @let hasShortage = needsProcurement(inspectedProduct);
+    <div class="modal-backdrop" (click)="closeInspection()">
+      <div class="modal-dialog-inspect-interactive" (click)="$event.stopPropagation()">
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <div class="modal-title-row">
+              <h3 class="modal-title">Product Verification Inspection</h3>
+              @if (isVerified) {
+                <span class="badge-modal-status badge-verified"><i class="bi bi-check-circle-fill"></i> Fully Verified</span>
+              } @else {
+                <span class="badge-modal-status badge-pending"><i class="bi bi-hourglass-split"></i> Verification In Progress</span>
+              }
+            </div>
+            <span class="modal-subtitle">Interactive verification workspace for Order {{ selectedOrder.id }} (Customer: {{ selectedOrder.customerName }})</span>
+          </div>
+          <button type="button" class="btn-close-modal" (click)="closeInspection()" title="Close">&times;</button>
+        </div>
+
+        <div class="modal-body-interactive">
+          <!-- 1. Top Editable Bar: Product Title, SKU Barcode, and Quantity -->
+          <div class="interactive-product-banner">
+            <div class="field-item flex-2">
+              <label class="field-label"><i class="bi bi-box-seam"></i> Product Name (Click to edit)</label>
+              <input
+                type="text"
+                class="field-input"
+                [(ngModel)]="editProductName"
+                placeholder="Product Name"
+                (change)="saveCurrentInspectionState()"
+              />
+            </div>
+
+            <div class="field-item flex-1">
+              <label class="field-label"><i class="bi bi-upc-scan"></i> SKU Barcode (Click to edit)</label>
+              <input
+                type="text"
+                class="field-input font-mono"
+                [(ngModel)]="editSku"
+                placeholder="SKU Barcode"
+                (change)="saveCurrentInspectionState()"
+              />
+            </div>
+
+            <div class="field-item flex-1">
+              <label class="field-label"><i class="bi bi-boxes"></i> Ordered Quantity</label>
+              <div class="qty-control-box">
+                <input
+                  type="number"
+                  class="field-input text-center"
+                  [(ngModel)]="editQuantity"
+                  min="1"
+                  (change)="saveCurrentInspectionState()"
+                />
+                <span class="qty-unit-label">Units</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Inventory Shortage Warning if applicable -->
+          @if (hasShortage) {
+            <div class="inspect-stock-box box-warning">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              <div class="stock-box-text">
+                <strong>Warehouse Shortage Flagged for Order {{ selectedOrder.id }}</strong>
+                <p>Required: <strong>{{ inspectedProduct.quantity }}</strong> units | Available in stock: <strong>{{ inspectedProduct.inStock }}</strong> units | Shortage to procure: <span class="text-danger"><strong>{{ getDeficit(inspectedProduct) }}</strong> units</span></p>
+              </div>
+            </div>
+          }
+
+          <!-- 2-COLUMN INTERACTIVE VERIFICATION WORKBENCH -->
+          <div class="verification-workbench-grid">
+            
+            <!-- LEFT COLUMN: IMAGE UPLOAD & IMAGE VERIFICATION -->
+            <div class="workbench-card">
+              <div class="card-section-title">
+                <div class="title-with-icon">
+                  <i class="bi bi-image-fill"></i>
+                  <span>1. Product Image Verification & Upload</span>
+                </div>
+                @if (imageVerified) {
+                  <span class="badge-verified"><i class="bi bi-check-circle-fill"></i> Image Verified</span>
+                } @else {
+                  <span class="badge-pending"><i class="bi bi-clock"></i> Unverified</span>
+                }
+              </div>
+
+              <!-- Side-by-Side Multi-Image Galleries: Catalog Standard vs Uploaded Product Samples -->
+              <div class="image-comparison-container">
+                <!-- 1. Catalog Reference Multi-Angle Gallery -->
+                <div class="image-box gallery-card">
+                  <div class="gallery-card-header">
+                    <span class="image-box-label">Catalog Reference ({{ catalogGallery.length }} Views)</span>
+                    <span class="gallery-counter-pill">{{ activeCatalogIndex + 1 }}/{{ catalogGallery.length }}</span>
+                  </div>
+
+                  <!-- Active Catalog Image Preview -->
+                  <div
+                    class="image-wrapper active-gallery-preview"
+                    (click)="openLightbox('catalog', activeCatalogIndex)"
+                    title="Click to Zoom & View in Full Preview"
+                  >
+                    @if (catalogGallery[activeCatalogIndex]) {
+                      <img
+                        [src]="catalogGallery[activeCatalogIndex].url"
+                        [alt]="catalogGallery[activeCatalogIndex].label"
+                        class="compare-img"
+                        (error)="onImageError($event)"
+                      />
+                      <div class="image-zoom-overlay">
+                        <i class="bi bi-arrows-fullscreen"></i>
+                        <span>Click to Zoom</span>
+                      </div>
+                    }
+                  </div>
+
+                  <span class="image-caption">{{ catalogGallery[activeCatalogIndex]?.label }}</span>
+
+                  <!-- Interactive Thumbnail Strip for Catalog Angles -->
+                  <div class="thumbnails-strip">
+                    @for (catImg of catalogGallery; track catImg.id; let idx = $index) {
+                      <button
+                        type="button"
+                        class="thumb-btn"
+                        [class.thumb-active]="activeCatalogIndex === idx"
+                        (click)="activeCatalogIndex = idx"
+                        [title]="catImg.label + ' (Click to preview)'"
+                      >
+                        <img [src]="catImg.url" [alt]="catImg.label" class="thumb-img" (error)="onImageError($event)" />
+                        <span class="thumb-idx">{{ idx + 1 }}</span>
+                      </button>
+                    }
+                  </div>
+
+                  <div class="upload-button-bar">
+                    <button
+                      type="button"
+                      class="btn-inspect-zoom-trigger"
+                      (click)="openLightbox('catalog', activeCatalogIndex)"
+                      title="Open interactive zoom view"
+                    >
+                      <i class="bi bi-zoom-in"></i>
+                      <span>Zoom Reference ({{ catalogGallery.length }} Views)</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- 2. Procured / Uploaded Samples Multi-Photo Gallery -->
+                <div class="image-box gallery-card" [class.box-has-image]="uploadedGallery.length > 0">
+                  <div class="gallery-card-header">
+                    <span class="image-box-label">Uploaded Samples ({{ uploadedGallery.length }})</span>
+                    @if (uploadedGallery.length > 0) {
+                      <span class="gallery-counter-pill pill-success">{{ activeUploadedIndex + 1 }}/{{ uploadedGallery.length }}</span>
+                    } @else {
+                      <span class="gallery-counter-pill">None</span>
+                    }
+                  </div>
+
+                  <!-- Active Uploaded Sample Preview -->
+                  <div class="image-wrapper active-gallery-preview uploaded-preview-box">
+                    @if (uploadedGallery.length > 0 && uploadedGallery[activeUploadedIndex]) {
+                      <div
+                        class="uploaded-zoom-trigger-wrap"
+                        (click)="openLightbox('uploaded', activeUploadedIndex)"
+                        title="Click to Zoom & View in Full Preview"
+                      >
+                        <img
+                          [src]="uploadedGallery[activeUploadedIndex].url"
+                          [alt]="uploadedGallery[activeUploadedIndex].label"
+                          class="compare-img"
+                        />
+                        <div class="image-zoom-overlay">
+                          <i class="bi bi-arrows-fullscreen"></i>
+                          <span>Click to Zoom</span>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        class="btn-remove-uploaded"
+                        (click)="removeUploadedImageAt(activeUploadedIndex, $event)"
+                        title="Delete this uploaded photo"
+                      >
+                        <i class="bi bi-trash-fill"></i>
+                      </button>
+                    } @else {
+                      <div class="upload-placeholder" (click)="multiFileInput.click()">
+                        <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
+                        <span class="upload-hint">Upload one or multiple physical sample photos</span>
+                        <span class="upload-format">Select multiple files (JPG, PNG, WEBP)</span>
+                      </div>
+                    }
+                  </div>
+
+                  <span class="image-caption">
+                    {{ uploadedGallery.length > 0 ? uploadedGallery[activeUploadedIndex]?.label : 'Packaging, batch print, or label photos' }}
+                  </span>
+
+                  <!-- Thumbnails Strip for Uploaded Samples -->
+                  @if (uploadedGallery.length > 0) {
+                    <div class="thumbnails-strip">
+                      @for (upImg of uploadedGallery; track upImg.id; let idx = $index) {
+                        <button
+                          type="button"
+                          class="thumb-btn"
+                          [class.thumb-active]="activeUploadedIndex === idx"
+                          (click)="activeUploadedIndex = idx"
+                          [title]="upImg.label + ' (Click to preview)'"
+                        >
+                          <img [src]="upImg.url" [alt]="upImg.label" class="thumb-img" />
+                          <span class="thumb-idx">{{ idx + 1 }}</span>
+                        </button>
+                      }
+                    </div>
+                  }
+
+                  <input
+                    type="file"
+                    #multiFileInput
+                    (change)="onMultipleImagesSelected($event)"
+                    accept="image/*"
+                    multiple
+                    class="d-none"
+                  />
+
+                  <div class="upload-button-bar dual-buttons">
+                    <button type="button" class="btn-upload-trigger" (click)="multiFileInput.click()">
+                      <i class="bi bi-camera-fill"></i>
+                      <span>{{ uploadedGallery.length > 0 ? 'Add More Photos' : 'Upload Sample Photos' }}</span>
+                    </button>
+
+                    @if (uploadedGallery.length > 0) {
+                      <button
+                        type="button"
+                        class="btn-inspect-zoom-trigger"
+                        (click)="openLightbox('uploaded', activeUploadedIndex)"
+                        title="Zoom into uploaded sample photos"
+                      >
+                        <i class="bi bi-zoom-in"></i>
+                        <span>Zoom</span>
+                      </button>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <!-- Unified Full Gallery Inspector Button -->
+              <button
+                type="button"
+                class="btn-open-full-gallery"
+                (click)="openLightbox('all', 0)"
+                title="Open interactive multi-image zoom gallery with full preview"
+              >
+                <i class="bi bi-collection-play-fill"></i>
+                <span>Open Full Interactive Gallery & Zoom ({{ catalogGallery.length + uploadedGallery.length }} Images)</span>
+              </button>
+
+              <!-- Check Option Before Confirming (Requirement) -->
+              <div class="image-check-option-card">
+                <span class="check-option-label">
+                  <i class="bi bi-question-circle-fill"></i> Does the product photo & packaging match specification?
+                </span>
+                
+                <div class="check-button-group">
+                  <button
+                    type="button"
+                    class="btn-check-option"
+                    [class.selected-yes]="imageCorrectChecked"
+                    (click)="setImageCorrect(true)"
+                  >
+                    <i class="bi bi-check-lg"></i>
+                    <span>Yes, Image is Correct</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn-check-option"
+                    [class.selected-no]="!imageCorrectChecked && uploadedImagePreview"
+                    (click)="setImageCorrect(false)"
+                  >
+                    <i class="bi bi-x-lg"></i>
+                    <span>No, Image Mismatched</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Image Verified Button (Requirement) -->
+              <div class="image-verify-action-row">
+                <button
+                  type="button"
+                  class="btn-image-verified"
+                  [class.btn-is-verified]="imageVerified"
+                  (click)="toggleImageVerified()"
+                >
+                  <i class="bi" [class.bi-check-circle-fill]="imageVerified" [class.bi-shield-check]="!imageVerified"></i>
+                  <span>{{ imageVerified ? 'Image Verified (Packaging OK)' : 'Mark Image Verified' }}</span>
+                </button>
+                @if (imageVerified) {
+                  <span class="verified-helper-text">
+                    <i class="bi bi-check-all"></i> Verified and confirmed matching
+                  </span>
+                }
+              </div>
+            </div>
+
+            <!-- RIGHT COLUMN: SIZE CONFIRMATION & PROCUREMENT TEAM COMMENTS -->
+            <div class="workbench-card">
+              <div class="card-section-title">
+                <div class="title-with-icon">
+                  <i class="bi bi-aspect-ratio-fill"></i>
+                  <span>2. Size Confirmation & Procurement Notes</span>
+                </div>
+                @if (sizeConfirmed) {
+                  <span class="badge-verified"><i class="bi bi-patch-check-fill"></i> Size Confirmed</span>
+                } @else {
+                  <span class="badge-pending"><i class="bi bi-clock"></i> Size Pending</span>
+                }
+              </div>
+
+              <!-- Size Confirmation Section (Requirement) -->
+              <div class="size-confirmation-box" [class.size-is-confirmed]="sizeConfirmed">
+                <div class="size-ordered-summary">
+                  <span class="size-prompt">Ordered Variant / Size:</span>
+                  <span class="size-ordered-tag">{{ inspectedProduct.size || inspectedProduct.variant || 'Standard 60 Caps' }}</span>
+                </div>
+
+                <!-- Interactive Preset Selector -->
+                <div class="preset-sizes-row">
+                  <span class="preset-label">Quick Presets:</span>
+                  <div class="preset-chips">
+                    @for (s of presetSizes; track s) {
+                      <button
+                        type="button"
+                        class="preset-chip"
+                        [class.active]="editSize === s"
+                        (click)="selectPresetSize(s)"
+                      >
+                        {{ s }}
+                      </button>
+                    }
+                  </div>
+                </div>
+
+                <!-- Manual Size Input & Confirmation Button -->
+                <div class="size-action-input-row">
+                  <div class="manual-size-input-wrap">
+                    <input
+                      type="text"
+                      class="field-input"
+                      [(ngModel)]="editSize"
+                      placeholder="Enter or confirm size (e.g., 60 Caps, 100g)"
+                    />
+                  </div>
+
+                  @if (!sizeConfirmed) {
+                    <button
+                      type="button"
+                      class="btn-confirm-size"
+                      (click)="confirmSize()"
+                    >
+                      <i class="bi bi-check2"></i>
+                      <span>Confirm Size</span>
+                    </button>
+                  } @else {
+                    <div class="confirmed-size-chip-wrap">
+                      <span class="confirmed-chip">
+                        <i class="bi bi-check-circle-fill"></i> {{ confirmedSize }}
+                      </span>
+                      <button type="button" class="btn-edit-size-link" (click)="editSizeAgain()">
+                        <i class="bi bi-pencil-square"></i> Change Size
+                      </button>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Procurement Team Comment Box (Requirement) -->
+              @if (sizeConfirmed) {
+                <div class="procurement-comments-section animate-slide-down">
+                  <div class="comments-section-header">
+                    <div class="comments-header-title">
+                      <i class="bi bi-chat-left-dots-fill text-primary"></i>
+                      <h4>Comments for Procurement Team</h4>
+                    </div>
+                    <span class="comments-badge">Procurement Review</span>
+                  </div>
+                  <p class="comments-instructions">
+                    Enter comments, batch specifications, or supplier instructions below. These will be sent directly to the Procurement Team.
+                  </p>
+
+                  <!-- Quick Comment Suggestions -->
+                  <div class="quick-suggestions-row">
+                    <span class="suggestions-label">Quick Notes:</span>
+                    <div class="suggestion-chips">
+                      @for (sug of quickCommentSuggestions; track sug) {
+                        <button
+                          type="button"
+                          class="suggestion-chip"
+                          (click)="applyCommentSuggestion(sug)"
+                          title="Click to copy into comment box"
+                        >
+                          {{ sug }}
+                        </button>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Comment Textarea -->
+                  <div class="comment-textarea-wrap">
+                    <textarea
+                      class="comment-textarea"
+                      [(ngModel)]="newCommentText"
+                      rows="3"
+                      placeholder="Type comments for the Procurement Team (e.g. Batch #2026-X verified, packaging sealed, dispatch immediately)..."
+                    ></textarea>
+                  </div>
+
+                  <!-- Send Button (Requirement) -->
+                  <div class="comment-send-bar">
+                    <button
+                      type="button"
+                      class="btn-send-procurement"
+                      [disabled]="!newCommentText.trim()"
+                      (click)="sendProcurementComment()"
+                    >
+                      <i class="bi bi-send-fill"></i>
+                      <span>Send to Procurement Team</span>
+                    </button>
+                  </div>
+
+                  <!-- Comments Sent History / Audit Log -->
+                  @if (procurementComments.length > 0) {
+                    <div class="comments-history-list">
+                      <span class="history-title">Sent Comments ({{ procurementComments.length }}):</span>
+                      @for (c of procurementComments; track c.id) {
+                        <div class="comment-history-item">
+                          <div class="comment-item-header">
+                            <span class="author-name"><strong>{{ c.author }}</strong></span>
+                            <span class="comment-time">{{ c.createdAt }}</span>
+                            <span class="comment-status-pill"><i class="bi bi-check2-all"></i> {{ c.status }}</span>
+                          </div>
+                          <p class="comment-item-text">"{{ c.text }}"</p>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="comments-locked-notice">
+                  <i class="bi bi-lock-fill"></i>
+                  <span>Please confirm the product size above to unlock the Procurement Team comment box.</span>
+                </div>
+              }
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Modal Footer: Overall Verification & Close -->
+        <div class="modal-footer-interactive">
+          <label class="modal-verify-toggle" (click)="$event.stopPropagation()">
+            <input
+              type="checkbox"
+              [checked]="isVerified"
+              (change)="toggleOverallVerificationFromModal()"
+              class="custom-check-input"
+            />
+            <span class="checkbox-visual">
+              <i class="bi bi-check-lg check-icon"></i>
+            </span>
+            <span class="checkbox-label-text">
+              <strong>I have verified this product.</strong>
+            </span>
+          </label>
+
+          <div class="modal-footer-actions">
+            <button type="button" class="btn-save-inspect" (click)="closeInspection()">
+              <i class="bi bi-check-circle"></i>
+              <span>Save & Done Inspecting</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- FINAL CONFIRMATION MODAL (Task 5 & Task 6) -->
+  @if (isConfirmModalOpen && selectedOrder) {
+    <div class="modal-backdrop" (click)="closeConfirmModal()">
+      <div class="modal-dialog-confirm" (click)="$event.stopPropagation()">
+        <div class="confirm-icon-bubble">
+          <i class="bi bi-shield-check"></i>
+        </div>
+
+        <h3 class="confirm-title">Confirm Procurement for {{ selectedOrder.id }}?</h3>
+        
+        <p class="confirm-message">
+          You are confirming that <strong>all {{ selectedOrder.items.length }} products</strong> for customer
+          <strong>{{ selectedOrder.customerName }}</strong> have been individually inspected and verified.
+        </p>
+
+        <div class="confirm-summary-list">
+          <div class="summary-row">
+            <span class="label">Order ID:</span>
+            <span class="val font-mono">{{ selectedOrder.id }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="label">Customer:</span>
+            <span class="val">{{ selectedOrder.customerName }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="label">Total Products:</span>
+            <span class="val">{{ selectedOrder.items.length }} Items Verified (100%)</span>
+          </div>
+          <div class="summary-row">
+            <span class="label">New Procurement Status:</span>
+            <span class="val text-success"><strong>Completed</strong></span>
+          </div>
+          <div class="summary-row">
+            <span class="label">New Order Status:</span>
+            <span class="val text-primary"><strong>Ready to Ship</strong></span>
+          </div>
+        </div>
+
+        <p class="confirm-note">
+          <i class="bi bi-info-circle"></i>
+          This order will be removed from the Pending Procurement list and moved immediately to the Ready to Ship Orders section.
+        </p>
+
+        <div class="confirm-actions">
+          <button type="button" class="btn-cancel" (click)="closeConfirmModal()">
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn-confirm-final"
+            (click)="executeConfirmProcurement()"
+          >
+            <i class="bi bi-check2-circle"></i>
+            <span>Yes, Confirm & Move to Ready to Ship</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- =============================================================== -->
+  <!-- INTERACTIVE IMAGE GALLERY LIGHTBOX & ZOOM INSPECTOR (User Request) -->
+  <!-- =============================================================== -->
+  @if (isLightboxOpen && currentLightboxImage) {
+    <div class="lightbox-backdrop" (click)="closeLightbox()">
+      <div class="lightbox-container" (click)="$event.stopPropagation()">
+        
+        <!-- Lightbox Top Control Bar -->
+        <div class="lightbox-header">
+          <!-- Left: Image Info -->
+          <div class="lightbox-info">
+            <div class="lightbox-title-row">
+              <span class="source-tag" [class.tag-catalog]="currentLightboxImage.source === 'catalog'" [class.tag-uploaded]="currentLightboxImage.source === 'uploaded'">
+                <i class="bi" [class.bi-box-seam]="currentLightboxImage.source === 'catalog'" [class.bi-camera-fill]="currentLightboxImage.source === 'uploaded'"></i>
+                {{ currentLightboxImage.source === 'catalog' ? 'Catalog Reference' : 'Uploaded Sample' }}
+              </span>
+              <h3 class="lightbox-img-title">{{ currentLightboxImage.label }}</h3>
+            </div>
+            <span class="lightbox-subtitle">{{ currentLightboxImage.subLabel || 'Click image or use controls to zoom' }}</span>
+          </div>
+
+          <!-- Center: Gallery Filter Tabs & Counter -->
+          <div class="lightbox-filter-bar">
+            <button
+              type="button"
+              class="filter-tab-btn"
+              [class.active]="lightboxFilter === 'all'"
+              (click)="setLightboxFilter('all')"
+            >
+              All ({{ catalogGallery.length + uploadedGallery.length }})
+            </button>
+            <button
+              type="button"
+              class="filter-tab-btn"
+              [class.active]="lightboxFilter === 'catalog'"
+              (click)="setLightboxFilter('catalog')"
+            >
+              Catalog ({{ catalogGallery.length }})
+            </button>
+            @if (uploadedGallery.length > 0) {
+              <button
+                type="button"
+                class="filter-tab-btn"
+                [class.active]="lightboxFilter === 'uploaded'"
+                (click)="setLightboxFilter('uploaded')"
+              >
+                Uploaded ({{ uploadedGallery.length }})
+              </button>
+            }
+            <span class="lightbox-counter-badge">
+              {{ activeLightboxIndex + 1 }} of {{ filteredLightboxImages.length }}
+            </span>
+          </div>
+
+          <!-- Right: Zoom Controls & Close -->
+          <div class="lightbox-controls">
+            <button type="button" class="btn-ctrl" (click)="zoomOut()" [disabled]="zoomLevel <= 1" title="Zoom Out (-)">
+              <i class="bi bi-dash-lg"></i>
+            </button>
+            <span class="zoom-level-pill" (click)="resetZoom()" title="Click to reset zoom">
+              {{ (zoomLevel * 100).toFixed(0) }}%
+            </span>
+            <button type="button" class="btn-ctrl" (click)="zoomIn()" [disabled]="zoomLevel >= 3" title="Zoom In (+)">
+              <i class="bi bi-plus-lg"></i>
+            </button>
+            <button type="button" class="btn-ctrl" (click)="resetZoom()" title="Reset Zoom (1:1)">
+              <i class="bi bi-arrows-angle-contract"></i>
+            </button>
+            <button type="button" class="btn-ctrl btn-close-lightbox" (click)="closeLightbox()" title="Close Lightbox (Esc)">
+              &times;
+            </button>
+          </div>
+        </div>
+
+        <!-- Main Lightbox Stage (Navigation + Zoomable Image) -->
+        <div class="lightbox-stage">
+          <!-- Previous Image Arrow Button -->
+          <button
+            type="button"
+            class="lightbox-nav-arrow arrow-prev"
+            (click)="prevLightboxImage()"
+            [disabled]="filteredLightboxImages.length <= 1"
+            title="Previous Image (Left Arrow)"
+          >
+            <i class="bi bi-chevron-left"></i>
+          </button>
+
+          <!-- Interactive Zoom Canvas -->
+          <div class="lightbox-canvas" (click)="toggleZoom()" title="Click to toggle 2x zoom">
+            <img
+              [src]="currentLightboxImage.url"
+              [alt]="currentLightboxImage.label"
+              class="lightbox-zoom-image"
+              [style.transform]="'scale(' + zoomLevel + ')'"
+              (error)="onImageError($event)"
+            />
+          </div>
+
+          <!-- Next Image Arrow Button -->
+          <button
+            type="button"
+            class="lightbox-nav-arrow arrow-next"
+            (click)="nextLightboxImage()"
+            [disabled]="filteredLightboxImages.length <= 1"
+            title="Next Image (Right Arrow)"
+          >
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+
+        <!-- Bottom Verification Actions & Thumbnails Strip -->
+        <div class="lightbox-footer">
+          <!-- Quick Inline Verification Bar -->
+          <div class="lightbox-verify-row">
+            <div class="verify-question">
+              <i class="bi bi-shield-check"></i>
+              <span>Inspection Verification:</span>
+            </div>
+
+            <div class="verify-buttons">
+              <button
+                type="button"
+                class="btn-lb-check"
+                [class.selected-yes]="imageCorrectChecked"
+                (click)="setImageCorrect(true)"
+              >
+                <i class="bi bi-check-lg"></i>
+                <span>Image Matches Specification</span>
+              </button>
+
+              <button
+                type="button"
+                class="btn-lb-check"
+                [class.selected-no]="!imageCorrectChecked && uploadedGallery.length > 0"
+                (click)="setImageCorrect(false)"
+              >
+                <i class="bi bi-x-lg"></i>
+                <span>Image Mismatched</span>
+              </button>
+
+              <button
+                type="button"
+                class="btn-lb-verify"
+                [class.btn-is-verified]="imageVerified"
+                (click)="toggleImageVerified()"
+              >
+                <i class="bi" [class.bi-check-circle-fill]="imageVerified" [class.bi-shield-check]="!imageVerified"></i>
+                <span>{{ imageVerified ? 'Image Verified (Packaging OK)' : 'Mark Image Verified' }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bottom Thumbnails Strip for Quick Switching -->
+          <div class="lightbox-thumbnails-wrapper">
+            <div class="lightbox-thumbnails-strip">
+              @for (thumb of filteredLightboxImages; track thumb.id; let idx = $index) {
+                <button
+                  type="button"
+                  class="lb-thumb-btn"
+                  [class.thumb-active]="activeLightboxIndex === idx"
+                  (click)="selectLightboxImage(idx)"
+                  [title]="thumb.label + ' (' + (idx + 1) + '/' + filteredLightboxImages.length + ')'"
+                >
+                  <img [src]="thumb.url" [alt]="thumb.label" class="lb-thumb-img" (error)="onImageError($event)" />
+                  <span class="lb-thumb-badge" [class.badge-cat]="thumb.source === 'catalog'" [class.badge-up]="thumb.source === 'uploaded'">
+                    {{ thumb.source === 'catalog' ? 'Cat ' + (idx + 1) : 'Sample ' + (idx + 1) }}
+                  </span>
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="lightbox-keyboard-hint">
+            <span><kbd>←</kbd> <kbd>→</kbd> Navigate images</span>
+            <span>•</span>
+            <span><kbd>+</kbd> <kbd>-</kbd> Zoom in/out</span>
+            <span>•</span>
+            <span><kbd>Esc</kbd> Close preview</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,638 @@
+<div class="inventory-container">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">Inventory</h1>
+      <p class="page-subtitle">Manage product stock, variants and low stock alerts from here.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="openAddProductModal()">
+        <i class="bi bi-plus-lg"></i>
+        <span>Add Product</span>
+      </button>
+      <button class="btn btn-outline" (click)="exportCsv()">
+        <i class="bi bi-download"></i>
+        <span>Export CSV</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 4 STAT CARDS -->
+  <div class="stats-row">
+    <!-- Total Products -->
+    <div class="stat-card">
+      <div class="stat-icon-circle bg-blue">
+        <i class="bi bi-box-seam"></i>
+      </div>
+      <div class="stat-details">
+        <span class="stat-title">Total Products</span>
+        <h2 class="stat-num">{{ totalProductsCount }}</h2>
+        <div class="stat-trend positive">
+          <i class="bi bi-arrow-up-short"></i>
+          <span>5%</span>
+          <span class="trend-text">from last month</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- In Stock -->
+    <div class="stat-card">
+      <div class="stat-icon-circle bg-emerald">
+        <i class="bi bi-layers-fill"></i>
+      </div>
+      <div class="stat-details">
+        <span class="stat-title">In Stock</span>
+        <h2 class="stat-num">{{ inStockCount }}</h2>
+        <div class="stat-trend positive">
+          <i class="bi bi-arrow-up-short"></i>
+          <span>8%</span>
+          <span class="trend-text">from last month</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Low Stock -->
+    <div class="stat-card">
+      <div class="stat-icon-circle bg-orange">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+      </div>
+      <div class="stat-details">
+        <span class="stat-title">Low Stock</span>
+        <h2 class="stat-num">{{ lowStockCount }}</h2>
+        <div class="stat-trend negative">
+          <i class="bi bi-arrow-down-short"></i>
+          <span>12%</span>
+          <span class="trend-text">from last month</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Out of Stock -->
+    <div class="stat-card">
+      <div class="stat-icon-circle bg-rose">
+        <i class="bi bi-x-circle-fill"></i>
+      </div>
+      <div class="stat-details">
+        <span class="stat-title">Out of Stock</span>
+        <h2 class="stat-num">{{ outOfStockCount }}</h2>
+        <div class="stat-trend negative">
+          <i class="bi bi-arrow-down-short"></i>
+          <span>15%</span>
+          <span class="trend-text">from last month</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN TWO-COLUMN LAYOUT -->
+  <div class="inventory-layout">
+    
+    <!-- LEFT COLUMN: MAIN INVENTORY TABLE CARD -->
+    <div class="main-column">
+      <div class="table-card">
+        
+        <!-- FILTER BAR -->
+        <div class="filters-bar">
+          <div class="search-input-group">
+            <i class="bi bi-search"></i>
+            <input
+              type="text"
+              [(ngModel)]="searchTerm"
+              placeholder="Search by product name, SKU, category, brand..."
+            />
+            @if (searchTerm) {
+              <button class="clear-btn" (click)="searchTerm = ''">
+                <i class="bi bi-x"></i>
+              </button>
+            }
+          </div>
+
+          <div class="dropdowns-group">
+            <!-- Category -->
+            <div class="filter-select">
+              <label>Category</label>
+              <select [(ngModel)]="selectedCategory">
+                @for (cat of categories; track cat) {
+                  <option [value]="cat">{{ cat }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Stock Status -->
+            <div class="filter-select">
+              <label>Stock Status</label>
+              <select [(ngModel)]="selectedStatus">
+                <option value="All Status">All Status</option>
+                <option value="In Stock">In Stock</option>
+                <option value="Low Stock">Low Stock</option>
+                <option value="Out of Stock">Out of Stock</option>
+              </select>
+            </div>
+
+            <!-- Brand -->
+            <div class="filter-select">
+              <label>Brand</label>
+              <select [(ngModel)]="selectedBrand">
+                @for (brand of brands; track brand) {
+                  <option [value]="brand">{{ brand }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Date Range Button -->
+            <button class="date-picker-btn" type="button">
+              <i class="bi bi-calendar3"></i>
+              <span>Last 30 days</span>
+              <i class="bi bi-chevron-down caret"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- PILL TABS -->
+        <div class="pill-tabs-bar">
+          <button
+            class="pill-tab"
+            [class.active]="activeTab === 'All'"
+            (click)="setTab('All')"
+          >
+            All Products ({{ totalProductsCount }})
+          </button>
+          <button
+            class="pill-tab"
+            [class.active]="activeTab === 'In Stock'"
+            (click)="setTab('In Stock')"
+          >
+            In Stock ({{ inStockCount }})
+          </button>
+          <button
+            class="pill-tab"
+            [class.active]="activeTab === 'Low Stock'"
+            (click)="setTab('Low Stock')"
+          >
+            Low Stock ({{ lowStockCount }})
+          </button>
+          <button
+            class="pill-tab"
+            [class.active]="activeTab === 'Out of Stock'"
+            (click)="setTab('Out of Stock')"
+          >
+            Out of Stock ({{ outOfStockCount }})
+          </button>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-responsive">
+          <table class="inventory-table">
+            <thead>
+              <tr>
+                <th class="th-checkbox">
+                  <input
+                    type="checkbox"
+                    [checked]="isAllSelected"
+                    (change)="toggleSelectAll()"
+                  />
+                </th>
+                <th>Product</th>
+                <th>SKU</th>
+                <th>Category</th>
+                <th>Brand</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th class="th-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (filteredItems.length === 0) {
+                <tr>
+                  <td colspan="9" class="empty-row">
+                    <div class="empty-state">
+                      <i class="bi bi-inbox"></i>
+                      <p>No products match your search or filter criteria.</p>
+                    </div>
+                  </td>
+                </tr>
+              }
+
+              @for (item of filteredItems; track item.id) {
+                <tr [class.row-selected]="item.selected">
+                  <td class="td-checkbox">
+                    <input
+                      type="checkbox"
+                      [(ngModel)]="item.selected"
+                      (change)="checkIndividualSelection()"
+                    />
+                  </td>
+                  <td class="td-product">
+                    <div class="product-info-cell">
+                      <img [src]="item.image" [alt]="item.name" class="product-thumb" />
+                      <div class="product-text">
+                        <span class="product-name">{{ item.name }}</span>
+                        <span class="product-variants">{{ item.variants }}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="td-sku">{{ item.sku }}</td>
+                  <td class="td-category">{{ item.category }}</td>
+                  <td class="td-brand">{{ item.brand }}</td>
+                  <td class="td-price">₹{{ item.price }}</td>
+                  <td class="td-stock">
+                    <span
+                      class="stock-num"
+                      [class.text-red]="item.stock === 0"
+                      [class.text-orange]="item.stock > 0 && item.stock <= 15"
+                    >
+                      {{ item.stock }}
+                    </span>
+                  </td>
+                  <td class="td-status">
+                    <span
+                      class="status-pill"
+                      [class.in-stock]="item.status === 'In Stock'"
+                      [class.low-stock]="item.status === 'Low Stock'"
+                      [class.out-of-stock]="item.status === 'Out of Stock'"
+                    >
+                      {{ item.status }}
+                    </span>
+                  </td>
+                  <td class="td-actions">
+                    <div class="actions-group">
+                      <button class="icon-action-btn" title="View Details">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                      <button class="icon-action-btn" (click)="openStockEdit(item)" title="Edit Stock">
+                        <i class="bi bi-pencil"></i>
+                      </button>
+                      <button class="icon-action-btn" title="More Options">
+                        <i class="bi bi-three-dots"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- PAGINATION FOOTER -->
+        <div class="table-footer">
+          <div class="pagination-info">
+            Showing 1-10 of {{ totalProductsCount }} products
+          </div>
+          <div class="pagination-controls">
+            <button
+              class="page-btn nav-btn"
+              [disabled]="currentPage === 1"
+              (click)="setPage(currentPage - 1)"
+            >
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <button
+              class="page-btn"
+              [class.active]="currentPage === 1"
+              (click)="setPage(1)"
+            >
+              1
+            </button>
+            <button
+              class="page-btn"
+              [class.active]="currentPage === 2"
+              (click)="setPage(2)"
+            >
+              2
+            </button>
+            <button
+              class="page-btn"
+              [class.active]="currentPage === 3"
+              (click)="setPage(3)"
+            >
+              3
+            </button>
+            <button
+              class="page-btn"
+              [class.active]="currentPage === 4"
+              (click)="setPage(4)"
+            >
+              4
+            </button>
+            <button
+              class="page-btn"
+              [class.active]="currentPage === 5"
+              (click)="setPage(5)"
+            >
+              5
+            </button>
+            <span class="page-ellipsis">...</span>
+            <button
+              class="page-btn"
+              [class.active]="currentPage === totalPages"
+              (click)="setPage(totalPages)"
+            >
+              {{ totalPages }}
+            </button>
+            <button
+              class="page-btn nav-btn"
+              [disabled]="currentPage === totalPages"
+              (click)="setPage(currentPage + 1)"
+            >
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: SIDEBAR WIDGETS -->
+    <div class="side-column">
+
+      <!-- 1. STOCK OVERVIEW DONUT CARD -->
+      <div class="side-card">
+        <div class="card-header">
+          <h3 class="card-title">Stock Overview</h3>
+        </div>
+        <div class="donut-chart-wrapper">
+          <!-- Circular / Donut SVG Graphic -->
+          <div class="chart-container">
+            <svg class="donut-svg" viewBox="0 0 160 160">
+              <!-- Background track -->
+              <circle
+                cx="80"
+                cy="80"
+                r="64"
+                fill="none"
+                stroke="#f1f5f9"
+                stroke-width="16"
+              />
+              <!-- Green (In Stock: 87.6%) -> 402 * 0.876 = ~352 -->
+              <circle
+                cx="80"
+                cy="80"
+                r="64"
+                fill="none"
+                stroke="#10b981"
+                stroke-width="16"
+                stroke-dasharray="352 402"
+                stroke-dashoffset="0"
+                stroke-linecap="round"
+                transform="rotate(-90 80 80)"
+              />
+              <!-- Yellow (Low Stock: 6.7%) -> 402 * 0.067 = ~27 -->
+              <circle
+                cx="80"
+                cy="80"
+                r="64"
+                fill="none"
+                stroke="#f59e0b"
+                stroke-width="16"
+                stroke-dasharray="27 402"
+                stroke-dashoffset="-356"
+                stroke-linecap="round"
+                transform="rotate(-90 80 80)"
+              />
+              <!-- Red (Out of Stock: 5.6%) -> 402 * 0.056 = ~23 -->
+              <circle
+                cx="80"
+                cy="80"
+                r="64"
+                fill="none"
+                stroke="#ef4444"
+                stroke-width="16"
+                stroke-dasharray="23 402"
+                stroke-dashoffset="-385"
+                stroke-linecap="round"
+                transform="rotate(-90 80 80)"
+              />
+            </svg>
+            <div class="donut-center-text">
+              <span class="donut-value">{{ totalProductsCount }}</span>
+              <span class="donut-label">Total Products</span>
+            </div>
+          </div>
+
+          <!-- Donut Legend -->
+          <div class="donut-legend">
+            <div class="legend-row">
+              <span class="legend-bullet bg-emerald"></span>
+              <span class="legend-name">In Stock</span>
+              <span class="legend-val">312 (87.6%)</span>
+            </div>
+            <div class="legend-row">
+              <span class="legend-bullet bg-orange"></span>
+              <span class="legend-name">Low Stock</span>
+              <span class="legend-val">24 (6.7%)</span>
+            </div>
+            <div class="legend-row">
+              <span class="legend-bullet bg-rose"></span>
+              <span class="legend-name">Out of Stock</span>
+              <span class="legend-val">20 (5.6%)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. LOW STOCK ALERT CARD -->
+      <div class="side-card">
+        <div class="card-header space-between">
+          <h3 class="card-title">Low Stock Alert</h3>
+          <a href="javascript:void(0)" (click)="setTab('Low Stock')" class="view-all-link">View All</a>
+        </div>
+        <div class="alert-items-list">
+          @for (alert of lowStockAlerts; track alert.sku) {
+            <div class="alert-item">
+              <img [src]="alert.image" [alt]="alert.name" class="alert-thumb" />
+              <div class="alert-info">
+                <span class="alert-name">{{ alert.name }}</span>
+                <span class="alert-sku">SKU: {{ alert.sku }} &nbsp;|&nbsp; Qty: {{ alert.qty }}</span>
+              </div>
+              <span
+                class="status-pill mini"
+                [class.low-stock]="alert.status === 'Low Stock'"
+                [class.out-of-stock]="alert.status === 'Out of Stock'"
+              >
+                {{ alert.status }}
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- 3. QUICK ACTIONS CARD -->
+      <div class="side-card">
+        <div class="card-header">
+          <h3 class="card-title">Quick Actions</h3>
+        </div>
+        <div class="quick-actions-list">
+          <button class="quick-action-btn" (click)="openAddProductModal()">
+            <div class="action-btn-left">
+              <div class="action-icon-circle blue-icon">
+                <i class="bi bi-plus-lg"></i>
+              </div>
+              <span>Add New Product</span>
+            </div>
+            <i class="bi bi-chevron-right action-arrow"></i>
+          </button>
+
+          <a routerLink="/admin/categories" class="quick-action-btn">
+            <div class="action-btn-left">
+              <div class="action-icon-circle blue-icon">
+                <i class="bi bi-grid-fill"></i>
+              </div>
+              <span>Manage Categories</span>
+            </div>
+            <i class="bi bi-chevron-right action-arrow"></i>
+          </a>
+
+          <button class="quick-action-btn" (click)="openAddProductModal()">
+            <div class="action-btn-left">
+              <div class="action-icon-circle blue-icon">
+                <i class="bi bi-upload"></i>
+              </div>
+              <span>Bulk Update Stock</span>
+            </div>
+            <i class="bi bi-chevron-right action-arrow"></i>
+          </button>
+
+          <a routerLink="/admin/reports" class="quick-action-btn">
+            <div class="action-btn-left">
+              <div class="action-icon-circle blue-icon">
+                <i class="bi bi-bar-chart-line-fill"></i>
+              </div>
+              <span>View Stock Report</span>
+            </div>
+            <i class="bi bi-chevron-right action-arrow"></i>
+          </a>
+
+          <button class="quick-action-btn" (click)="setTab('Low Stock')">
+            <div class="action-btn-left">
+              <div class="action-icon-circle blue-icon">
+                <i class="bi bi-bell-fill"></i>
+              </div>
+              <span>Set Low Stock Alert</span>
+            </div>
+            <i class="bi bi-chevron-right action-arrow"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 4. DEMO DATA NOTICE CARD -->
+      @if (showNotice) {
+        <div class="demo-notice-card">
+          <div class="notice-top">
+            <div class="notice-header">
+              <i class="bi bi-info-circle-fill notice-icon"></i>
+              <span class="notice-title">Demo Data Notice</span>
+            </div>
+            <button class="notice-close" (click)="dismissNotice()" aria-label="Dismiss notice">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+          <p class="notice-body">
+            This page shows sample data for demonstration purposes. In a real environment, this will be connected to your backend API.
+          </p>
+        </div>
+      }
+
+    </div>
+
+  </div>
+
+  <!-- MODAL: ADD PRODUCT -->
+  @if (isAddModalOpen) {
+    <div class="modal-backdrop" (click)="isAddModalOpen = false">
+      <div class="modal-panel" (click)="$event.stopPropagation()">
+        <div class="modal-head">
+          <h3>Add New Product</h3>
+          <button class="close-x" (click)="isAddModalOpen = false"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <form (ngSubmit)="saveNewProduct()" class="modal-form">
+          <div class="form-field">
+            <label>Product Name *</label>
+            <input type="text" [(ngModel)]="newProduct.name" name="pName" placeholder="e.g. Organic Neem Hair Oil" required />
+          </div>
+          <div class="form-row-2">
+            <div class="form-field">
+              <label>SKU</label>
+              <input type="text" [(ngModel)]="newProduct.sku" name="pSku" placeholder="PST-011" />
+            </div>
+            <div class="form-field">
+              <label>Variants</label>
+              <input type="text" [(ngModel)]="newProduct.variants" name="pVariants" placeholder="1 variant" />
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-field">
+              <label>Category</label>
+              <select [(ngModel)]="newProduct.category" name="pCategory">
+                <option value="Personal Care">Personal Care</option>
+                <option value="Skincare">Skincare</option>
+                <option value="Health Care">Health Care</option>
+                <option value="Hair Care">Hair Care</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Brand</label>
+              <select [(ngModel)]="newProduct.brand" name="pBrand">
+                <option value="Himalaya">Himalaya</option>
+                <option value="Biotique">Biotique</option>
+                <option value="Patanjali">Patanjali</option>
+                <option value="Dabur">Dabur</option>
+                <option value="Nivea">Nivea</option>
+                <option value="The Ordinary">The Ordinary</option>
+                <option value="Vaseline">Vaseline</option>
+                <option value="Tata Tea">Tata Tea</option>
+                <option value="Parachute">Parachute</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-field">
+              <label>Price (₹)</label>
+              <input type="number" [(ngModel)]="newProduct.price" name="pPrice" />
+            </div>
+            <div class="form-field">
+              <label>Initial Stock Units</label>
+              <input type="number" [(ngModel)]="newProduct.stock" name="pStock" />
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" (click)="isAddModalOpen = false">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save to Inventory</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL: QUICK EDIT STOCK -->
+  @if (isEditStockModalOpen && selectedItemForEdit) {
+    <div class="modal-backdrop" (click)="isEditStockModalOpen = false">
+      <div class="modal-panel mini-panel" (click)="$event.stopPropagation()">
+        <div class="modal-head">
+          <h3>Quick Edit Stock</h3>
+          <button class="close-x" (click)="isEditStockModalOpen = false"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-form">
+          <div class="item-summary-box">
+            <img [src]="selectedItemForEdit.image" [alt]="selectedItemForEdit.name" class="modal-thumb" />
+            <div>
+              <strong class="item-summary-title">{{ selectedItemForEdit.name }}</strong>
+              <div class="item-summary-sub">SKU: {{ selectedItemForEdit.sku }} | Price: ₹{{ selectedItemForEdit.price }}</div>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Available Quantity (Units)</label>
+            <input type="number" [(ngModel)]="newStockValue" min="0" />
+            <small class="field-hint">Note: Setting to 0 marks as Out of Stock, &le; 15 marks as Low Stock.</small>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline" (click)="isEditStockModalOpen = false">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="saveStockEdit()">Update Stock</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

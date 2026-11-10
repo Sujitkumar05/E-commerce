@@ -1,0 +1,26 @@
+.careers-page {
+  font-family: inherit;
+
+  .hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+    }
+  }
+
+  .modal-backdrop-custom {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.55);
+    z-index: 1050;
+    backdrop-filter: blur(4px);
+  }
+
+  .max-w-600 {
+    max-width: 600px;
+  }
+}

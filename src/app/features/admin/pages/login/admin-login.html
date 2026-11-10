@@ -1,0 +1,29 @@
+<main class="login-page">
+    <div class="login-art"><a routerLink="/" class="brand"><span class="brand-mark">D</span>Dista<span>Admin</span></a>
+        <div class="art-copy">
+            <div class="eyebrow">CONTROL YOUR COMMERCE</div>
+            <h1>Everything your store needs.<br><span>One clear view.</span></h1>
+            <p>Manage your catalogue, orders and customer experience from a dedicated workspace.</p>
+            <div class="mini-stats">
+                <div><strong>One workspace</strong><small>Store operations</small></div>
+                <div><strong>Role-based</strong><small>Access structure</small></div>
+            </div>
+        </div>
+        <div class="art-footer">DISTAMARKETPLACE <span>•</span> ADMIN WORKSPACE</div>
+    </div>
+    <div class="login-side">
+        <form class="login-card" (ngSubmit)="signIn()">
+            <div class="login-symbol">↗</div>
+            <div class="eyebrow">WELCOME BACK</div>
+            <h2>Sign in to admin</h2>
+            <p>Enter your administrator credentials to continue.</p><label>Email address<input name="email" type="email"
+                    [(ngModel)]="email" required autocomplete="username"></label><label>Password<input name="password"
+                    type="password" [(ngModel)]="password" required autocomplete="current-password"></label>@if(error){
+            <div class="error">{{error}}</div>}<button type="submit" [disabled]="busy">{{busy?'Signing in…':'Sign in to
+                workspace'}} <span>→</span></button>
+            <div class="demo-note"><strong>Frontend demo credentials</strong><br>admin@dista.demo /
+                AdminDemo123!<small>Demo only — replace with backend authentication before client production
+                    delivery.</small></div><a class="back-link" routerLink="/">← Back to storefront</a>
+        </form>
+    </div>
+</main>

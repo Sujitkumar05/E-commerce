@@ -1,0 +1,64 @@
+<app-storefront-header />
+
+<main class="checkout-page-wrapper">
+  <div class="container py-4">
+    <!-- Breadcrumb (shown on pre-success stages) -->
+    @if (checkoutService.currentStep() !== 'success') {
+      <nav aria-label="breadcrumb" class="checkout-breadcrumb mb-3">
+        <a routerLink="/" class="breadcrumb-link"><i class="fas fa-home me-1"></i> Home</a>
+        <span class="mx-2 text-muted">/</span>
+        <a routerLink="/cart" class="breadcrumb-link">Cart</a>
+        <span class="mx-2 text-muted">/</span>
+        <span class="breadcrumb-current">Checkout</span>
+      </nav>
+
+      <!-- Stepper Progress Header -->
+      <app-checkout-progress />
+    }
+
+    <!-- Empty Cart Handling (Except when viewing confirmed order receipt) -->
+    @if (cartService.items().length === 0 && checkoutService.currentStep() !== 'success' && checkoutService.currentStep() !== 'processing') {
+      <div class="empty-cart-card">
+        <div class="empty-icon-wrap">
+          <i class="fas fa-shopping-cart"></i>
+        </div>
+        <h3 class="empty-title">Your Shopping Cart is Empty</h3>
+        <p class="empty-desc">
+          You don't have any items in your cart to proceed with checkout. Browse our catalog to discover top Ayurvedic and wellness products.
+        </p>
+        <div class="empty-actions">
+          <a routerLink="/products" class="btn btn-primary px-4 py-2">
+            <i class="fas fa-store me-2"></i> Explore Products
+          </a>
+          <a routerLink="/" class="btn btn-outline-secondary px-4 py-2">
+            Return to Home
+          </a>
+        </div>
+      </div>
+    } @else {
+      <!-- Active Step Component Switcher -->
+      <div class="checkout-step-outlet">
+        @switch (checkoutService.currentStep()) {
+          @case ('address') {
+            <app-delivery-address />
+          }
+          @case ('summary') {
+            <app-order-summary />
+          }
+          @case ('payment') {
+            <app-payment-method />
+          }
+          @case ('processing') {
+            <app-payment-processing />
+          }
+          @case ('success') {
+            <app-payment-success />
+          }
+        }
+      </div>
+    }
+  </div>
+</main>
+
+<app-footer />
+

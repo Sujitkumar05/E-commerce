@@ -1,0 +1,55 @@
+@if (cartService.toast(); as toast) {
+  <aside class="cart-toast-wrapper position-fixed top-0 end-0 p-3 p-md-4 z-3" role="status" aria-live="polite">
+    <div class="toast-card bg-white rounded-4 shadow-lg border p-3 d-flex align-items-center gap-3">
+      
+      <!-- Product Image Thumbnail or Checkmark -->
+      <div class="toast-thumb-box rounded-3 overflow-hidden d-flex align-items-center justify-content-center flex-shrink-0 bg-light border">
+        @if (toast.image) {
+          <img [src]="toast.image" [alt]="toast.productName" class="img-fluid toast-img">
+        } @else {
+          <i class="fa-solid fa-check text-success fs-5"></i>
+        }
+      </div>
+
+      <!-- Toast Content -->
+      <div class="toast-content d-flex flex-column lh-sm flex-grow-1 pe-2">
+        <div class="d-flex align-items-center gap-1.5 mb-1">
+          <span class="badge rounded-pill bg-success text-white px-2 py-0.5" style="font-size: 10px;">
+            <i class="fa-solid fa-check me-1"></i>Added to Cart
+          </span>
+          @if (toast.price) {
+            <span class="fw-bold text-dark ms-auto" style="font-size: 13px;">${{ toast.price | number: '1.2-2' }}</span>
+          }
+        </div>
+
+        <span class="toast-title fw-bold text-dark text-truncate" [title]="toast.productName" style="font-size: 13.5px; max-width: 220px;">
+          {{ toast.productName }}
+        </span>
+
+        @if (toast.variant) {
+          <span class="toast-variant text-muted text-truncate mt-0.5" style="font-size: 11.5px; max-width: 220px;">
+            {{ toast.variant }}
+          </span>
+        }
+
+        <!-- View Cart Link -->
+        <div class="mt-2 d-flex align-items-center gap-2">
+          <a routerLink="/cart" 
+             (click)="cartService.dismissToast()" 
+             class="btn btn-primary rounded-pill px-3 py-1 fw-semibold d-inline-flex align-items-center gap-1 shadow-sm"
+             style="font-size: 12px; background-color: #1748D8;">
+            <span>View Cart</span>
+            <i class="fa-solid fa-arrow-right" style="font-size: 10px;"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Dismiss Close Button -->
+      <button type="button" 
+              class="btn-close p-1 ms-auto align-self-start shadow-none" 
+              (click)="cartService.dismissToast()" 
+              aria-label="Close"></button>
+
+    </div>
+  </aside>
+}

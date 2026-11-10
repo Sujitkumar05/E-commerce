@@ -1,0 +1,208 @@
+<app-storefront-header></app-storefront-header>
+
+<main class="wishlist-page-main py-4 py-lg-5 bg-light min-vh-100">
+  <div class="container-fluid px-3 px-lg-5">
+
+    <!-- Breadcrumb Row -->
+    <nav aria-label="breadcrumb" class="mb-4">
+      <ol class="breadcrumb" style="font-size: 13.5px;">
+        <li class="breadcrumb-item">
+          <a routerLink="/" class="text-decoration-none text-secondary">
+            <i class="fa-solid fa-house me-1"></i>Home
+          </a>
+        </li>
+        <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">
+          My Wishlist
+        </li>
+      </ol>
+    </nav>
+
+    <!-- Page Header & Action Bar -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-3 border-bottom">
+      <div class="d-flex align-items-center gap-3">
+        <div class="wishlist-header-icon d-flex align-items-center justify-content-center rounded-circle bg-danger-subtle text-danger" style="width: 44px; height: 44px;">
+          <i class="fa-solid fa-heart fs-5"></i>
+        </div>
+        <div>
+          <h1 class="display-6 fw-bold text-dark m-0" style="letter-spacing: -0.5px; font-size: 1.85rem;">
+            My Wishlist
+          </h1>
+          <span class="text-secondary small">
+            {{ wishlistService.count() }} {{ wishlistService.count() === 1 ? 'item saved' : 'items saved' }} for later
+          </span>
+        </div>
+      </div>
+
+      @if (!wishlistService.isEmpty()) {
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <button type="button" 
+                  class="btn btn-outline-danger btn-sm rounded-pill px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5"
+                  (click)="clearAll()">
+            <i class="fa-regular fa-trash-can"></i>
+            <span>Clear Wishlist</span>
+          </button>
+
+          <button type="button" 
+                  class="btn btn-primary btn-sm rounded-pill px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2 shadow-xs"
+                  (click)="addAllToCart()"
+                  style="background-color: #1748D8;">
+            <i class="fa-solid fa-cart-plus"></i>
+            <span>Add All to Cart</span>
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- Active Wishlist Products Grid -->
+    @if (!wishlistService.isEmpty()) {
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-4 mb-5">
+        @for (item of wishlistService.items(); track item.id) {
+          <div class="col">
+            <div class="card h-100 border-0 rounded-4 shadow-sm wishlist-card overflow-hidden transition-all bg-white position-relative">
+              
+              <!-- Floating Remove Wishlist Action -->
+              <button type="button" 
+                      class="btn btn-white shadow-xs rounded-circle position-absolute p-0 d-flex align-items-center justify-content-center remove-wishlist-btn"
+                      (click)="removeItem(item.id, $event)"
+                      title="Remove from wishlist"
+                      aria-label="Remove item from wishlist"
+                      style="top: 12px; right: 12px; width: 34px; height: 34px; z-index: 5; background: #ffffff;">
+                <i class="fa-solid fa-heart text-danger"></i>
+              </button>
+
+              <!-- In-Stock Tag -->
+              <span class="position-absolute badge rounded-pill bg-success-subtle text-success fw-bold px-2.5 py-1"
+                    style="top: 14px; left: 14px; z-index: 5; font-size: 11px;">
+                <i class="fa-solid fa-circle-check me-1"></i>In Stock
+              </span>
+
+              <!-- Product Image Link -->
+              <a [routerLink]="['/product', item.id]" class="product-thumb-container d-block overflow-hidden bg-light p-3 text-center position-relative text-decoration-none">
+                <img [src]="item.image" 
+                     [alt]="item.name" 
+                     class="img-fluid product-thumb-img mx-auto" 
+                     loading="lazy" 
+                     style="max-height: 210px; object-fit: contain;">
+              </a>
+
+              <!-- Card Body -->
+              <div class="card-body p-3 p-xl-4 d-flex flex-column justify-content-between">
+                <div>
+                  <!-- Brand & Category -->
+                  <div class="d-flex align-items-center justify-content-between mb-1.5">
+                    <span class="text-uppercase fw-bold text-secondary" style="font-size: 11px; letter-spacing: 0.8px;">
+                      {{ item.brand }}
+                    </span>
+                    @if (item.categoryTag) {
+                      <span class="badge bg-light text-muted border small px-2 py-0.5" style="font-size: 10px;">
+                        {{ item.categoryTag }}
+                      </span>
+                    }
+                  </div>
+
+                  <!-- Product Title Link -->
+                  <h3 class="card-title fw-bold text-dark mb-2 line-clamp-2" style="font-size: 15px; line-height: 1.35;">
+                    <a [routerLink]="['/product', item.id]" class="text-dark text-decoration-none hover-primary">
+                      {{ item.name }}
+                    </a>
+                  </h3>
+
+                  <!-- Star Ratings & Review Count -->
+                  <div class="d-flex align-items-center gap-1.5 mb-2.5">
+                    <div class="d-inline-flex text-warning" style="font-size: 12px;">
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                    </div>
+                    <span class="fw-bold text-dark" style="font-size: 12.5px;">{{ item.rating ?? 5.0 }}</span>
+                    <span class="text-muted" style="font-size: 11.5px;">({{ item.reviewCount ?? 120 }})</span>
+                  </div>
+
+                  <!-- Variant Indicator if present -->
+                  @if (item.variant) {
+                    <div class="mb-3">
+                      <span class="badge bg-light text-secondary border fw-medium px-2 py-1" style="font-size: 11px;">
+                        Pack: {{ item.variant }}
+                      </span>
+                    </div>
+                  }
+                </div>
+
+                <!-- Price & Add to Cart Action -->
+                <div class="pt-2 border-top mt-2">
+                  <div class="d-flex align-items-baseline justify-content-between mb-3">
+                    <div>
+                      <span class="text-muted small d-block" style="font-size: 11.5px;">Price</span>
+                      <span class="fw-bold fs-5 text-dark" style="letter-spacing: -0.3px;">
+                        ${{ item.price | number: '1.2-2' }} <span class="small text-muted fw-normal" style="font-size: 12px;">USD</span>
+                      </span>
+                    </div>
+                    @if (item.originalPrice) {
+                      <span class="text-muted text-decoration-line-through small">
+                        ${{ item.originalPrice | number: '1.2-2' }}
+                      </span>
+                    }
+                  </div>
+
+                  <!-- Action Buttons -->
+                  <div class="d-grid gap-2">
+                    <button type="button" 
+                            class="btn btn-primary rounded-pill py-2.5 fw-bold d-flex align-items-center justify-content-center gap-2 add-to-cart-btn shadow-xs"
+                            (click)="addToCart(item, $event)"
+                            style="background-color: #1748D8; font-size: 13.5px;">
+                      <i class="fa-solid fa-bag-shopping"></i>
+                      <span>Add to Cart</span>
+                    </button>
+                    
+                    <a [routerLink]="['/product', item.id]" 
+                       class="btn btn-outline-secondary rounded-pill py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1.5 view-detail-link"
+                       style="font-size: 12.5px;">
+                      <span>View Details</span>
+                      <i class="fa-solid fa-arrow-right small"></i>
+                    </a>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Empty Wishlist State -->
+    @if (wishlistService.isEmpty()) {
+      <div class="empty-wishlist-container bg-white rounded-4 border p-5 text-center shadow-sm my-4 mx-auto" style="max-width: 680px;">
+        
+        <!-- Large Heart Visual -->
+        <div class="empty-wishlist-icon-box mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle shadow-xs">
+          <i class="fa-solid fa-heart" style="font-size: 46px; color: #dc2626;"></i>
+        </div>
+
+        <h2 class="display-6 fw-bold text-dark mb-2" style="font-size: 1.85rem;">
+          Your wishlist is empty
+        </h2>
+        
+        <p class="text-secondary mx-auto mb-4" style="max-width: 440px; font-size: 15px;">
+          You haven't added any products to your wishlist yet. Tap the heart icon on any product you love while browsing to save it here!
+        </p>
+
+        <!-- Continue Shopping Call to Action -->
+        <a routerLink="/" 
+           class="btn btn-primary rounded-pill px-5 py-3 fw-bold d-inline-flex align-items-center gap-2 shadow-sm"
+           style="background-color: #1748D8; font-size: 15px;">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span>Explore All Products</span>
+          <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
+
+      </div>
+    }
+
+  </div>
+</main>
+
+<app-footer></app-footer>

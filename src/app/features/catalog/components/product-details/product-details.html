@@ -1,0 +1,638 @@
+<!-- Product Details Component Template -->
+<div class="product-details-wrapper">
+
+  <!-- Top Breadcrumb & Back Navigation Strip -->
+  <div class="product-breadcrumb-strip bg-white border-bottom py-2.5">
+    <div class="container-fluid px-3 px-lg-5">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-0 align-items-center" style="font-size: 13px;">
+            <li class="breadcrumb-item">
+              <a routerLink="/" class="text-decoration-none text-secondary d-inline-flex align-items-center gap-1">
+                <i class="fa-solid fa-house" style="font-size: 11px;"></i>
+                <span>Home</span>
+              </a>
+            </li>
+            <li class="breadcrumb-item">
+              <a routerLink="/products" class="text-decoration-none text-secondary">
+                All Products
+              </a>
+            </li>
+            <li class="breadcrumb-item">
+              <a [routerLink]="['/products']" [queryParams]="{ category: categoryGroup }" class="text-decoration-none text-secondary">
+                {{ categoryDisplayName }}
+              </a>
+            </li>
+            <li class="breadcrumb-item active fw-semibold text-dark text-truncate" style="max-width: 260px;" aria-current="page">
+              {{ title }}
+            </li>
+          </ol>
+        </nav>
+
+        <a routerLink="/products" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1.5 text-decoration-none back-to-catalog-btn" style="font-size: 12.5px;">
+          <i class="fa-solid fa-arrow-left" style="font-size: 10px;"></i>
+          <span>Back to catalog</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Natural Supplements Green Hero Header (Matching Screenshot) -->
+  <section class="supplement-top-banner position-relative">
+    <!-- Decorative Corner Leaf Sprigs -->
+    <div class="leaf-corner leaf-corner-left" aria-hidden="true"></div>
+    <div class="leaf-corner leaf-corner-right" aria-hidden="true"></div>
+
+    <div class="container-fluid px-3 px-lg-5 py-4 position-relative z-1">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-4">
+        
+        <!-- Left Title & Subtitle -->
+        <div class="header-text-block">
+          <span class="category-tag text-uppercase fw-bold d-block mb-1">
+            {{ categoryTag }}
+          </span>
+          <h1 class="page-title fw-bold mb-1">
+            {{ categoryTitle }}
+          </h1>
+          <p class="page-subtitle text-secondary mb-0">
+            {{ categorySubtitle }}
+          </p>
+        </div>
+
+        <!-- Right 4 Trust Badges in Columns with Vertical Dividers -->
+        <div class="top-badges-container d-flex align-items-center">
+          @for (badge of badges; track badge.label; let last = $last) {
+            <div class="top-badge-column text-center px-3">
+              <div class="badge-icon-circle mx-auto mb-1 d-flex align-items-center justify-content-center">
+                <i [class]="'fa-solid ' + badge.icon"></i>
+              </div>
+              <span class="badge-label fw-semibold text-dark">{{ badge.label }}</span>
+            </div>
+
+            @if (!last) {
+              <div class="badge-divider"></div>
+            }
+          }
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Product Content Area -->
+  <main class="product-details-main py-4 py-lg-5 bg-white">
+    <div class="container-fluid px-3 px-lg-5">
+
+      <!-- Row: Gallery on Left + Buy Box on Right -->
+      <div class="row g-4 g-xl-5 mb-5 align-items-start">
+        
+        <!-- Left Column: Gallery Thumbnails & Main Image Frame -->
+        <div class="col-12 col-lg-6">
+          <div class="product-gallery-layout d-flex flex-column-reverse flex-sm-row gap-3">
+            
+            <!-- Thumbnails Strip (Vertical on SM+) -->
+            <div class="thumbnails-column d-flex flex-sm-column gap-2.5 overflow-x-auto no-scrollbar">
+              @for (img of galleryImages; track img; let i = $index) {
+                <button type="button" 
+                        class="thumb-item-btn p-1 rounded-3 bg-white"
+                        [class.active]="selectedThumbIndex === i"
+                        (click)="selectThumbnail(i)"
+                        [attr.aria-label]="'Select image thumbnail ' + (i + 1)">
+                  <img [src]="img" [alt]="title + ' preview ' + (i + 1)" class="img-fluid thumb-image" loading="lazy" decoding="async">
+                </button>
+              }
+              
+              <!-- More Photos Badge -->
+              <div class="more-thumbs-badge rounded-3 d-flex align-items-center justify-content-center fw-bold">
+                +{{ galleryImages.length > 2 ? galleryImages.length - 2 : 2 }}
+              </div>
+            </div>
+
+            <!-- Main Product Hero Frame -->
+            <div class="hero-image-frame position-relative rounded-4 overflow-hidden flex-grow-1 d-flex align-items-center justify-content-center p-4">
+              
+              <!-- Best Seller Badge (Top Left Pill) -->
+              <div class="bestseller-pill position-absolute top-0 start-0 m-3 px-3 py-1.5 rounded-pill text-white fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-crown" style="font-size: 11px;"></i>
+                <span>Best Seller</span>
+              </div>
+
+              <!-- Wishlist Heart Button (Top Right Circle) -->
+              <button type="button" 
+                      class="wishlist-round-btn position-absolute top-0 end-0 m-3 rounded-circle d-flex align-items-center justify-content-center bg-white shadow-xs"
+                      [class.active]="isFavorite"
+                      (click)="toggleFavorite($event)"
+                      aria-label="Add to wishlist">
+                <i [class]="isFavorite ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart'"></i>
+              </button>
+
+              <!-- Main Hero Product Photo -->
+              <img [src]="mainImage" [alt]="title" class="img-fluid main-hero-photo">
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right Column: Product Buy Box & Configuration -->
+        <div class="col-12 col-lg-6">
+          <div class="product-buy-box">
+            
+            <!-- Brand Tag -->
+            <span class="product-brand-label text-uppercase fw-bold d-block mb-1">
+              {{ brand }}
+            </span>
+
+            <!-- Product Title -->
+            <h2 class="product-display-title fw-bold text-dark mb-2">
+              {{ title }}
+            </h2>
+
+            <!-- Short Subtitle Description -->
+            <p class="product-lead-desc text-secondary mb-3">
+              {{ subtitle }}
+            </p>
+
+            <!-- Star Ratings & Review Count -->
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <div class="rating-stars d-inline-flex align-items-center gap-1">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+              </div>
+              <span class="reviews-count-text text-secondary fw-semibold">
+                ({{ reviewCount }} Reviews)
+              </span>
+            </div>
+
+            <!-- Price & Organic Pill Badge -->
+            <div class="price-row d-flex align-items-center gap-3 mb-4">
+              <span class="product-price-amount fw-bold text-dark">
+                ${{ currentPrice | number: '1.2-2' }} USD
+              </span>
+
+              <span class="badge-organic rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5">
+                <i class="fa-solid fa-leaf" style="font-size: 11px;"></i>
+                <span>100% Organic</span>
+              </span>
+            </div>
+
+            <!-- Pack Size Selector Box (Exact to Screenshot) -->
+            <div class="pack-size-card rounded-4 border p-3.5 mb-4">
+              <div class="pack-size-header d-flex align-items-center gap-2 mb-3 text-dark fw-bold">
+                <i class="fa-solid fa-cube text-success"></i>
+                <span>Pack Size</span>
+              </div>
+
+              <div class="row g-2.5">
+                @for (variant of variants; track variant.label; let i = $index) {
+                  <div class="col-4">
+                    <button type="button" 
+                            class="pack-option-btn w-100 p-3 rounded-3 text-start position-relative transition"
+                            [class.active]="selectedVariantIndex === i"
+                            (click)="selectVariant(i)">
+                      
+                      @if (selectedVariantIndex === i) {
+                        <span class="variant-check-circle position-absolute top-0 end-0 m-2 rounded-circle d-flex align-items-center justify-content-center text-white">
+                          <i class="fa-solid fa-check"></i>
+                        </span>
+                      }
+
+                      <span class="d-block option-label fw-bold">{{ variant.label }}</span>
+                      <span class="d-block option-sub text-secondary">{{ variant.subLabel }}</span>
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Quantity Picker & Add to Cart Button Row -->
+            <div class="buy-actions-row d-flex flex-wrap align-items-center gap-3 mb-4">
+              
+              <!-- Quantity Pill Picker -->
+              <div class="quantity-pill-picker d-inline-flex align-items-center justify-content-between rounded-pill px-3">
+                <button type="button" 
+                        class="btn qty-btn p-0 border-0 bg-transparent text-secondary d-flex align-items-center justify-content-center"
+                        (click)="decrementQty()"
+                        aria-label="Decrease quantity">
+                  <i class="fa-solid fa-minus"></i>
+                </button>
+
+                <span class="qty-number fw-bold text-dark px-3 text-center">
+                  {{ quantity }}
+                </span>
+
+                <button type="button" 
+                        class="btn qty-btn p-0 border-0 bg-transparent text-secondary d-flex align-items-center justify-content-center"
+                        (click)="incrementQty()"
+                        aria-label="Increase quantity">
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+
+              <!-- Big Forest Green Add to Cart CTA Button -->
+              <button type="button" 
+                      class="btn add-to-cart-hero-btn flex-grow-1 rounded-pill fw-bold text-white d-flex align-items-center justify-content-center gap-2 shadow-sm transition-all"
+                      [style.background-color]="justAddedToCart ? '#16a34a' : ''"
+                      (click)="addToCart()">
+                <i [class]="justAddedToCart ? 'fa-solid fa-check' : 'fa-solid fa-cart-shopping'"></i>
+                <span>{{ justAddedToCart ? 'Added to Cart!' : 'Add to Cart' }}</span>
+                @if (!justAddedToCart) {
+                  <i class="fa-solid fa-arrow-right ms-1"></i>
+                }
+              </button>
+
+              <!-- Amber Gold Buy Now CTA Button -->
+              <button type="button" 
+                      class="btn buy-now-hero-btn rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm transition-all"
+                      (click)="buyNow()">
+                <i class="fa-solid fa-bolt"></i>
+                <span>Buy Now</span>
+              </button>
+            </div>
+
+            <!-- 4 Value Features Row (Two-line Layout from Screenshot) -->
+            <div class="product-perks-row row g-3 pt-3 mt-1 border-top">
+              
+              <div class="col-6 col-sm-3 d-flex align-items-center gap-2.5">
+                <div class="perk-icon-wrap rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="fa-solid fa-leaf text-success"></i>
+                </div>
+                <div class="perk-text text-start lh-sm">
+                  <span class="d-block fw-bold text-dark">100%</span>
+                  <span class="text-secondary small">Organic</span>
+                </div>
+              </div>
+
+              <div class="col-6 col-sm-3 d-flex align-items-center gap-2.5">
+                <div class="perk-icon-wrap rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="fa-solid fa-shield-halved text-success"></i>
+                </div>
+                <div class="perk-text text-start lh-sm">
+                  <span class="d-block fw-bold text-dark">Safe &amp;</span>
+                  <span class="text-secondary small">Effective</span>
+                </div>
+              </div>
+
+              <div class="col-6 col-sm-3 d-flex align-items-center gap-2.5">
+                <div class="perk-icon-wrap rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="fa-solid fa-truck-fast text-success"></i>
+                </div>
+                <div class="perk-text text-start lh-sm">
+                  <span class="d-block fw-bold text-dark">Fast</span>
+                  <span class="text-secondary small">Shipping</span>
+                </div>
+              </div>
+
+              <div class="col-6 col-sm-3 d-flex align-items-center gap-2.5">
+                <div class="perk-icon-wrap rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="fa-solid fa-headset text-success"></i>
+                </div>
+                <div class="perk-text text-start lh-sm">
+                  <span class="d-block fw-bold text-dark">24/7</span>
+                  <span class="text-secondary small">Support</span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Tabs Navigation & Panels Section -->
+      <section class="product-tabs-section mb-5">
+        
+        <!-- Tab Nav Bar (Underlined) -->
+        <ul class="nav product-nav-tabs border-bottom mb-4" role="tablist">
+          <li class="nav-item">
+            <button type="button" 
+                    class="nav-link tab-nav-btn fw-bold" 
+                    [class.active]="activeTab === 'description'"
+                    (click)="activeTab = 'description'">
+              Description
+            </button>
+          </li>
+          <li class="nav-item">
+            <button type="button" 
+                    class="nav-link tab-nav-btn fw-bold" 
+                    [class.active]="activeTab === 'benefits'"
+                    (click)="activeTab = 'benefits'">
+              Benefits
+            </button>
+          </li>
+          <li class="nav-item">
+            <button type="button" 
+                    class="nav-link tab-nav-btn fw-bold" 
+                    [class.active]="activeTab === 'ingredients'"
+                    (click)="activeTab = 'ingredients'">
+              Ingredients
+            </button>
+          </li>
+          <li class="nav-item">
+            <button type="button" 
+                    class="nav-link tab-nav-btn fw-bold" 
+                    [class.active]="activeTab === 'howToUse'"
+                    (click)="activeTab = 'howToUse'">
+              How to Use
+            </button>
+          </li>
+          <li class="nav-item">
+            <button type="button" 
+                    class="nav-link tab-nav-btn fw-bold" 
+                    [class.active]="activeTab === 'reviews'"
+                    (click)="activeTab = 'reviews'">
+              Reviews ({{ reviewCount }})
+            </button>
+          </li>
+        </ul>
+
+        <!-- Tab Content Panels -->
+        <div class="tab-content py-2">
+          
+          <!-- TAB 1: Description (Default as shown in screenshot) -->
+          @if (activeTab === 'description') {
+            <div class="tab-pane fade show active">
+              <div class="row g-4 g-lg-5 align-items-center">
+                
+                <!-- Left: About This Product + 4 Feature Badges -->
+                <div class="col-12 col-lg-7">
+                  <h3 class="about-title fw-bold text-dark mb-3">About This Product</h3>
+                  <p class="about-description-text text-secondary mb-4">
+                    {{ aboutText }}
+                  </p>
+
+                  <!-- 4 Circular Icon Pills Row from Screenshot -->
+                  <div class="row g-3 text-center">
+                    @for (ab of aboutBadges; track ab.title) {
+                      <div class="col-6 col-sm-3">
+                        <div class="about-badge-item d-flex flex-column align-items-center">
+                          <div class="about-icon-circle rounded-circle d-flex align-items-center justify-content-center mb-2">
+                            <i [class]="'fa-solid ' + ab.icon + ' text-success'"></i>
+                          </div>
+                          <span class="about-badge-text fw-bold text-dark">{{ ab.title }}</span>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+
+                <!-- Right: The Power of Neem & Turmeric Banner Card -->
+                <div class="col-12 col-lg-5">
+                  <div class="power-banner-card rounded-4 p-4 position-relative overflow-hidden">
+                    <div class="row align-items-center">
+                      <div class="col-7">
+                        <h4 class="power-card-title fw-bold mb-1" [innerHTML]="powerBanner.title"></h4>
+                        <p class="power-card-subtitle text-secondary mb-3">
+                          {{ powerBanner.subtitle }}
+                        </p>
+
+                        <div class="d-flex flex-column gap-2">
+                          @for (ci of powerBanner.checkItems; track ci) {
+                            <div class="d-flex align-items-center gap-2 power-check-item">
+                              <i class="fa-solid fa-circle-check text-success"></i>
+                              <span class="fw-semibold text-dark">{{ ci }}</span>
+                            </div>
+                          }
+                        </div>
+                      </div>
+
+                      <div class="col-5 text-end">
+                        <img [src]="powerBanner.image" 
+                             [alt]="title" 
+                             class="img-fluid rounded-3 shadow-xs power-card-img">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          }
+
+          <!-- TAB 2: Benefits -->
+          @if (activeTab === 'benefits') {
+            <div class="tab-pane fade show active">
+              <div class="row g-4">
+                @for (b of benefitsList; track b.title) {
+                  <div class="col-12 col-md-6">
+                    <div class="benefit-card p-4 rounded-4 border bg-light h-100 d-flex gap-3 align-items-start">
+                      <div class="benefit-icon-box rounded-circle bg-white shadow-xs d-flex align-items-center justify-content-center text-success flex-shrink-0">
+                        <i [class]="'fa-solid ' + b.icon"></i>
+                      </div>
+                      <div>
+                        <h5 class="fw-bold text-dark mb-1">{{ b.title }}</h5>
+                        <p class="text-secondary small mb-0 lh-base">{{ b.desc }}</p>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- TAB 3: Ingredients -->
+          @if (activeTab === 'ingredients') {
+            <div class="tab-pane fade show active">
+              <div class="row g-4">
+                <div class="col-12 col-lg-7">
+                  <div class="table-responsive rounded-4 border overflow-hidden">
+                    <table class="table table-hover mb-0 align-middle">
+                      <thead class="table-light">
+                        <tr>
+                          <th class="py-3 px-4 fw-bold">Active Ayurvedic Ingredient</th>
+                          <th class="py-3 px-4 fw-bold">Per Serving</th>
+                          <th class="py-3 px-4 fw-bold">Standardization</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (ing of ingredientsList; track ing.name) {
+                          <tr>
+                            <td class="py-3 px-4 fw-semibold text-dark">{{ ing.name }}</td>
+                            <td class="py-3 px-4 text-success fw-bold">{{ ing.amount }}</td>
+                            <td class="py-3 px-4 text-secondary small">{{ ing.note }}</td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="col-12 col-lg-5">
+                  <div class="supplement-facts-preview p-3 rounded-4 border bg-light text-center">
+                    <h6 class="fw-bold mb-2">Supplement Facts Sheet</h6>
+                    <img src="/images/wellness/supplement-facts.svg" alt="Supplement Facts" class="img-fluid rounded-3 border bg-white shadow-xs" style="max-height: 280px;">
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- TAB 4: How to Use -->
+          @if (activeTab === 'howToUse') {
+            <div class="tab-pane fade show active">
+              <div class="row g-4">
+                @for (s of usageSteps; track s.step) {
+                  <div class="col-12 col-md-4">
+                    <div class="step-card p-4 rounded-4 border bg-white h-100 position-relative">
+                      <span class="step-badge rounded-circle text-white fw-bold d-inline-flex align-items-center justify-content-center mb-3">
+                        {{ s.step }}
+                      </span>
+                      <h5 class="fw-bold text-dark mb-2">{{ s.title }}</h5>
+                      <p class="text-secondary small mb-0 lh-base">{{ s.desc }}</p>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- TAB 5: Reviews -->
+          @if (activeTab === 'reviews') {
+            <div class="tab-pane fade show active">
+              <div class="d-flex flex-column gap-3">
+                @for (rev of reviews; track rev.id) {
+                  <div class="review-item-card p-4 rounded-4 border bg-white shadow-xs">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="fw-bold text-dark">{{ rev.author }}</span>
+                        @if (rev.verified) {
+                          <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small">
+                            <i class="fa-solid fa-check small me-1"></i>Verified Buyer
+                          </span>
+                        }
+                      </div>
+                      <span class="text-secondary small">{{ rev.date }}</span>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-1 text-warning mb-2" style="font-size: 13px;">
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                    </div>
+
+                    <h6 class="fw-bold text-dark mb-1">{{ rev.title }}</h6>
+                    <p class="text-secondary small mb-0 lh-base">{{ rev.comment }}</p>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+        </div>
+
+      </section>
+
+      <!-- "You May Also Like" Related Products Section (From Screenshot) -->
+      <section class="related-products-section pt-4 border-top">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+          <div>
+            <h3 class="related-section-title fw-bold text-dark mb-1">
+              You May Also Like
+            </h3>
+            <p class="related-section-subtitle text-secondary mb-0">
+              Explore more natural products for a healthier you.
+            </p>
+          </div>
+
+          <a [routerLink]="['/products']" [queryParams]="{ category: categoryGroup }" class="view-all-link fw-semibold text-decoration-none d-inline-flex align-items-center gap-1.5">
+            <span>View All</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <!-- 4 Product Cards Grid (Matching Screenshot) -->
+        <div class="row g-4">
+          @for (prod of relatedProducts; track prod.id) {
+            <div class="col-12 col-sm-6 col-lg-3">
+              <div class="card related-product-card h-100 rounded-4 border p-3 shadow-xs bg-white d-flex flex-column justify-content-between"
+                   (click)="navigateToProduct(prod.id)"
+                   role="button"
+                   style="cursor: pointer;">
+                
+                <!-- Product Image Box -->
+                <div class="product-thumb-frame position-relative rounded-3 overflow-hidden d-flex align-items-center justify-content-center mb-3">
+                  
+                  <!-- Wishlist Heart Button -->
+                  <button type="button" 
+                          class="card-wishlist-btn position-absolute top-0 end-0 m-2 rounded-circle bg-white d-flex align-items-center justify-content-center p-0 shadow-xs"
+                          [class.active]="prod.isFavorite"
+                          (click)="toggleRelatedFavorite(prod, $event)"
+                          aria-label="Wishlist">
+                    <i [class]="prod.isFavorite ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart text-secondary'"></i>
+                  </button>
+
+                  <a [routerLink]="['/product', prod.id]" (click)="$event.stopPropagation()" class="d-flex align-items-center justify-content-center w-100 h-100">
+                    <img [src]="prod.image" [alt]="prod.name" class="img-fluid related-prod-img" loading="lazy" decoding="async">
+                  </a>
+                </div>
+
+                <!-- Product Content Details -->
+                <div class="d-flex flex-column flex-grow-1">
+                  
+                  <!-- Rating Stars & Reviews Count -->
+                  <div class="d-flex align-items-center gap-1 mb-1">
+                    <div class="stars d-inline-flex align-items-center text-warning" style="font-size: 11px;">
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                    </div>
+                    <span class="text-secondary small fw-medium">({{ prod.reviewCount }})</span>
+                  </div>
+
+                  <!-- Product Name -->
+                  <a [routerLink]="['/product', prod.id]" (click)="$event.stopPropagation()" class="text-decoration-none">
+                    <h4 class="card-prod-title fw-bold text-dark mb-1 text-truncate" [title]="prod.name">
+                      {{ prod.name }}
+                    </h4>
+                  </a>
+
+                  <!-- Brand Label -->
+                  <span class="card-brand-label text-uppercase fw-bold text-secondary mb-2">
+                    {{ prod.brand }}
+                  </span>
+
+                  <!-- Price -->
+                  <span class="card-price-value fw-bold text-dark mb-2">
+                    ${{ prod.price | number: '1.2-2' }} USD
+                  </span>
+
+                  <!-- Pack Size Dropdown Selector -->
+                  <div class="mb-3 mt-auto">
+                    <select class="form-select form-select-sm pack-dropdown shadow-none" 
+                            (click)="$event.stopPropagation()"
+                            (change)="prod.selectedVariant = $any($event.target).value">
+                      @for (v of prod.variants; track v) {
+                        <option [value]="v" [selected]="v === prod.selectedVariant">{{ v }}</option>
+                      }
+                    </select>
+                  </div>
+
+                  <!-- Add to Cart Pill Button (Solid Forest Green as in Screenshot) -->
+                  <button type="button" 
+                          class="btn related-add-to-cart-btn w-100 rounded-pill py-2 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-none"
+                          (click)="addRelatedToCart(prod, $event)">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span>Add to Cart</span>
+                  </button>
+
+                </div>
+
+              </div>
+            </div>
+          }
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+</div>

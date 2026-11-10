@@ -1,0 +1,216 @@
+<app-storefront-header></app-storefront-header>
+
+<main class="auth-page-wrapper py-5 min-vh-100 d-flex align-items-center justify-content-center bg-light position-relative">
+  
+  <div class="container py-3">
+    <div class="row justify-content-center">
+      <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+
+        <!-- Redirect Notice Banner -->
+        @if (redirectReason) {
+          <div class="alert alert-primary bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-4 p-3 mb-4 shadow-xs d-flex align-items-start gap-3">
+            <span class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 text-white mt-0.5" 
+                  style="width: 28px; height: 28px; background-color: #1748D8;">
+              <i class="fa-solid fa-cart-shopping" style="font-size: 12px;"></i>
+            </span>
+            <div class="lh-sm">
+              <strong class="d-block text-dark mb-1" style="font-size: 13.5px;">Sign in or Register for cart access</strong>
+              <span class="text-secondary small">
+                @if (pendingProductName) {
+                  Create an account to add <strong>{{ pendingProductName }}</strong> to your cart and complete checkout.
+                } @else {
+                  Create your customer account to access your cart and express international delivery.
+                }
+              </span>
+            </div>
+          </div>
+        }
+
+        <!-- Main Registration Card -->
+        <div class="auth-card bg-white rounded-4 border shadow-sm overflow-hidden p-4 p-md-5">
+          
+          <!-- Top Header -->
+          <div class="text-center mb-4">
+            <a routerLink="/" class="text-decoration-none d-inline-block mb-3">
+              <div class="bg-light border rounded-3 px-3 py-1.5 d-inline-flex flex-column justify-content-center">
+                <span class="fw-bold text-dark lh-1" style="font-size: 16px; letter-spacing: -0.3px;">YOUR STORE</span>
+                <span class="text-uppercase fw-bold" style="font-size: 8.5px; letter-spacing: 1.2px; color: #1748D8;">WORLD MARKET</span>
+              </div>
+            </a>
+            <h1 class="h3 fw-bold text-dark mb-1" style="letter-spacing: -0.4px;">
+              Create an Account
+            </h1>
+            <p class="text-secondary small mb-0">
+              Join Your Store for authentic global sourcing, fast ordering, and tracked delivery.
+            </p>
+          </div>
+
+          <!-- Auth Switch Tabs -->
+          <div class="auth-tabs-nav d-flex p-1 rounded-pill bg-light border mb-4">
+            <a [routerLink]="['/login']" 
+               [queryParams]="{ returnUrl: returnUrl, reason: redirectReason, productName: pendingProductName }"
+               class="btn btn-sm flex-fill rounded-pill fw-semibold text-secondary text-decoration-none text-center">
+              Sign In
+            </a>
+            <button type="button" 
+                    class="btn btn-sm flex-fill rounded-pill fw-bold active-tab-pill shadow-xs" 
+                    style="background-color: #ffffff; color: #1748D8;">
+              Create Account
+            </button>
+          </div>
+
+          <!-- Error Alert Banner -->
+          @if (errorMessage) {
+            <div class="alert alert-danger rounded-3 py-2.5 px-3 mb-4 d-flex align-items-center gap-2 small" role="alert">
+              <i class="fa-solid fa-triangle-exclamation flex-shrink-0"></i>
+              <span>{{ errorMessage }}</span>
+            </div>
+          }
+
+          <!-- Registration Form -->
+          <form (submit)="onSubmit()" novalidate>
+            
+            <!-- Full Name Input -->
+            <div class="mb-3">
+              <label for="regName" class="form-label text-dark fw-bold small mb-1.5">
+                Full Name
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 text-secondary">
+                  <i class="fa-regular fa-user"></i>
+                </span>
+                <input id="regName" 
+                       type="text" 
+                       name="name" 
+                       class="form-control border-start-0 bg-light shadow-none" 
+                       placeholder="e.g. Sujit Kumar" 
+                       [(ngModel)]="name" 
+                       required 
+                       autocomplete="name"
+                       style="font-size: 14px; height: 46px;">
+              </div>
+            </div>
+
+            <!-- Email Input -->
+            <div class="mb-3">
+              <label for="regEmail" class="form-label text-dark fw-bold small mb-1.5">
+                Email Address
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 text-secondary">
+                  <i class="fa-regular fa-envelope"></i>
+                </span>
+                <input id="regEmail" 
+                       type="email" 
+                       name="email" 
+                       class="form-control border-start-0 bg-light shadow-none" 
+                       placeholder="name@example.com" 
+                       [(ngModel)]="email" 
+                       required 
+                       autocomplete="email"
+                       style="font-size: 14px; height: 46px;">
+              </div>
+            </div>
+
+            <!-- Password Input -->
+            <div class="mb-3">
+              <label for="regPassword" class="form-label text-dark fw-bold small mb-1.5">
+                Password
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 text-secondary">
+                  <i class="fa-solid fa-lock"></i>
+                </span>
+                <input id="regPassword" 
+                       [type]="showPassword ? 'text' : 'password'" 
+                       name="password" 
+                       class="form-control border-start-0 border-end-0 bg-light shadow-none" 
+                       placeholder="Minimum 6 characters" 
+                       [(ngModel)]="password" 
+                       required 
+                       autocomplete="new-password"
+                       style="font-size: 14px; height: 46px;">
+                <button type="button" 
+                        class="btn btn-light border border-start-0 text-secondary" 
+                        (click)="togglePasswordVisibility()" 
+                        aria-label="Toggle password visibility">
+                  <i [class]="showPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Confirm Password Input -->
+            <div class="mb-3">
+              <label for="regConfirmPassword" class="form-label text-dark fw-bold small mb-1.5">
+                Confirm Password
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 text-secondary">
+                  <i class="fa-solid fa-shield-halved"></i>
+                </span>
+                <input id="regConfirmPassword" 
+                       [type]="showPassword ? 'text' : 'password'" 
+                       name="confirmPassword" 
+                       class="form-control border-start-0 bg-light shadow-none" 
+                       placeholder="Re-enter password" 
+                       [(ngModel)]="confirmPassword" 
+                       required 
+                       autocomplete="new-password"
+                       style="font-size: 14px; height: 46px;">
+              </div>
+            </div>
+
+            <!-- Terms Agreement Checkbox -->
+            <div class="form-check mb-4">
+              <input id="termsCheck" 
+                     type="checkbox" 
+                     name="agreeTerms" 
+                     class="form-check-input mt-0.5" 
+                     [(ngModel)]="agreeTerms">
+              <label for="termsCheck" class="form-check-label text-secondary small" style="cursor: pointer; line-height: 1.4;">
+                I agree to the <a href="javascript:void(0)" class="text-primary text-decoration-none">Terms of Service</a> and <a href="javascript:void(0)" class="text-primary text-decoration-none">Privacy Policy</a>
+              </label>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" 
+                    class="btn btn-primary w-100 rounded-pill py-2.5 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm mb-3"
+                    [disabled]="isLoading"
+                    style="background-color: #1748D8; font-size: 15px; height: 48px;">
+              @if (isLoading) {
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <span>Creating Account...</span>
+              } @else {
+                <span>Create Customer Account</span>
+                <i class="fa-solid fa-arrow-right ms-1"></i>
+              }
+            </button>
+
+          </form>
+
+          <!-- Bottom Footer Link -->
+          <div class="text-center pt-2 border-top">
+            <span class="text-secondary small">Already have an account? </span>
+            <a [routerLink]="['/login']" 
+               [queryParams]="{ returnUrl: returnUrl, reason: redirectReason, productName: pendingProductName }"
+               class="fw-bold text-decoration-none" 
+               style="color: #1748D8; font-size: 13.5px;">
+              Sign in here
+            </a>
+          </div>
+
+        </div>
+
+        <!-- Privacy & Protection Note -->
+        <div class="text-center mt-3 text-secondary small">
+          <i class="fa-solid fa-shield-halved text-success me-1"></i>
+          <span>Protected by 256-bit bank-grade encryption</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<app-footer></app-footer>

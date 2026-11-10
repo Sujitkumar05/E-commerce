@@ -1,0 +1,160 @@
+<app-storefront-header></app-storefront-header>
+
+<main class="blog-page bg-light min-vh-100">
+  
+  <!-- Hero Section -->
+  <section class="blog-hero text-white py-5 position-relative overflow-hidden" style="background: linear-gradient(135deg, #18181b 0%, #3f3f46 60%, #1748D8 100%);">
+    <div class="container-fluid px-3 px-lg-5 py-4 position-relative z-2">
+      
+      <!-- Breadcrumb -->
+      <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb" style="font-size: 13px;">
+          <li class="breadcrumb-item"><a routerLink="/" class="text-white-50 text-decoration-none"><i class="fa-solid fa-house me-1"></i>Home</a></li>
+          <li class="breadcrumb-item active text-white" aria-current="page">Blog &amp; Stories</li>
+        </ol>
+      </nav>
+
+      <div class="row align-items-center g-4">
+        <div class="col-12 col-lg-8">
+          <span class="badge rounded-pill bg-white text-dark fw-bold px-3 py-1.5 mb-3 shadow-xs" style="color: #1748D8 !important; font-size: 11.5px; letter-spacing: 0.8px;">
+            THE YOUR STORE JOURNAL
+          </span>
+          <h1 class="display-4 fw-bold mb-3" style="letter-spacing: -1px; line-height: 1.15;">
+            Heritage Stories, Wellness Wisdom &amp; Culinary Traditions
+          </h1>
+          <p class="lead text-white-50 mb-0" style="font-size: 17px; line-height: 1.6; max-width: 720px;">
+            Explore expert guides on Indian homeopathic remedies, Ayurvedic daily rituals, culinary secrets of regional master makers, and festive celebrations abroad.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Featured Hero Article -->
+  <section class="py-5 bg-white border-bottom">
+    <div class="container-fluid px-3 px-lg-5">
+      <div class="featured-article-card rounded-4 p-4 p-md-5 border bg-light shadow-xs">
+        <div class="row g-4 align-items-center">
+          <div class="col-12 col-lg-6">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <span class="badge bg-primary rounded-pill px-3 py-1 fw-bold" style="background-color: #0f766e !important; font-size: 11px;">
+                FEATURED STORY
+              </span>
+              <span class="text-secondary small">•</span>
+              <span class="text-secondary small">{{ featuredPost.date }}</span>
+              <span class="text-secondary small">•</span>
+              <span class="text-secondary small"><i class="fa-regular fa-clock me-1"></i>{{ featuredPost.readTime }}</span>
+            </div>
+            
+            <h2 class="display-6 fw-bold text-dark mb-3" style="font-size: 2.1rem; line-height: 1.2;">
+              {{ featuredPost.title }}
+            </h2>
+
+            <p class="text-secondary lh-base mb-4" style="font-size: 15px;">
+              {{ featuredPost.excerpt }}
+            </p>
+
+            <div class="d-flex align-items-center justify-content-between pt-2">
+              <div class="d-flex align-items-center gap-2.5">
+                <img [src]="featuredPost.author.avatar" alt="Author" class="rounded-circle object-fit-cover border" style="width: 44px; height: 44px;">
+                <div class="lh-sm">
+                  <span class="fw-bold text-dark d-block" style="font-size: 14px;">{{ featuredPost.author.name }}</span>
+                  <span class="text-secondary small">{{ featuredPost.author.role }}</span>
+                </div>
+              </div>
+
+              <a routerLink="/homeopathy" class="btn btn-outline-teal rounded-pill px-4 py-2 fw-bold" style="color: #0f766e; border-color: #0f766e;">
+                Read Article &amp; Shop Remedies →
+              </a>
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-6 text-center">
+            <div class="rounded-4 overflow-hidden shadow-sm" style="max-height: 340px;">
+              <img [src]="featuredPost.image" [alt]="featuredPost.title" class="img-fluid w-100 object-fit-cover" style="min-height: 320px;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Category Filter Strip & Article Grid -->
+  <section class="py-5 bg-light">
+    <div class="container-fluid px-3 px-lg-5">
+      
+      <!-- Category Filter Pills -->
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-2 border-bottom">
+        <div>
+          <h3 class="fw-bold text-dark m-0">Recent Articles</h3>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+          @for (cat of categories; track cat) {
+            <button type="button" 
+                    class="btn btn-sm rounded-pill px-3 py-1.5 fw-semibold transition-all"
+                    [class.btn-dark]="selectedCategory === cat"
+                    [class.btn-outline-secondary]="selectedCategory !== cat"
+                    (click)="selectedCategory = cat">
+              {{ cat }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Articles Grid -->
+      <div class="row g-4">
+        @for (post of filteredPosts; track post.id) {
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="blog-card bg-white rounded-4 border overflow-hidden h-100 shadow-xs hover-lift transition-all d-flex flex-column justify-content-between">
+              <div>
+                <!-- Thumbnail -->
+                <div class="blog-thumb position-relative overflow-hidden" style="height: 200px;">
+                  <img [src]="post.image" [alt]="post.title" class="w-100 h-100 object-fit-cover" loading="lazy" decoding="async">
+                  <span class="badge position-absolute top-3 start-3 bg-dark bg-opacity-75 rounded-pill px-3 py-1 fw-bold text-white" style="font-size: 11px;">
+                    {{ post.category }}
+                  </span>
+                </div>
+
+                <!-- Content -->
+                <div class="p-4">
+                  <div class="d-flex align-items-center gap-2 text-secondary small mb-2" style="font-size: 12px;">
+                    <span>{{ post.date }}</span>
+                    <span>•</span>
+                    <span><i class="fa-regular fa-clock me-1"></i>{{ post.readTime }}</span>
+                  </div>
+
+                  <h4 class="fw-bold text-dark mb-2" style="font-size: 17px; line-height: 1.4;">
+                    {{ post.title }}
+                  </h4>
+
+                  <p class="text-secondary small mb-0 lh-base line-clamp-3">
+                    {{ post.excerpt }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Footer with Author -->
+              <div class="px-4 pb-4 pt-2 border-top d-flex align-items-center justify-content-between mt-auto">
+                <div class="d-flex align-items-center gap-2">
+                  <img [src]="post.author.avatar" alt="Author" class="rounded-circle object-fit-cover" loading="lazy" decoding="async" style="width: 32px; height: 32px;">
+                  <span class="fw-semibold text-dark small">{{ post.author.name }}</span>
+                </div>
+
+                <a [routerLink]="['/products']" class="text-primary small fw-bold text-decoration-none" style="color: #1748D8 !important;">
+                  Read More <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+              </div>
+
+            </div>
+          </div>
+        }
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<app-footer></app-footer>

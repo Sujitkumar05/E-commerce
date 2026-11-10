@@ -1,0 +1,668 @@
+<div class="orders-page-container">
+
+  <!-- PAGE HEADER & ACTIONS -->
+  <div class="page-header">
+    <div class="header-left">
+      <div class="title-with-badge">
+        <h1 class="page-title">Order Management</h1>
+        <span class="active-badge-pill" *ngIf="customerFilterId">
+          <i class="bi bi-funnel-fill"></i>
+          <span>Filtered by Customer: {{ customerFilterId }}</span>
+          <button type="button" class="btn-clear-filter" (click)="clearCustomerFilter()" title="Clear customer filter">
+            <i class="bi bi-x-circle-fill"></i>
+          </button>
+        </span>
+      </div>
+      <p class="page-subtitle">Track, process, reserve inventory, create shipments, and manage returns & refunds.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-export-csv" (click)="exportCsv()" title="Export filtered orders to CSV">
+        <i class="bi bi-download"></i>
+        <span>Export CSV</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 4 STATS CARDS (Dynamic from OrderService metrics) -->
+  <div class="stats-grid" *ngIf="metrics">
+    <!-- Total Orders -->
+    <div class="stat-card" (click)="switchTab('all')">
+      <div class="stat-icon-wrapper bg-blue-primary">
+        <i class="bi bi-cart3"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Total Orders</span>
+        <h3 class="stat-value">{{ metrics.total }}</h3>
+        <div class="stat-trend positive">
+          <i class="bi bi-check2-circle"></i>
+          <span>{{ metrics.delivered }} completed</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Revenue -->
+    <div class="stat-card">
+      <div class="stat-icon-wrapper bg-green-primary">
+        <i class="bi bi-currency-rupee"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Total Order Value</span>
+        <h3 class="stat-value">₹{{ metrics.totalRevenue.toLocaleString() }}</h3>
+        <div class="stat-trend positive">
+          <i class="bi bi-graph-up-arrow"></i>
+          <span>Active sales volume</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- In Progress & Shortages -->
+    <div class="stat-card" (click)="switchTab('procurement')">
+      <div class="stat-icon-wrapper bg-amber-primary">
+        <i class="bi bi-box-seam"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Procurement Needed</span>
+        <h3 class="stat-value">{{ metrics.procurementRequired }}</h3>
+        <div class="stat-trend" [ngClass]="metrics.procurementRequired > 0 ? 'text-amber font-semibold' : 'text-slate'">
+          <i class="bi bi-exclamation-triangle"></i>
+          <span>{{ metrics.stockShortages }} shortage item(s)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Returns & Refunds -->
+    <div class="stat-card" (click)="switchTab('returns')">
+      <div class="stat-icon-wrapper bg-rose-primary">
+        <i class="bi bi-arrow-repeat"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Returns & Refunds</span>
+        <h3 class="stat-value">{{ metrics.returnRequests + metrics.refundManagement }}</h3>
+        <div class="stat-trend text-slate">
+          <i class="bi bi-shield-check"></i>
+          <span>{{ metrics.returnRequests }} returns / {{ metrics.refundManagement }} refunds</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12 TABS BAR (Categorized Lifecycle & Workflows) -->
+  <div class="order-tabs-scroll-wrapper" *ngIf="metrics">
+    <div class="order-tabs-bar">
+      <button class="tab-btn" [class.active]="activeTab === 'all'" (click)="switchTab('all')">
+        All Orders <span class="tab-count">{{ metrics.total }}</span>
+      </button>
+
+      <button class="tab-btn" [class.active]="activeTab === 'pending'" (click)="switchTab('pending')">
+        Pending <span class="tab-count" [class.highlight]="metrics.pending > 0">{{ metrics.pending }}</span>
+      </button>
+
+      <button class="tab-btn" [class.active]="activeTab === 'confirmed'" (click)="switchTab('confirmed')">
+        Confirmed <span class="tab-count">{{ metrics.confirmed }}</span>
+      </button>
+
+      <button class="tab-btn" [class.active]="activeTab === 'processing'" (click)="switchTab('processing')">
+        Processing <span class="tab-count">{{ metrics.processing }}</span>
+      </button>
+
+      <button class="tab-btn tab-alert" [class.active]="activeTab === 'procurement'" (click)="switchTab('procurement')">
+        <i class="bi bi-exclamation-circle-fill"></i>
+        Procurement Required <span class="tab-count count-danger">{{ metrics.procurementRequired }}</span>
+      </button>
+
+      <button class="tab-btn" [class.active]="activeTab === 'ready_to_ship'" (click)="switchTab('ready_to_ship')">
+        Ready to Ship <span class="tab-count">{{ metrics.readyToShip }}</span>
+      </button>
+
+      <button class="tab-btn" [class.active]="activeTab === 'shipped'" (click)="switchTab('shipped')">
+        Shipped <span class="tab-count">{{ metrics.shipped }}</span>
+      </button>
+
+      <button class="tab-btn" [class.active]="activeTab === 'in_transit'" (click)="switchTab('in_transit')">
+        In Transit <span class="tab-count">{{ metrics.inTransit }}</span>
+      </button>
+
+      <button class="tab-btn" [class.active]="activeTab === 'delivered'" (click)="switchTab('delivered')">
+        Delivered <span class="tab-count count-success">{{ metrics.delivered }}</span>
+      </button>
+
+      <button class="tab-btn" [class.active]="activeTab === 'cancelled'" (click)="switchTab('cancelled')">
+        Cancelled <span class="tab-count">{{ metrics.cancelled }}</span>
+      </button>
+
+      <button class="tab-btn" [class.active]="activeTab === 'returns'" (click)="switchTab('returns')">
+        Return Requests <span class="tab-count count-warning">{{ metrics.returnRequests }}</span>
+      </button>
+
+      <button class="tab-btn" [class.active]="activeTab === 'refunds'" (click)="switchTab('refunds')">
+        Refund Management <span class="tab-count">{{ metrics.refundManagement }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- FILTER & SEARCH BAR -->
+  <div class="filters-card">
+    <div class="search-input-wrap">
+      <i class="bi bi-search"></i>
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        placeholder="Search by Order ID (#ORD), Customer name, Customer ID (#C1001), SKU..."
+        class="filter-search"
+      />
+    </div>
+
+    <!-- Payment Status Dropdown -->
+    <div class="filter-dropdown-wrap">
+      <span class="dropdown-label">Payment Status</span>
+      <select [(ngModel)]="paymentStatusFilter" class="filter-select">
+        <option value="All">All Payments</option>
+        <option value="Paid">Paid</option>
+        <option value="COD">Cash on Delivery</option>
+        <option value="Pending">Pending Payment</option>
+        <option value="Refunded">Refunded</option>
+        <option value="Partially Refunded">Partially Refunded</option>
+      </select>
+    </div>
+
+    <!-- Procurement Filter -->
+    <div class="filter-dropdown-wrap">
+      <span class="dropdown-label">Procurement</span>
+      <select [(ngModel)]="procurementStatusFilter" class="filter-select">
+        <option value="All">All Procurement</option>
+        <option value="None">None (Stock OK)</option>
+        <option value="Required">Deficit / Required</option>
+        <option value="PO_Created">PO Created</option>
+        <option value="Partially Received">Partially Received</option>
+        <option value="Fulfilled">Fulfilled</option>
+      </select>
+    </div>
+
+    <!-- Shipment Filter -->
+    <div class="filter-dropdown-wrap">
+      <span class="dropdown-label">Shipment</span>
+      <select [(ngModel)]="shipmentStatusFilter" class="filter-select">
+        <option value="All">All Shipments</option>
+        <option value="Unshipped">Unshipped</option>
+        <option value="Shipped">Shipped</option>
+        <option value="In Transit">In Transit</option>
+        <option value="Delivered">Delivered</option>
+        <option value="Exception">Delivery Exception</option>
+      </select>
+    </div>
+
+    <!-- Sort By -->
+    <div class="filter-dropdown-wrap">
+      <span class="dropdown-label">Sort By</span>
+      <select [(ngModel)]="sortBy" class="filter-select">
+        <option value="date_desc">Latest Order</option>
+        <option value="date_asc">Oldest Order</option>
+        <option value="amount_desc">Amount: High to Low</option>
+        <option value="amount_asc">Amount: Low to High</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- FULL WIDTH MAIN CONTENT: Orders Table -->
+  <div class="orders-layout-full">
+
+    <!-- LEFT: ORDERS DATA TABLE -->
+    <div class="table-container-card">
+      <div class="table-responsive">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th class="th-check">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="selectAll"
+                  (change)="toggleSelectAll()"
+                  class="custom-check"
+                />
+              </th>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Date & Time</th>
+              <th>Amount</th>
+              <th>Payment</th>
+              <th>Order Lifecycle</th>
+              <th>Procurement</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let order of paginatedOrders"
+              [class.selected-row]="selectedOrder?.id === order.id"
+              (click)="selectOrder(order)"
+            >
+              <td class="td-check" (click)="$event.stopPropagation()">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="order.selected"
+                  (change)="checkIndividualSelection()"
+                  class="custom-check"
+                />
+              </td>
+              <td class="td-order-id">
+                <div class="order-id-group">
+                  <span class="order-id-link">{{ order.id }}</span>
+                  <span class="badge-priority" *ngIf="order.fulfillmentPriority" [ngClass]="'prio-' + order.fulfillmentPriority.toLowerCase()">
+                    {{ order.fulfillmentPriority }}
+                  </span>
+                </div>
+              </td>
+              <td class="td-customer" (click)="selectOrder(order)">
+                <div class="cust-info">
+                  <span class="cust-name" title="Click to view order details">{{ order.customerName }}</span>
+                  <div class="cust-sub-line">
+                    <span class="cust-email">{{ order.customerEmail }}</span>
+                    <button
+                      type="button"
+                      class="cust-link-chip"
+                      (click)="navigateToCustomer(order.customerId); $event.stopPropagation()"
+                      title="Open Customer Profile in Customers module"
+                    >
+                      {{ order.customerId }} <i class="bi bi-box-arrow-up-right"></i>
+                    </button>
+                  </div>
+                </div>
+              </td>
+              <td class="td-date">
+                <div class="date-info">
+                  <span class="date-day">{{ order.date }}</span>
+                  <span class="date-time">{{ order.time }}</span>
+                </div>
+              </td>
+              <td class="td-amount">
+                ₹{{ order.totalAmount.toLocaleString() }}
+              </td>
+              <td class="td-payment">
+                <span class="status-badge" [ngClass]="'pay-' + order.paymentStatus.toLowerCase().replace(' ', '-')">
+                  {{ order.paymentStatus }}
+                </span>
+              </td>
+              <td class="td-fulfilment">
+                <span class="status-badge" [ngClass]="'ful-' + order.orderStatus.toLowerCase().replace(' ', '-')">
+                  {{ order.orderStatus }}
+                </span>
+              </td>
+              <td class="td-procurement">
+                <span *ngIf="order.procurementStatus === 'Required'" class="badge-shortage">
+                  <i class="bi bi-exclamation-triangle-fill"></i> Shortage
+                </span>
+                <span *ngIf="order.procurementStatus === 'PO_Created'" class="badge-po">
+                  <i class="bi bi-receipt"></i> PO Created
+                </span>
+                <span *ngIf="order.procurementStatus === 'Fulfilled'" class="badge-restocked">
+                  <i class="bi bi-check2"></i> Restocked
+                </span>
+                <span *ngIf="order.procurementStatus === 'None'" class="text-muted-stock">
+                  Stock OK
+                </span>
+              </td>
+              <td class="td-actions text-center" (click)="$event.stopPropagation()">
+                <!-- Context-Sensitive Quick Action Button -->
+                <button
+                  type="button"
+                  class="btn-row-action btn-confirm-sm"
+                  *ngIf="order.orderStatus === 'Pending'"
+                  (click)="confirmOrder(order)"
+                  title="Confirm order & reserve warehouse stock"
+                >
+                  <i class="bi bi-check-lg"></i> Confirm
+                </button>
+
+                <button
+                  type="button"
+                  class="btn-row-action btn-ready-sm"
+                  *ngIf="order.orderStatus === 'Processing' && order.procurementStatus !== 'Required'"
+                  (click)="markReadyToShip(order)"
+                  title="Mark items picked and packed"
+                >
+                  <i class="bi bi-box-seam"></i> Pack
+                </button>
+
+                <button
+                  type="button"
+                  class="btn-row-action btn-dispatch-sm"
+                  *ngIf="order.orderStatus === 'Ready to Ship'"
+                  (click)="openShipmentModal(order)"
+                  title="Dispatch with courier tracking"
+                >
+                  <i class="bi bi-truck"></i> Ship
+                </button>
+
+                <button
+                  type="button"
+                  class="btn-row-action btn-delivered-sm"
+                  *ngIf="order.orderStatus === 'In Transit'"
+                  (click)="confirmDelivered(order)"
+                  title="Confirm delivery to recipient"
+                >
+                  <i class="bi bi-check2-all"></i> Delivered
+                </button>
+
+                <button
+                  type="button"
+                  class="btn-row-action btn-return-sm"
+                  *ngIf="order.returnStatus === 'Return Requested'"
+                  (click)="approveReturn(order)"
+                  title="Approve return authorization"
+                >
+                  <i class="bi bi-arrow-repeat"></i> Approve
+                </button>
+
+                <button
+                  type="button"
+                  class="btn-row-action btn-refund-sm"
+                  *ngIf="order.refundStatus === 'Initiated'"
+                  (click)="openRefundModal(order)"
+                  title="Process refund payout"
+                >
+                  <i class="bi bi-cash-stack"></i> Refund
+                </button>
+
+                <button
+                  type="button"
+                  class="btn-more-actions"
+                  (click)="selectOrder(order)"
+                  title="View full details"
+                >
+                  <i class="bi bi-chevron-right"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Empty State -->
+            <tr *ngIf="filteredOrders.length === 0">
+              <td colspan="9" class="empty-orders-cell">
+                <div class="empty-state">
+                  <i class="bi bi-inbox"></i>
+                  <h4>No orders found</h4>
+                  <p>No orders match the current filter criteria or search keyword.</p>
+                  <button type="button" class="btn-reset-filters" (click)="switchTab('all'); searchTerm = ''; paymentStatusFilter = 'All'; customerFilterId = null;">
+                    Reset All Filters
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Footer -->
+      <div class="table-footer" *ngIf="filteredOrders.length > 0">
+        <span class="results-info">{{ paginationRangeText }}</span>
+        <div class="pagination-wrapper">
+          <button class="pag-arrow" [disabled]="currentPage === 1" (click)="currentPage = currentPage - 1">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <span class="pag-page-indicator">Page {{ currentPage }} of {{ totalPages }}</span>
+          <button class="pag-arrow" [disabled]="currentPage === totalPages" (click)="currentPage = currentPage + 1">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- 1. SHIPMENT DISPATCH MODAL -->
+  <div class="modal-backdrop" *ngIf="isShipmentModalOpen && selectedOrder">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="bi bi-truck"></i> Create Courier Consignment</h3>
+        <button class="btn-close-modal" (click)="isShipmentModalOpen = false">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Order Reference</label>
+          <input type="text" [value]="selectedOrder.id + ' — ' + selectedOrder.customerName" disabled class="form-input" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-half">
+            <label>Select Logistics Partner</label>
+            <select [(ngModel)]="shipmentCourier" (change)="onCourierChange()" class="form-select">
+              <option *ngFor="let courier of courierOptions" [value]="courier">{{ courier }}</option>
+            </select>
+          </div>
+
+          <div class="form-group col-half">
+            <label>Dispatch Mode</label>
+            <select [(ngModel)]="shipmentType" class="form-select">
+              <option value="Full">Full Order Dispatch</option>
+              <option value="Partial">Partial Stock Dispatch</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Courier AWB Tracking Number</label>
+          <input type="text" [(ngModel)]="shipmentTrackingNumber" class="form-input font-mono" />
+        </div>
+
+        <div class="form-group">
+          <label>Consignment Items</label>
+          <div class="modal-items-list">
+            <div class="modal-item-row" *ngFor="let it of shipmentSelectedItems">
+              <span class="m-item-title">{{ it.name }}</span>
+              <span class="m-item-qty">Qty: {{ it.quantity }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Dispatch Notes</label>
+          <input type="text" [(ngModel)]="shipmentNotes" placeholder="e.g. Fragile herbal pack, express delivery" class="form-input" />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-modal-cancel" (click)="isShipmentModalOpen = false">Cancel</button>
+        <button type="button" class="btn-modal-submit" (click)="submitShipment()">
+          <i class="bi bi-send-check"></i> Confirm & Dispatch
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. PROCUREMENT PURCHASE ORDER MODAL -->
+  <div class="modal-backdrop" *ngIf="isProcureModalOpen && procuringItem">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="bi bi-receipt"></i> Generate Supplier Purchase Order</h3>
+        <button class="btn-close-modal" (click)="isProcureModalOpen = false">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="procure-summary-banner">
+          <div>
+            <strong>{{ procuringItem.name }}</strong>
+            <span class="sub-text">SKU: {{ procuringItem.sku }} | Current Warehouse Stock: {{ procuringItem.inStock }}</span>
+          </div>
+          <span class="badge-deficit-highlight">Missing {{ procureQty }} unit(s)</span>
+        </div>
+
+        <div class="form-group mt-3">
+          <label>Approved Herbal Supplier</label>
+          <select [(ngModel)]="procureSupplier" class="form-select">
+            <option *ngFor="let sup of supplierOptions" [value]="sup">{{ sup }}</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-half">
+            <label>Quantity to Order</label>
+            <input type="number" [(ngModel)]="procureQty" min="1" class="form-input font-bold" />
+          </div>
+
+          <div class="form-group col-half">
+            <label>Priority</label>
+            <select [(ngModel)]="procurePriority" class="form-select">
+              <option value="Urgent">Urgent (Customer waiting)</option>
+              <option value="High">High</option>
+              <option value="Normal">Normal</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Procurement Notes</label>
+          <input type="text" [(ngModel)]="procureNotes" class="form-input" />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-modal-cancel" (click)="isProcureModalOpen = false">Cancel</button>
+        <button type="button" class="btn-modal-submit btn-amber" (click)="submitProcurementPO()">
+          <i class="bi bi-file-earmark-plus"></i> Generate Purchase Order
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. RETURN REQUEST MODAL -->
+  <div class="modal-backdrop" *ngIf="isReturnModalOpen && selectedOrder">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="bi bi-arrow-repeat"></i> Log Customer Return Request</h3>
+        <button class="btn-close-modal" (click)="isReturnModalOpen = false">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Order Reference</label>
+          <input type="text" [value]="selectedOrder.id + ' (' + selectedOrder.customerName + ')'" disabled class="form-input" />
+        </div>
+
+        <div class="form-group">
+          <label>Return Reason</label>
+          <select [(ngModel)]="returnReason" class="form-select">
+            <option value="Damaged product during transit">Damaged product during transit</option>
+            <option value="Broken seal on herbal medicine container">Broken seal on herbal medicine container</option>
+            <option value="Wrong product delivered">Wrong product delivered</option>
+            <option value="Defective or expired goods">Defective or expired goods</option>
+            <option value="Customer dissatisfied with product quality">Customer dissatisfied with product quality</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Items to Return</label>
+          <div class="modal-items-list">
+            <div class="modal-item-row" *ngFor="let it of returnItemsSelection">
+              <span class="m-item-title">{{ it.name }}</span>
+              <span class="m-item-qty">Qty: {{ it.quantity }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-modal-cancel" (click)="isReturnModalOpen = false">Cancel</button>
+        <button type="button" class="btn-modal-submit btn-rose" (click)="submitReturnRequest()">
+          <i class="bi bi-send"></i> Submit Return Request
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. RETURN INSPECTION MODAL -->
+  <div class="modal-backdrop" *ngIf="isInspectModalOpen && selectedOrder">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="bi bi-search"></i> Inspect Returned Goods</h3>
+        <button class="btn-close-modal" (click)="isInspectModalOpen = false">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Physical Condition of Goods</label>
+          <select [(ngModel)]="inspectionCondition" class="form-select">
+            <option value="Unopened">Unopened (Brand New Condition)</option>
+            <option value="Opened - Intact">Opened - Intact (Eligible for partial refund)</option>
+            <option value="Damaged">Damaged / Non-resellable</option>
+            <option value="Defective">Defective Manufacturer Batch</option>
+          </select>
+        </div>
+
+        <div class="form-check-group">
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="restockUsableItems" class="custom-check" />
+            <span>Restock usable items back to warehouse stock pool</span>
+          </label>
+        </div>
+
+        <div class="form-group mt-3">
+          <label>Inspection Report & Notes</label>
+          <textarea [(ngModel)]="inspectionNotes" rows="3" class="form-textarea"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-modal-cancel" (click)="isInspectModalOpen = false">Cancel</button>
+        <button type="button" class="btn-modal-submit" (click)="submitReturnInspection()">
+          <i class="bi bi-clipboard2-check"></i> Complete Inspection & Queue Refund
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. REFUND PAYOUT MODAL -->
+  <div class="modal-backdrop" *ngIf="isRefundModalOpen && selectedOrder">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="bi bi-cash-stack"></i> Process Refund Payout</h3>
+        <button class="btn-close-modal" (click)="isRefundModalOpen = false">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Refund Recipient</label>
+          <input type="text" [value]="selectedOrder.customerName + ' (' + selectedOrder.customerEmail + ')'" disabled class="form-input" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-half">
+            <label>Amount to Refund (₹)</label>
+            <input type="number" [(ngModel)]="refundAmountToPay" class="form-input font-bold text-green" />
+          </div>
+
+          <div class="form-group col-half">
+            <label>Payout Method</label>
+            <input type="text" [(ngModel)]="refundMethod" class="form-input" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Bank / Gateway Settlement Ref</label>
+          <input type="text" [(ngModel)]="refundTxnRef" class="form-input font-mono" />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-modal-cancel" (click)="isRefundModalOpen = false">Cancel</button>
+        <button type="button" class="btn-modal-submit btn-green" (click)="submitRefundPayout()">
+          <i class="bi bi-check2-circle"></i> Confirm Refund Payout
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST FEEDBACK ALERT -->
+  <div class="floating-toast" *ngIf="toastMessage" [ngClass]="'toast-' + toastType">
+    <i class="bi" [ngClass]="{
+      'bi-check-circle-fill': toastType === 'success',
+      'bi-info-circle-fill': toastType === 'info',
+      'bi-exclamation-triangle-fill': toastType === 'warning',
+      'bi-x-circle-fill': toastType === 'error'
+    }"></i>
+    <span>{{ toastMessage }}</span>
+    <button class="toast-close" (click)="toastMessage = null">&times;</button>
+  </div>
+
+</div>

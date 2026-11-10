@@ -1,0 +1,331 @@
+l<div class="categories-page-container">
+
+  <!-- PAGE HEADER & BREADCRUMBS -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">Categories</h1>
+      <div class="breadcrumbs">
+        <span>Dashboard</span>
+        <i class="bi bi-chevron-right"></i>
+        <span class="active-crumb">Categories</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 STATS CARDS -->
+  <div class="stats-grid">
+    <!-- Total Categories -->
+    <div class="stat-card">
+      <div class="stat-icon-wrapper bg-green-soft">
+        <i class="bi bi-grid-fill"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Total Categories</span>
+        <h3 class="stat-value">{{ totalCategories }}</h3>
+        <div class="stat-trend positive">
+          <i class="bi bi-arrow-up-short"></i>
+          <span>2%</span>
+          <span class="trend-sub">from last month</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Categories -->
+    <div class="stat-card">
+      <div class="stat-icon-wrapper bg-purple-soft">
+        <i class="bi bi-tag-fill"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Active Categories</span>
+        <h3 class="stat-value">{{ activeCategories }}</h3>
+        <div class="stat-trend positive">
+          <i class="bi bi-arrow-up-short"></i>
+          <span>1%</span>
+          <span class="trend-sub">from last month</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inactive Categories -->
+    <div class="stat-card">
+      <div class="stat-icon-wrapper bg-amber-soft">
+        <i class="bi bi-eye-slash-fill"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Inactive Categories</span>
+        <h3 class="stat-value">{{ inactiveCategories }}</h3>
+        <div class="stat-trend negative">
+          <i class="bi bi-arrow-down-short"></i>
+          <span>1%</span>
+          <span class="trend-sub">from last month</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN 2-COLUMN LAYOUT: Categories Table (Left) + Add New Category Form (Right) -->
+  <div class="categories-layout-grid">
+
+    <!-- LEFT COLUMN: All Categories Table Panel -->
+    <div class="table-card">
+      
+      <!-- Panel Header & Filter Toolbar -->
+      <div class="panel-header">
+        <h2 class="panel-title">All Categories</h2>
+      </div>
+
+      <div class="table-toolbar">
+        <div class="search-wrapper">
+          <i class="bi bi-search"></i>
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            placeholder="Search categories by name..."
+            class="search-input"
+          />
+        </div>
+
+        <div class="toolbar-actions">
+          <div class="select-wrapper">
+            <select [(ngModel)]="statusFilter" class="status-select">
+              <option value="All Status">All Status</option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+
+          <button class="btn-primary-add" (click)="saveCategory()">
+            <i class="bi bi-plus"></i>
+            <span>Add Category</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Categories Data Table -->
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="th-checkbox">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="selectAll"
+                  (change)="toggleSelectAll()"
+                  class="custom-checkbox"
+                />
+              </th>
+              <th class="th-hash">#</th>
+              <th class="th-image">Image</th>
+              <th class="th-name">Category Name</th>
+              <th class="th-slug">Slug</th>
+              <th class="th-status">Status</th>
+              <th class="th-products">Products</th>
+              <th class="th-order">Sort Order</th>
+              <th class="th-actions text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cat of filteredCategories; let i = index">
+              <td class="td-checkbox">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="cat.selected"
+                  (change)="checkIndividualSelection()"
+                  class="custom-checkbox"
+                />
+              </td>
+              <td class="td-hash">{{ cat.id }}</td>
+              <td class="td-image">
+                <div class="category-icon-box" [style.background-color]="cat.iconBg">
+                  <span>{{ cat.icon }}</span>
+                </div>
+              </td>
+              <td class="td-name">
+                <span class="category-name-text">{{ cat.name }}</span>
+              </td>
+              <td class="td-slug">
+                <span class="slug-text">{{ cat.slug }}</span>
+              </td>
+              <td class="td-status">
+                <span class="status-pill" [ngClass]="cat.status === 'Active' ? 'status-active' : 'status-inactive'">
+                  {{ cat.status }}
+                </span>
+              </td>
+              <td class="td-products">{{ cat.productsCount }}</td>
+              <td class="td-order">{{ cat.sortOrder }}</td>
+              <td class="td-actions text-center">
+                <div class="action-buttons-group">
+                  <button class="action-btn btn-view" (click)="viewCategory(cat)" title="View Details">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button class="action-btn btn-edit" (click)="editCategory(cat)" title="Edit Category">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="action-btn btn-delete" (click)="deleteCategory(cat)" title="Delete Category">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <tr *ngIf="filteredCategories.length === 0">
+              <td colspan="9" class="no-records-cell">
+                <div class="empty-state">
+                  <i class="bi bi-inbox"></i>
+                  <p>No categories found matching your criteria.</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Table Footer / Pagination -->
+      <div class="table-footer">
+        <span class="results-count">
+          Showing 1 to {{ filteredCategories.length }} of {{ categories.length }} categories
+        </span>
+        <div class="pagination-controls">
+          <button class="page-arrow" disabled>
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <button class="page-number active">1</button>
+          <button class="page-arrow">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: Add New Category Form Panel -->
+    <div class="form-card">
+      <h2 class="panel-title form-header-title">Add New Category</h2>
+
+      <div class="form-body">
+        
+        <!-- Category Name -->
+        <div class="form-group">
+          <label class="form-label">Category Name <span class="required">*</span></label>
+          <input
+            type="text"
+            [(ngModel)]="newCategory.name"
+            (ngModelChange)="onNameChange()"
+            placeholder="Enter category name"
+            class="form-control"
+          />
+        </div>
+
+        <!-- Slug -->
+        <div class="form-group">
+          <label class="form-label">Slug <span class="required">*</span></label>
+          <input
+            type="text"
+            [(ngModel)]="newCategory.slug"
+            placeholder="e.g. homeopathy"
+            class="form-control"
+          />
+        </div>
+
+        <!-- Parent Category -->
+        <div class="form-group">
+          <label class="form-label">Parent Category</label>
+          <div class="select-wrapper-full">
+            <select [(ngModel)]="newCategory.parentCategory" class="form-control form-select">
+              <option *ngFor="let parent of parentCategories" [value]="parent">{{ parent }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Status Toggle Buttons -->
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <div class="status-toggle-group">
+            <button
+              type="button"
+              class="toggle-btn"
+              [class.active]="newCategory.status === 'Active'"
+              (click)="newCategory.status = 'Active'"
+            >
+              Active
+            </button>
+            <button
+              type="button"
+              class="toggle-btn"
+              [class.active]="newCategory.status === 'Inactive'"
+              (click)="newCategory.status = 'Inactive'"
+            >
+              Inactive
+            </button>
+          </div>
+        </div>
+
+        <!-- Sort Order -->
+        <div class="form-group">
+          <label class="form-label">Sort Order</label>
+          <input
+            type="number"
+            [(ngModel)]="newCategory.sortOrder"
+            placeholder="Enter sort order (e.g. 1)"
+            class="form-control"
+          />
+        </div>
+
+        <!-- Category Image Upload Box -->
+        <div class="form-group">
+          <label class="form-label">Category Image</label>
+          
+          <input
+            type="file"
+            id="categoryImageInput"
+            style="display: none;"
+            accept="image/*"
+            (change)="onImageSelected($event)"
+          />
+
+          <div class="upload-dropzone" (click)="triggerImageUpload()">
+            <div *ngIf="!newCategory.imagePreview" class="upload-placeholder">
+              <div class="cloud-icon-circle">
+                <i class="bi bi-cloud-arrow-up"></i>
+              </div>
+              <p class="upload-title"><strong>Click to upload image</strong></p>
+              <p class="upload-sub">or drag and drop</p>
+              <span class="upload-formats">Supports JPG, PNG (Max 2MB)</span>
+            </div>
+
+            <div *ngIf="newCategory.imagePreview" class="image-uploaded-preview">
+              <img [src]="newCategory.imagePreview" alt="Category Preview" />
+              <button type="button" class="btn-change-image" (click)="$event.stopPropagation(); triggerImageUpload()">
+                Change Image
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea
+            rows="3"
+            [(ngModel)]="newCategory.description"
+            maxlength="500"
+            placeholder="Enter category description..."
+            class="form-control form-textarea"
+          ></textarea>
+          <div class="char-count">
+            {{ newCategory.description.length }}/500
+          </div>
+        </div>
+
+        <!-- Save Button -->
+        <button type="button" class="btn-submit-save" (click)="saveCategory()">
+          <i class="bi bi-save"></i>
+          <span>Save Category</span>
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>

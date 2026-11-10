@@ -1,0 +1,163 @@
+<app-storefront-header></app-storefront-header>
+
+<main class="contact-us-page bg-light min-vh-100">
+  
+  <!-- Hero Section -->
+  <section class="contact-hero text-white py-5 position-relative overflow-hidden" style="background: linear-gradient(135deg, #0b1118 0%, #1e293b 60%, #334155 100%);">
+    <div class="container-fluid px-3 px-lg-5 py-4 position-relative z-2">
+      
+      <!-- Breadcrumb -->
+      <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb" style="font-size: 13px;">
+          <li class="breadcrumb-item"><a routerLink="/" class="text-white-50 text-decoration-none"><i class="fa-solid fa-house me-1"></i>Home</a></li>
+          <li class="breadcrumb-item active text-white" aria-current="page">Contact Us</li>
+        </ol>
+      </nav>
+
+      <div class="row align-items-center g-4">
+        <div class="col-12 col-lg-8">
+          <span class="badge rounded-pill bg-white text-dark fw-bold px-3 py-1.5 mb-3 shadow-xs" style="color: #0f172a !important; font-size: 11.5px; letter-spacing: 0.8px;">
+            24/7 CUSTOMER CARE
+          </span>
+          <h1 class="display-4 fw-bold mb-3" style="letter-spacing: -1px; line-height: 1.15;">
+            We're Here to Help You Every Step of the Way
+          </h1>
+          <p class="lead text-white-50 mb-0" style="font-size: 17px; line-height: 1.6; max-width: 700px;">
+            Have a question about an order, international transit, product authenticity, or looking for a specific regional delicacy? Get in touch with our dedicated support specialists.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Channels Grid -->
+  <section class="py-5 bg-white border-bottom">
+    <div class="container-fluid px-3 px-lg-5">
+      <div class="row g-4">
+        @for (channel of supportChannels; track channel.title) {
+          <div class="col-12 col-md-4">
+            <div class="p-4 rounded-4 border bg-light h-100 shadow-xs hover-lift transition-all d-flex flex-column justify-content-between">
+              <div>
+                <div class="rounded-circle d-flex align-items-center justify-content-center mb-3 text-white" style="width: 46px; height: 46px; background-color: #1748D8;">
+                  <i [class]="'fa-solid ' + channel.icon" style="font-size: 18px;"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-1">{{ channel.title }}</h5>
+                <p class="fw-semibold text-primary mb-1" style="font-size: 14px;">{{ channel.desc }}</p>
+                <p class="text-secondary small mb-3">{{ channel.sub }}</p>
+              </div>
+
+              <a [href]="channel.action" class="btn btn-outline-dark rounded-pill btn-sm fw-semibold w-100 py-2">
+                {{ channel.actionLabel }}
+              </a>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Split Form & Office Locations -->
+  <section class="py-5 bg-light">
+    <div class="container-fluid px-3 px-lg-5">
+      <div class="row g-4 g-lg-5">
+        
+        <!-- Left: Interactive Form -->
+        <div class="col-12 col-lg-7">
+          <div class="p-4 p-md-5 bg-white rounded-4 border shadow-sm">
+            <h3 class="fw-bold text-dark mb-1">Send Us a Direct Message</h3>
+            <p class="text-secondary small mb-4">Fill out the form below and our team will get back to you promptly.</p>
+
+            @if (submitted) {
+              <div class="alert alert-success d-flex align-items-center gap-2 rounded-3 mb-4">
+                <i class="fa-solid fa-circle-check fs-4"></i>
+                <div>
+                  <strong>Thank you!</strong> Your message has been sent successfully. One of our support concierges will respond within a few hours.
+                </div>
+              </div>
+            }
+
+            <form (submit)="onSubmit($event)" class="d-flex flex-column gap-3">
+              <div class="row g-3">
+                <div class="col-12 col-sm-6">
+                  <label class="form-label small fw-bold text-dark">Your Name *</label>
+                  <input type="text" class="form-control rounded-3" [(ngModel)]="name" name="name" placeholder="e.g. Rahul Sharma" required>
+                </div>
+                <div class="col-12 col-sm-6">
+                  <label class="form-label small fw-bold text-dark">Email Address *</label>
+                  <input type="email" class="form-control rounded-3" [(ngModel)]="email" name="email" placeholder="rahul@example.com" required>
+                </div>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-12 col-sm-6">
+                  <label class="form-label small fw-bold text-dark">Inquiry Subject</label>
+                  <select class="form-select rounded-3" [(ngModel)]="subject" name="subject">
+                    <option value="Order Tracking & Support">Order Tracking &amp; Status</option>
+                    <option value="Product or Ingredient Inquiry">Product / Ingredient Query</option>
+                    <option value="Homeopathy Dispensary Question">Homeopathy Dispensary Question</option>
+                    <option value="Become a Seller / Supplier">Become a Seller / Maker</option>
+                    <option value="Bulk Festive Order">Bulk / Festive Gifting Order</option>
+                    <option value="Feedback / Other">General Feedback</option>
+                  </select>
+                </div>
+                <div class="col-12 col-sm-6">
+                  <label class="form-label small fw-bold text-dark">Order ID (Optional)</label>
+                  <input type="text" class="form-control rounded-3" [(ngModel)]="orderId" name="orderId" placeholder="e.g. DST-98214">
+                </div>
+              </div>
+
+              <div>
+                <label class="form-label small fw-bold text-dark">Your Message *</label>
+                <textarea class="form-control rounded-3" rows="5" [(ngModel)]="message" name="message" placeholder="How can we assist you today?" required></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary rounded-pill py-2.5 px-4 fw-bold align-self-start mt-2" style="background-color: #1748D8;">
+                Send Message <i class="fa-solid fa-paper-plane ms-1"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right: Global Offices & FAQ -->
+        <div class="col-12 col-lg-5">
+          <div class="d-flex flex-column gap-4">
+            
+            <!-- Global Offices Card -->
+            <div class="p-4 bg-white rounded-4 border shadow-sm">
+              <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-building text-primary"></i>
+                <span>Global Operational Hubs</span>
+              </h5>
+              
+              <div class="d-flex flex-column gap-3">
+                @for (office of offices; track office.city) {
+                  <div class="border-bottom pb-3 last-no-border">
+                    <span class="fw-bold text-dark d-block mb-1" style="font-size: 14px;">{{ office.city }}</span>
+                    <span class="text-secondary small">{{ office.address }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Need Quick Answers Card -->
+            <div class="p-4 rounded-4 text-white shadow-sm" style="background: linear-gradient(135deg, #1748D8 0%, #1e3a8a 100%);">
+              <h5 class="fw-bold mb-2">Looking for a Specific Item?</h5>
+              <p class="text-white-50 small mb-3">
+                Can't find your hometown's specific brand of pickles, temple prasadam, or regional snack? Tell us and we'll source it for you!
+              </p>
+              <a routerLink="/products" class="btn btn-light rounded-pill btn-sm px-3 py-2 fw-bold text-dark">
+                Explore Current Collections
+              </a>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<app-footer></app-footer>

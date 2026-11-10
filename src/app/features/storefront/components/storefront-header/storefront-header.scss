@@ -1,0 +1,149 @@
+// Storefront Header Custom Styles
+
+:host {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+}
+
+.site-header {
+  position: relative;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.bottom-nav-bar {
+  position: relative;
+
+  .cat-nav-link {
+    color: #1f2937;
+    transition: color 0.15s ease-in-out;
+    
+    i, svg {
+      transition: color 0.15s ease-in-out, stroke 0.15s ease-in-out;
+    }
+
+    &:hover {
+      color: #1748D8 !important;
+
+      i {
+        color: #1748D8 !important;
+      }
+
+      svg {
+        stroke: #1748D8 !important;
+      }
+    }
+  }
+
+  // Smooth scrollbar hiding for horizontal overflow
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+// Mega Menu Backdrop & Panel
+.mega-menu-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.35);
+  z-index: 1040;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.mega-menu-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1050;
+  background-color: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 2px solid #e5e7eb;
+  box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.12), 0 10px 15px -5px rgba(0, 0, 0, 0.05);
+  animation: slideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+  .mega-menu-sidebar {
+    background-color: #ffffff;
+    border-right: 1px solid #e5e7eb;
+  }
+
+  .mega-cat-btn {
+    border-left: 3px solid transparent;
+    color: #374151;
+    transition: all 0.15s ease;
+
+    &:hover {
+      background-color: #f9fafb;
+      color: #111827;
+    }
+
+    &.active {
+      background-color: #f0fdf4;
+      border-left: 3px solid #16a34a !important;
+      color: #166534 !important;
+      font-weight: 600;
+
+      .cat-name {
+        color: #166534;
+        font-weight: 600;
+      }
+
+      .fa-chevron-right {
+        color: #16a34a !important;
+      }
+    }
+  }
+
+  .mega-subcat-link {
+    color: #4b5563;
+    transition: all 0.15s ease;
+
+    &:hover {
+      color: #1748D8 !important;
+      transform: translateX(3px);
+    }
+  }
+
+  .promo-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08) !important;
+    }
+  }
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

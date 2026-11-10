@@ -1,0 +1,280 @@
+<div class="order-summary-container">
+  
+  <!-- Selected Address Summary Callout Banner -->
+  @if (checkoutService.selectedAddress(); as addr) {
+    <div class="selected-address-banner bg-white border rounded-4 p-3.5 mb-4 shadow-xs d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="banner-icon-box rounded-circle d-flex align-items-center justify-content-center text-primary bg-primary bg-opacity-10">
+          <i class="fa-solid fa-truck-fast"></i>
+        </div>
+        <div>
+          <div class="d-flex align-items-center gap-2 mb-0.5">
+            <span class="text-uppercase fw-bold text-secondary" style="font-size: 11px; letter-spacing: 0.5px;">DELIVERING TO</span>
+            <span class="badge bg-light text-dark border rounded-pill fw-bold" style="font-size: 10px;">{{ addr.type }}</span>
+          </div>
+          <span class="fw-bold text-dark me-2">{{ addr.name }}</span>
+          <span class="text-secondary small">{{ addr.houseAddress }}, {{ addr.locality }}, {{ addr.city }} - {{ addr.pincode }}</span>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-bold" (click)="changeAddress()">
+        Change Address
+      </button>
+    </div>
+  }
+
+  <!-- Main Grid: Left Items List + Right Price Breakdown -->
+  <div class="row g-4 align-items-start">
+    
+    <!-- Left Column: Products List -->
+    <div class="col-12 col-lg-7 col-xl-8">
+      
+      <!-- Section Header -->
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h2 class="h5 fw-bold text-dark mb-0">
+          Order Items ({{ cartService.totalQuantity() }})
+        </h2>
+        <span class="text-secondary small">
+          Shipped with certified eco-friendly packaging
+        </span>
+      </div>
+
+      <!-- Empty State Guard -->
+      @if (cartService.items().length === 0) {
+        <div class="empty-cart-card bg-white border rounded-4 p-5 text-center shadow-xs">
+          <div class="empty-icon-circle rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3">
+            <i class="fa-solid fa-cart-shopping fs-3 text-secondary"></i>
+          </div>
+          <h5 class="fw-bold text-dark mb-2">Your shopping cart is empty</h5>
+          <p class="text-secondary small mb-4">Add your favourite products to continue with checkout.</p>
+          <a routerLink="/products" class="btn btn-primary rounded-pill px-4 fw-bold">
+            Explore All Products
+          </a>
+        </div>
+      } @else {
+        <div class="items-list-card bg-white border rounded-4 shadow-xs overflow-hidden mb-4">
+          @for (item of cartService.items(); track item.id; let last = $last) {
+            <div class="item-row p-3 p-md-3.5 d-flex align-items-center justify-content-between flex-wrap gap-3"
+                 [class.border-bottom]="!last">
+              
+              <!-- Item Thumbnail & Info -->
+              <div class="d-flex align-items-center gap-3 item-main-info flex-grow-1">
+                <div class="item-img-container rounded-3 bg-light border p-1 d-flex align-items-center justify-content-center flex-shrink-0">
+                  <img [src]="item.image" 
+                       [alt]="item.name" 
+                       class="img-fluid item-thumb" 
+                       (error)="onImageError($event)">
+                </div>
+
+                <div class="d-flex flex-column lh-sm">
+                  <span class="badge bg-light text-primary border rounded-pill fw-bold mb-1 align-self-start" style="font-size: 10px;">
+                    SKU: {{ item.productId.padStart(4, '0') }}
+                  </span>
+                  <h6 class="fw-bold text-dark mb-1 item-name" [title]="item.name">
+                    {{ item.name }}
+                  </h6>
+                  <div class="d-flex align-items-center gap-2 text-secondary small flex-wrap">
+                    @if (item.brand) {
+                      <span class="text-uppercase fw-semibold">{{ item.brand }}</span>
+                      <span class="bullet-dot">•</span>
+                    }
+                    <span>{{ item.variant || 'Standard 1 Unit' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Price, Stepper & Delete Actions -->
+              <div class="d-flex align-items-center justify-content-between gap-4 item-actions-right">
+                
+                <!-- Unit Stepper -->
+                <div class="item-stepper d-inline-flex align-items-center border rounded-pill bg-white px-2 py-1">
+                  <button type="button" 
+                          class="btn-step" 
+                          (click)="decrementItem(item)"
+                          aria-label="Decrease quantity">
+                    <i class="fa-solid fa-minus"></i>
+                  </button>
+                  <span class="step-qty fw-bold text-dark px-2.5">{{ item.quantity }}</span>
+                  <button type="button" 
+                          class="btn-step" 
+                          (click)="incrementItem(item)"
+                          aria-label="Increase quantity">
+                    <i class="fa-solid fa-plus"></i>
+                  </button>
+                </div>
+
+                <!-- Price Column -->
+                <div class="text-end" style="min-width: 80px;">
+                  <span class="fw-bold text-dark d-block fs-6">
+                    ${{ (item.price * item.quantity) | number: '1.2-2' }}
+                  </span>
+                  @if (item.quantity > 1) {
+                    <span class="text-muted" style="font-size: 11px;">
+                      (${{ item.price | number: '1.2-2' }} each)
+                    </span>
+                  }
+                </div>
+
+                <!-- Delete Trash Button -->
+                <button type="button" 
+                        class="btn btn-link text-danger p-1" 
+                        (click)="removeItem(item)"
+                        title="Remove product">
+                  <i class="fa-regular fa-trash-can"></i>
+                </button>
+
+              </div>
+
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Back Link -->
+      <div class="d-flex align-items-center gap-2 mt-3">
+        <button type="button" class="btn btn-link text-secondary text-decoration-none p-0 fw-semibold small" (click)="backToAddress()">
+          <i class="fa-solid fa-arrow-left me-1"></i>Back to Delivery Address
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Price Breakdown & Coupon Sidebar -->
+    <div class="col-12 col-lg-5 col-xl-4">
+      <div class="price-breakdown-card bg-white border rounded-4 p-4 shadow-xs position-sticky" style="top: 90px;">
+        
+        <h5 class="fw-bold text-dark mb-3 pb-2 border-bottom">
+          Price Details
+        </h5>
+
+        <!-- Coupon Box -->
+        <div class="coupon-section mb-3 pb-3 border-bottom">
+          <label class="form-label text-dark fw-bold small mb-1.5 d-flex align-items-center justify-content-between">
+            <span><i class="fa-solid fa-tag text-primary me-1.5"></i>Apply Coupon Code</span>
+          </label>
+
+          @if (checkoutService.appliedCoupon(); as cpn) {
+            <div class="applied-coupon-pill bg-success bg-opacity-10 border border-success border-opacity-25 rounded-3 p-2.5 d-flex align-items-center justify-content-between mb-2">
+              <div class="d-flex align-items-center gap-2">
+                <i class="fa-solid fa-circle-check text-success"></i>
+                <div>
+                  <span class="fw-bold text-dark font-monospace small">{{ cpn.code }}</span>
+                  <span class="d-block text-success fw-semibold" style="font-size: 11px;">Coupon applied successfully</span>
+                </div>
+              </div>
+              <button type="button" class="btn-remove-coupon" (click)="removeCoupon()" title="Remove coupon">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          } @else {
+            <div class="input-group mb-2">
+              <input type="text" 
+                     class="form-control bg-light text-uppercase font-monospace" 
+                     placeholder="Enter promo code" 
+                     [(ngModel)]="couponInput" 
+                     (keyup.enter)="applyCouponCode()">
+              <button type="button" 
+                      class="btn btn-primary px-3 fw-bold" 
+                      [disabled]="!couponInput.trim()"
+                      (click)="applyCouponCode()">
+                Apply
+              </button>
+            </div>
+          }
+
+          <!-- Feedback notification -->
+          @if (couponMessage) {
+            <div class="alert p-2 rounded-2 mb-2 small"
+                 [class.alert-success]="couponMessage.type === 'success'"
+                 [class.alert-danger]="couponMessage.type === 'error'">
+              {{ couponMessage.text }}
+            </div>
+          }
+
+          <!-- Quick Suggestion Chips -->
+          @if (!checkoutService.appliedCoupon()) {
+            <div class="coupon-chips-strip d-flex align-items-center gap-1.5 flex-wrap mt-2">
+              <span class="text-muted" style="font-size: 11px;">Try:</span>
+              @for (cpn of checkoutService.availableCoupons; track cpn.code) {
+                <button type="button" 
+                        class="btn-coupon-chip border rounded-pill px-2 py-0.5" 
+                        (click)="applyCouponCode(cpn.code)"
+                        [title]="cpn.description">
+                  <span class="font-monospace fw-bold">{{ cpn.code }}</span>
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Calculated Lines -->
+        <div class="price-lines d-flex flex-column gap-2 mb-3 pb-3 border-bottom small">
+          <!-- Subtotal -->
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="text-secondary">Price ({{ cartService.totalQuantity() }} items)</span>
+            <span class="text-dark fw-semibold">${{ checkoutService.priceBreakdown().subtotal | number: '1.2-2' }}</span>
+          </div>
+
+          <!-- Retail Savings -->
+          @if (checkoutService.priceBreakdown().savings > 0) {
+            <div class="d-flex align-items-center justify-content-between text-success">
+              <span>Retail Discount / Savings</span>
+              <span class="fw-semibold">-${{ checkoutService.priceBreakdown().savings | number: '1.2-2' }}</span>
+            </div>
+          }
+
+          <!-- Coupon Discount -->
+          @if (checkoutService.priceBreakdown().couponDiscount > 0) {
+            <div class="d-flex align-items-center justify-content-between text-success">
+              <span>Coupon Discount ({{ checkoutService.appliedCoupon()?.code }})</span>
+              <span class="fw-semibold">-${{ checkoutService.priceBreakdown().couponDiscount | number: '1.2-2' }}</span>
+            </div>
+          }
+
+          <!-- Delivery Charges -->
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="text-secondary">Delivery Charges</span>
+            @if (checkoutService.priceBreakdown().shipping === 0) {
+              <span class="text-success fw-bold">FREE</span>
+            } @else {
+              <span class="text-dark fw-semibold">${{ checkoutService.priceBreakdown().shipping | number: '1.2-2' }}</span>
+            }
+          </div>
+
+          <!-- Taxes -->
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="text-secondary">Estimated Taxes & Fees (5%)</span>
+            <span class="text-dark fw-semibold">${{ checkoutService.priceBreakdown().tax | number: '1.2-2' }}</span>
+          </div>
+        </div>
+
+        <!-- Final Total -->
+        <div class="d-flex align-items-baseline justify-content-between mb-4">
+          <span class="fw-bold text-dark fs-5">Total Amount</span>
+          <span class="fw-bold text-dark fs-4">
+            ${{ checkoutService.priceBreakdown().finalTotal | number: '1.2-2' }}
+          </span>
+        </div>
+
+        <!-- CTA Button -->
+        <button type="button" 
+                class="btn btn-primary w-100 rounded-pill py-2.5 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm"
+                [disabled]="cartService.items().length === 0"
+                (click)="goToPayment()">
+          <span>Continue to Payment</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+
+        <!-- Security Trust Badge -->
+        <div class="text-center mt-3 pt-2 text-muted" style="font-size: 11.5px;">
+          <i class="fa-solid fa-lock text-success me-1"></i>
+          <span>Safe & Secure 256-Bit SSL Encrypted Checkout</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+

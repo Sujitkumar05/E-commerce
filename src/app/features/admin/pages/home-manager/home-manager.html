@@ -1,0 +1,309 @@
+<div class="home-manager-container">
+  <!-- PAGE HEADER & BREADCRUMBS -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">Storefront Home Manager</h1>
+      <div class="breadcrumbs">
+        <span>Admin</span>
+        <i class="bi bi-chevron-right"></i>
+        <span>Storefront</span>
+        <i class="bi bi-chevron-right"></i>
+        <span class="active-crumb">Home Layout</span>
+      </div>
+      <p class="page-desc">
+        Configure, reorder, enable, or customize the dynamic sections rendered on the storefront homepage.
+      </p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="saveAllLayout()">
+        <i class="bi bi-cloud-arrow-up"></i>
+        <span>Publish Layout</span>
+      </button>
+      <button class="btn btn-primary" (click)="openAddModal()">
+        <i class="bi bi-plus-lg"></i>
+        <span>Add Section</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- STATS BAR -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon-wrapper bg-blue-soft">
+        <i class="bi bi-layers-fill"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Total Sections</span>
+        <h3 class="stat-value">{{ sections.length }}</h3>
+        <span class="stat-sub">Configured layout blocks</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon-wrapper bg-emerald-soft">
+        <i class="bi bi-eye-fill"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Active on Home</span>
+        <h3 class="stat-value">{{ activeCount }}</h3>
+        <span class="stat-sub">Visible to customers</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon-wrapper bg-amber-soft">
+        <i class="bi bi-eye-slash-fill"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Hidden / Draft</span>
+        <h3 class="stat-value">{{ inactiveCount }}</h3>
+        <span class="stat-sub">Disabled from display</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTROLS & FILTER BAR -->
+  <div class="table-card">
+    <div class="filter-bar">
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Search by section name, tag, or component..."
+        />
+        @if (searchTerm) {
+          <button class="clear-search" (click)="searchTerm = ''">
+            <i class="bi bi-x"></i>
+          </button>
+        }
+      </div>
+
+      <div class="filter-controls">
+        <div class="select-wrapper">
+          <label>Type:</label>
+          <select [(ngModel)]="typeFilter">
+            <option value="All">All Types</option>
+            <option value="Hero">Hero</option>
+            <option value="Showcase">Showcase</option>
+            <option value="Grid">Grid</option>
+            <option value="Banner">Banner</option>
+            <option value="Features">Features</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTIONS LIST -->
+    <div class="sections-list">
+      @if (filteredSections.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon"><i class="bi bi-search"></i></div>
+          <h4>No sections found</h4>
+          <p>Try refining your search or filter criteria, or add a new section.</p>
+        </div>
+      }
+
+      @for (sec of filteredSections; track sec.id; let idx = $index) {
+        <div class="section-item-card" [class.disabled-section]="!sec.enabled">
+          <!-- Order & Move Handles -->
+          <div class="order-col">
+            <span class="order-badge">#{{ sec.order }}</span>
+            <div class="move-btns">
+              <button
+                class="btn-icon"
+                (click)="moveUp(idx)"
+                [disabled]="idx === 0"
+                title="Move Up"
+              >
+                <i class="bi bi-chevron-up"></i>
+              </button>
+              <button
+                class="btn-icon"
+                (click)="moveDown(idx)"
+                [disabled]="idx === filteredSections.length - 1"
+                title="Move Down"
+              >
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Section Preview / Thumbnail -->
+          <div class="preview-col">
+            <div class="thumb-container">
+              <img [src]="sec.previewImage" [alt]="sec.name" loading="lazy" />
+              <span class="type-pill" [attr.data-type]="sec.type">{{ sec.type }}</span>
+            </div>
+          </div>
+
+          <!-- Section Info -->
+          <div class="info-col">
+            <div class="info-header">
+              <span class="tag-label">{{ sec.tag }}</span>
+              <h3 class="section-title">{{ sec.name }}</h3>
+            </div>
+            <p class="section-desc">{{ sec.description }}</p>
+            <div class="meta-row">
+              <span class="meta-item">
+                <i class="bi bi-code-slash"></i>
+                <code>{{ sec.componentName }}</code>
+              </span>
+              <span class="meta-item">
+                <i class="bi bi-boxes"></i>
+                <span>{{ sec.itemsCount }} items</span>
+              </span>
+              <span class="meta-item">
+                <i class="bi bi-clock"></i>
+                <span>Updated {{ sec.lastUpdated }}</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Status & Actions -->
+          <div class="actions-col">
+            <!-- Toggle Active / Inactive -->
+            <label class="switch-control" [title]="sec.enabled ? 'Click to disable' : 'Click to enable'">
+              <input
+                type="checkbox"
+                [checked]="sec.enabled"
+                (change)="toggleSectionEnabled(sec)"
+              />
+              <span class="slider"></span>
+              <span class="status-text">{{ sec.enabled ? 'Visible' : 'Hidden' }}</span>
+            </label>
+
+            <!-- Action Buttons -->
+            <div class="btn-group">
+              <button
+                class="action-btn edit"
+                (click)="openEditModal(sec)"
+                title="Edit Section"
+              >
+                <i class="bi bi-pencil-square"></i>
+              </button>
+              <button
+                class="action-btn delete"
+                (click)="deleteSection(sec)"
+                title="Delete Section"
+              >
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- ADD / EDIT MODAL DRAWER -->
+  @if (isModalOpen) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>{{ isEditing ? 'Edit Section' : 'Add New Section' }}</h2>
+          <button class="close-btn" (click)="closeModal()" aria-label="Close modal">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <form (ngSubmit)="saveSection()" class="modal-body">
+          <div class="form-group">
+            <label>Section Name *</label>
+            <input
+              type="text"
+              name="sectionName"
+              [(ngModel)]="currentSection.name"
+              placeholder="e.g. Hero Banner Showcase"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Section Sub-Tag / Subtitle</label>
+              <input
+                type="text"
+                name="sectionTag"
+                [(ngModel)]="currentSection.tag"
+                placeholder="e.g. PREMIUM PROMOTIONS"
+              />
+            </div>
+            <div class="form-group">
+              <label>Section Type</label>
+              <select name="sectionType" [(ngModel)]="currentSection.type">
+                <option value="Hero">Hero</option>
+                <option value="Showcase">Showcase</option>
+                <option value="Grid">Grid</option>
+                <option value="Banner">Banner</option>
+                <option value="Features">Features</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Component / Selector</label>
+              <input
+                type="text"
+                name="componentName"
+                [(ngModel)]="currentSection.componentName"
+                placeholder="e.g. <app-hero-banner>"
+              />
+            </div>
+            <div class="form-group">
+              <label>Items Display Count</label>
+              <input
+                type="number"
+                name="itemsCount"
+                [(ngModel)]="currentSection.itemsCount"
+                min="1"
+                max="24"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Preview Image URL</label>
+            <input
+              type="text"
+              name="previewImage"
+              [(ngModel)]="currentSection.previewImage"
+              placeholder="/images/wellness/wellness-banner.jpg"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Description</label>
+            <textarea
+              name="description"
+              [(ngModel)]="currentSection.description"
+              rows="3"
+              placeholder="Brief details about what this section renders..."
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input
+                type="checkbox"
+                name="sectionEnabled"
+                [(ngModel)]="currentSection.enabled"
+              />
+              <span>Enable this section on the storefront homepage</span>
+            </label>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">
+              {{ isEditing ? 'Update Section' : 'Create Section' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

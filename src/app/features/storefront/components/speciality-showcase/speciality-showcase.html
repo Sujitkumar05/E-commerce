@@ -1,0 +1,148 @@
+<section class="speciality-section py-5 bg-white position-relative overflow-hidden">
+  <div class="container-fluid px-3 px-lg-5">
+    
+    <!-- Section Header Row -->
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4 pb-2">
+      <div>
+        <!-- Micro Tag -->
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="rounded-circle pulse-dot" style="width: 8px; height: 8px; background-color: #1748D8;"></span>
+          <span class="text-uppercase fw-bold text-secondary" style="font-size: 11.5px; letter-spacing: 1px;">
+            AUTHENTIC TRADITIONS & ESSENTIALS
+          </span>
+        </div>
+        
+        <!-- Main Title -->
+        <h2 class="display-6 fw-bold text-dark mb-1" style="font-weight: 800; letter-spacing: -0.6px;">
+          Regional <span style="color: #1748D8;">Specialities</span>
+        </h2>
+        
+        <!-- Subtitle -->
+        <p class="text-secondary mb-0" style="font-size: 14.5px;">
+          Handcrafted heritage delicacies, cultured ghee, stone-ground snacks, and regional staples.
+        </p>
+      </div>
+
+      <!-- Controls: Navigation Arrows & View All Button -->
+      <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2 me-2">
+          <button type="button" 
+                  class="btn carousel-nav-btn rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                  (click)="scrollProducts('left')"
+                  aria-label="Scroll left">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <button type="button" 
+                  class="btn carousel-nav-btn rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                  (click)="scrollProducts('right')"
+                  aria-label="Scroll right">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+
+        <a [routerLink]="['/products']" [queryParams]="{ category: 'pantry' }" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2 view-all-btn">
+          <span>Explore all</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- 8 Clean Box-Style Image Cards Row -->
+    <div class="box-products-grid d-flex gap-3 overflow-x-auto no-scrollbar pb-3 mb-5" id="boxProductsGrid">
+      @for (prod of products; track prod.id) {
+        <div class="product-item-wrapper d-flex flex-column text-center"
+             [routerLink]="['/product', prod.id]"
+             role="button"
+             style="cursor: pointer;">
+          
+          <!-- Box-Style Image Card (Consistent with Signature Picks) -->
+          <div class="box-card position-relative rounded-4 overflow-hidden d-flex align-items-center justify-content-center shadow-sm mb-3"
+               [style.background]="prod.bgGradient">
+            
+            <!-- Wishlist Heart Button -->
+            <button type="button" 
+                    class="btn wishlist-btn position-absolute rounded-circle shadow-sm d-flex align-items-center justify-content-center p-0"
+                    [class.active]="prod.isFavorite"
+                    (click)="toggleFavorite(prod, $event)"
+                    aria-label="Add to Wishlist">
+              <i [class]="prod.isFavorite ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart text-danger'"></i>
+            </button>
+
+            <!-- Ambient Glow Effect (from Signature Picks) -->
+            <div class="ambient-glow" [style.background]="prod.themeColor"></div>
+
+            <!-- Prominent Product Image -->
+            <img [src]="prod.image" [alt]="prod.name" class="img-fluid box-product-image" loading="lazy" decoding="async">
+
+            <!-- Verified Brand Pill Badge -->
+            @if (prod.isVerified) {
+              <div class="verified-badge position-absolute d-inline-flex align-items-center gap-1 px-2 py-0.5 rounded-pill shadow-sm bg-white">
+                <span class="badge-icon rounded-circle d-inline-flex align-items-center justify-content-center">
+                  <i class="fa-solid fa-check"></i>
+                </span>
+                <span class="badge-text fw-bold">VERIFIED</span>
+              </div>
+            }
+          </div>
+
+          <!-- Neat Product Details Below Image (Product Name & Brand Name) -->
+          <div class="box-details text-center">
+            <!-- Product / Category Name -->
+            <h3 class="product-name fw-bold mb-1" [title]="prod.name">
+              {{ prod.name }}
+            </h3>
+
+            <!-- Brand Name Neatly Displayed Below with Proper Spacing -->
+            <span class="product-brand text-uppercase fw-bold text-secondary mb-1 d-block text-truncate" [title]="prod.brand">
+              {{ prod.brand }}
+            </span>
+
+            <!-- Rating Bar -->
+            <div class="rating-bar d-inline-flex align-items-center justify-content-center gap-1 mt-1">
+              <div class="stars d-inline-flex align-items-center gap-0.5 text-warning">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star-half-stroke"></i>
+              </div>
+              <span class="rating-score fw-bold text-dark ms-1">{{ prod.rating }}</span>
+            </div>
+          </div>
+
+        </div>
+      }
+    </div>
+
+    <!-- Top Brands Row (As Shown in Screenshot) -->
+    <div class="top-brands-section pt-3">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h3 class="top-brands-title fw-bold text-dark mb-0">
+          Top brands
+        </h3>
+        <span class="text-secondary fw-semibold" style="font-size: 13px;">
+          Trusted heritage partners
+        </span>
+      </div>
+
+      <!-- 8 Brand Logo Pills with Golden / Beige Borders -->
+      <div class="row g-3 top-brands-row">
+        @for (brand of topBrands; track brand.id) {
+          <div class="col-6 col-sm-4 col-md-3 col-xl">
+            <a href="#" class="brand-box-pill text-decoration-none rounded-3 d-flex flex-column align-items-center justify-content-center p-3 text-center h-100 shadow-xs">
+              <span class="brand-logo-text fw-bold" [class]="brand.fontClass">
+                {{ brand.name }}
+              </span>
+              @if (brand.tagline) {
+                <span class="brand-tagline text-muted text-uppercase fw-semibold">
+                  {{ brand.tagline }}
+                </span>
+              }
+            </a>
+          </div>
+        }
+      </div>
+    </div>
+
+  </div>
+</section>

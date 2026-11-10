@@ -1,0 +1,107 @@
+.payment-card {
+  border-color: #e2e8f0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.card-selected {
+    border-color: #1748D8 !important;
+    box-shadow: 0 4px 16px rgba(23, 72, 216, 0.12) !important;
+
+    .payment-card-header {
+      background-color: #f8faff;
+    }
+  }
+
+  .payment-card-header {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: #f8fafc;
+    }
+  }
+}
+
+.radio-indicator {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #cbd5e1;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+
+  .radio-dot {
+    width: 10px;
+    height: 10px;
+    background-color: transparent;
+    transition: all 0.2s ease;
+  }
+
+  &.radio-checked {
+    border-color: #1748D8;
+
+    .radio-dot {
+      background-color: #1748D8;
+    }
+  }
+}
+
+.method-icon-box {
+  width: 38px;
+  height: 38px;
+  font-size: 16px;
+}
+
+.upi-app-chip {
+  cursor: pointer;
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #cbd5e1;
+    background-color: #f8fafc;
+  }
+
+  &.active {
+    border-color: #1748D8 !important;
+    background-color: #eff6ff !important;
+    box-shadow: 0 0 0 2px rgba(23, 72, 216, 0.15);
+  }
+}
+
+.bank-pill {
+  cursor: pointer;
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #cbd5e1;
+  }
+
+  &.active {
+    border-color: #1748D8 !important;
+    background-color: #eff6ff !important;
+    box-shadow: 0 0 0 2px rgba(23, 72, 216, 0.15);
+  }
+}
+
+.captcha-badge {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  letter-spacing: 4px;
+  user-select: none;
+}
+
+.pay-now-btn {
+  font-size: 15px;
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #133cb5;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(23, 72, 216, 0.3) !important;
+  }
+}
+

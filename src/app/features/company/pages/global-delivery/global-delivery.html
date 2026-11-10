@@ -1,0 +1,130 @@
+<app-storefront-header></app-storefront-header>
+
+<main class="store-global-page bg-light min-vh-100">
+  
+  <!-- Hero Section -->
+  <section class="global-hero text-white py-5 position-relative overflow-hidden" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%);">
+    <div class="container-fluid px-3 px-lg-5 py-4 position-relative z-2">
+      
+      <!-- Breadcrumb -->
+      <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb" style="font-size: 13px;">
+          <li class="breadcrumb-item"><a routerLink="/" class="text-white-50 text-decoration-none"><i class="fa-solid fa-house me-1"></i>Home</a></li>
+          <li class="breadcrumb-item active text-white" aria-current="page">Global Delivery</li>
+        </ol>
+      </nav>
+
+      <div class="row align-items-center g-4">
+        <div class="col-12 col-lg-7">
+          <span class="badge rounded-pill bg-white text-dark fw-bold px-3 py-1.5 mb-3 shadow-xs" style="color: #4338ca !important; font-size: 11.5px; letter-spacing: 0.8px;">
+            INTERNATIONAL CROSS-BORDER LOGISTICS
+          </span>
+          <h1 class="display-4 fw-bold mb-3" style="letter-spacing: -1px; line-height: 1.15;">
+            Your Store Global: Sourced in India, Delivered to 45+ Nations
+          </h1>
+          <p class="lead text-white-50 mb-4" style="font-size: 17px; line-height: 1.6; max-width: 680px;">
+            Our proprietary international fulfillment network bridges the gap between authentic Indian master artisans, confectionery kitchens, and global homes with express customs clearance and doorstep delivery.
+          </p>
+          <div class="d-flex flex-wrap align-items-center gap-3">
+            <a routerLink="/products" class="btn btn-light rounded-pill px-4 py-2.5 fw-bold text-dark shadow-sm">
+              Shop International Delivery
+            </a>
+            <a routerLink="/homeopathy" class="btn btn-outline-light rounded-pill px-4 py-2.5 fw-semibold">
+              Browse Homeopathy Worldwide
+            </a>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-5">
+          <div class="p-4 rounded-4 bg-white bg-opacity-10 border border-white border-opacity-20 shadow-lg backdrop-blur">
+            <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+              <i class="fa-solid fa-plane-up text-warning"></i>
+              <span>Global Dispatch Guarantee</span>
+            </h5>
+            <ul class="list-unstyled d-flex flex-column gap-2.5 mb-0 text-white-50 small">
+              <li class="d-flex align-items-start gap-2">
+                <i class="fa-solid fa-circle-check text-success mt-1"></i>
+                <span class="text-white"><strong>Pre-Cleared Customs:</strong> Zero surprise import levies for customers.</span>
+              </li>
+              <li class="d-flex align-items-start gap-2">
+                <i class="fa-solid fa-circle-check text-success mt-1"></i>
+                <span class="text-white"><strong>Fresh Batch Promise:</strong> Confections baked and dispatched within 24 hours.</span>
+              </li>
+              <li class="d-flex align-items-start gap-2">
+                <i class="fa-solid fa-circle-check text-success mt-1"></i>
+                <span class="text-white"><strong>Secure Amber Packaging:</strong> Fragile homeopathy glass sealed in tamper-proof liners.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Global Features Grid -->
+  <section class="py-5 bg-white border-bottom">
+    <div class="container-fluid px-3 px-lg-5">
+      <div class="text-center max-w-700 mx-auto mb-5">
+        <span class="text-uppercase fw-bold text-indigo small" style="letter-spacing: 1.2px; color: #4338ca;">CROSS-BORDER ADVANTAGE</span>
+        <h2 class="fw-bold text-dark mb-2">How Your Store Global Delivers What Local Stores Cannot</h2>
+        <p class="text-secondary small">Engineered specifically for temperature-sensitive food items, liquid botanical tinctures, and fragile handicrafts.</p>
+      </div>
+
+      <div class="row g-4">
+        @for (feat of features; track feat.title) {
+          <div class="col-12 col-sm-6 col-lg-3">
+            <div class="p-4 rounded-4 border bg-light h-100 shadow-xs hover-lift transition-all">
+              <div class="rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 44px; height: 44px; background: #e0e7ff; color: #4338ca;">
+                <i [class]="'fa-solid ' + feat.icon" style="font-size: 18px;"></i>
+              </div>
+              <h5 class="fw-bold text-dark mb-2" style="font-size: 16px;">{{ feat.title }}</h5>
+              <p class="text-secondary small mb-0 lh-base">{{ feat.desc }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- International Hubs & Delivery Transit Times -->
+  <section class="py-5 bg-light">
+    <div class="container-fluid px-3 px-lg-5">
+      <div class="text-center max-w-700 mx-auto mb-5">
+        <span class="text-uppercase fw-bold text-indigo small" style="letter-spacing: 1.2px; color: #4338ca;">GLOBAL COVERAGE</span>
+        <h2 class="fw-bold text-dark mb-2">Active Country Delivery Corridors</h2>
+        <p class="text-secondary small">Express air routes serving thousands of major cities worldwide.</p>
+      </div>
+
+      <div class="row g-4">
+        @for (hub of globalHubs; track hub.code) {
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="p-4 rounded-4 bg-white border h-100 shadow-xs">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="fs-4">{{ hub.flag }}</span>
+                  <h5 class="fw-bold text-dark m-0">{{ hub.country }}</h5>
+                </div>
+                <span class="badge bg-indigo-subtle text-indigo fw-bold rounded-pill px-3 py-1" style="background-color: #e0e7ff; color: #4338ca;">
+                  {{ hub.code }}
+                </span>
+              </div>
+              
+              <div class="d-flex align-items-center gap-2 text-success small fw-semibold mb-2">
+                <i class="fa-solid fa-bolt"></i>
+                <span>Typical Transit: {{ hub.eta }}</span>
+              </div>
+
+              <div class="text-secondary small">
+                <strong class="text-dark">Key Cities:</strong> {{ hub.cities }}
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<app-footer></app-footer>

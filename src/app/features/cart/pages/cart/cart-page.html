@@ -1,0 +1,325 @@
+<app-storefront-header></app-storefront-header>
+
+<main class="cart-page-main py-4 py-lg-5 bg-light min-vh-100">
+  <div class="container-fluid px-3 px-lg-5">
+
+    <!-- Breadcrumb Row -->
+    <nav aria-label="breadcrumb" class="mb-4">
+      <ol class="breadcrumb" style="font-size: 13.5px;">
+        <li class="breadcrumb-item">
+          <a routerLink="/" class="text-decoration-none text-secondary">
+            <i class="fa-solid fa-house me-1"></i>Home
+          </a>
+        </li>
+        <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">
+          Shopping Cart
+        </li>
+      </ol>
+    </nav>
+
+    <!-- Page Title Header -->
+    <div class="d-flex flex-wrap align-items-baseline justify-content-between gap-2 mb-4 pb-2 border-bottom">
+      <div class="d-flex align-items-center gap-3">
+        <h1 class="display-6 fw-bold text-dark m-0" style="letter-spacing: -0.5px;">
+          Shopping Cart
+        </h1>
+        <span class="badge rounded-pill bg-primary px-3 py-1.5 fw-semibold" style="font-size: 13px; background-color: #1748D8 !important;">
+          {{ cartService.totalQuantity() }} {{ cartService.totalQuantity() === 1 ? 'item' : 'items' }}
+        </span>
+      </div>
+
+      @if (!cartService.isEmpty()) {
+        <a routerLink="/" class="text-decoration-none fw-semibold d-inline-flex align-items-center gap-1.5" style="color: #1748D8; font-size: 14px;">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>Continue Shopping</span>
+        </a>
+      }
+    </div>
+
+    <!-- Cart Layout: Items + Order Summary -->
+    @if (!cartService.isEmpty()) {
+      <div class="row g-4">
+        
+        <!-- Left Column: Cart Items List -->
+        <div class="col-12 col-lg-8">
+          
+          <!-- Free Shipping Progress Notice -->
+          <div class="shipping-notice-box bg-white rounded-4 border p-3 mb-3 d-flex align-items-center gap-3 shadow-xs">
+            <span class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" 
+                  style="width: 40px; height: 40px; background-color: #eff6ff; color: #1748D8;">
+              <i class="fa-solid fa-truck-fast"></i>
+            </span>
+            <div class="flex-grow-1">
+              @if (cartService.subtotal() >= 50) {
+                <span class="fw-bold text-success d-block" style="font-size: 13.5px;">
+                  <i class="fa-solid fa-circle-check me-1"></i>You've unlocked FREE International Delivery!
+                </span>
+                <span class="text-muted" style="font-size: 12px;">Standard orders over $50 qualify for free express shipping.</span>
+              } @else {
+                <span class="fw-bold text-dark d-block" style="font-size: 13.5px;">
+                  Add ${{ (50 - cartService.subtotal()) | number: '1.2-2' }} more to unlock FREE International Shipping!
+                </span>
+                <div class="progress mt-1.5" style="height: 6px;">
+                  <div class="progress-bar" role="progressbar" 
+                       [style.width.%]="(cartService.subtotal() / 50) * 100" 
+                       style="background-color: #1748D8;"></div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Items Table Card -->
+          <div class="cart-items-card bg-white rounded-4 border shadow-sm overflow-hidden mb-4">
+            
+            <!-- Table Header -->
+            <div class="cart-table-header px-4 py-3 bg-light border-bottom d-none d-md-flex align-items-center justify-content-between text-secondary fw-bold text-uppercase" style="font-size: 11.5px; letter-spacing: 0.8px;">
+              <span style="flex: 2.5;">Product</span>
+              <span class="text-center" style="flex: 1;">Price</span>
+              <span class="text-center" style="flex: 1.5;">Quantity</span>
+              <span class="text-end" style="flex: 1;">Total</span>
+              <span class="text-end" style="width: 40px;"></span>
+            </div>
+
+            <!-- Items List -->
+            <div class="cart-items-list divide-y">
+              @for (item of cartService.items(); track item.id) {
+                <div class="cart-item-row p-3 p-md-4 border-bottom d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                  
+                  <!-- Product Visual & Info -->
+                  <div class="d-flex align-items-center gap-3" style="flex: 2.5;">
+                    <!-- Thumbnail Box -->
+                    <div class="cart-item-thumb-box rounded-3 overflow-hidden d-flex align-items-center justify-content-center flex-shrink-0 border bg-white p-1">
+                      <img [src]="item.image" [alt]="item.name" class="img-fluid cart-thumb-img" loading="lazy" decoding="async">
+                    </div>
+
+                    <!-- Details -->
+                    <div class="d-flex flex-column lh-sm">
+                      <span class="cart-item-brand text-uppercase fw-bold text-secondary mb-1" style="font-size: 10.5px; letter-spacing: 0.8px;">
+                        {{ item.brand }}
+                      </span>
+                      <h4 class="cart-item-title fw-bold text-dark mb-1" style="font-size: 15px;">
+                        {{ item.name }}
+                      </h4>
+                      <div class="d-flex align-items-center gap-2 mt-1">
+                        <span class="badge rounded-pill bg-light text-secondary border fw-medium px-2 py-0.5" style="font-size: 11.5px;">
+                          Pack: {{ item.variant }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Unit Price -->
+                  <div class="d-flex align-items-center justify-content-between d-md-block text-md-center" style="flex: 1;">
+                    <span class="d-md-none text-secondary fw-medium" style="font-size: 13px;">Unit Price:</span>
+                    <span class="cart-item-price fw-bold text-dark" style="font-size: 15px;">
+                      ${{ item.price | number: '1.2-2' }}
+                    </span>
+                  </div>
+
+                  <!-- Quantity Controls -->
+                  <div class="d-flex align-items-center justify-content-between justify-content-md-center" style="flex: 1.5;">
+                    <span class="d-md-none text-secondary fw-medium" style="font-size: 13px;">Quantity:</span>
+                    <div class="quantity-controller d-inline-flex align-items-center border rounded-pill bg-light p-1">
+                      <button type="button" 
+                              class="btn btn-sm btn-icon rounded-circle bg-white shadow-xs p-0 d-flex align-items-center justify-content-center"
+                              (click)="cartService.decrementQuantity(item.id)"
+                              aria-label="Decrease quantity"
+                              style="width: 28px; height: 28px;">
+                        <i class="fa-solid fa-minus" style="font-size: 10px;"></i>
+                      </button>
+                      
+                      <span class="quantity-display fw-bold text-dark px-3" style="font-size: 14px; min-width: 38px; text-align: center;">
+                        {{ item.quantity }}
+                      </span>
+
+                      <button type="button" 
+                              class="btn btn-sm btn-icon rounded-circle bg-white shadow-xs p-0 d-flex align-items-center justify-content-center"
+                              (click)="cartService.incrementQuantity(item.id)"
+                              aria-label="Increase quantity"
+                              style="width: 28px; height: 28px;">
+                        <i class="fa-solid fa-plus" style="font-size: 10px;"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Line Total -->
+                  <div class="d-flex align-items-center justify-content-between d-md-block text-md-end" style="flex: 1;">
+                    <span class="d-md-none text-secondary fw-medium" style="font-size: 13px;">Subtotal:</span>
+                    <span class="cart-line-total fw-bold text-primary fs-6" style="color: #1748D8 !important;">
+                      ${{ (item.price * item.quantity) | number: '1.2-2' }}
+                    </span>
+                  </div>
+
+                  <!-- Delete Button -->
+                  <div class="text-end" style="width: 40px;">
+                    <button type="button" 
+                            class="btn btn-link text-danger p-1 rounded-circle remove-btn" 
+                            (click)="cartService.removeItem(item.id)"
+                            title="Remove product"
+                            aria-label="Remove item">
+                      <i class="fa-regular fa-trash-can fs-6"></i>
+                    </button>
+                  </div>
+
+                </div>
+              }
+            </div>
+
+            <!-- Table Footer Actions -->
+            <div class="px-4 py-3 bg-white d-flex flex-wrap align-items-center justify-content-between gap-2 border-top">
+              <a routerLink="/" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2" style="font-size: 13.5px;">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Continue Shopping</span>
+              </a>
+
+              <button type="button" 
+                      class="btn btn-outline-danger rounded-pill px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5"
+                      (click)="cartService.clearCart()"
+                      style="font-size: 13px;">
+                <i class="fa-solid fa-trash-can"></i>
+                <span>Clear Cart</span>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Right Column: Order Summary Sidebar -->
+        <div class="col-12 col-lg-4">
+          <div class="order-summary-card bg-white rounded-4 border p-4 shadow-sm position-sticky" style="top: 24px;">
+            <h2 class="h5 fw-bold text-dark mb-4 pb-2 border-bottom">
+              Order Summary
+            </h2>
+
+            <!-- Price Breakdown Rows -->
+            <div class="d-flex flex-column gap-2 mb-3" style="font-size: 14.5px;">
+              <div class="d-flex align-items-center justify-content-between text-secondary">
+                <span>Subtotal ({{ cartService.totalQuantity() }} items)</span>
+                <span class="fw-semibold text-dark">${{ cartService.subtotal() | number: '1.2-2' }} USD</span>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-between text-secondary">
+                <span>Estimated Shipping</span>
+                @if (cartService.shipping() === 0) {
+                  <span class="badge bg-success-subtle text-success fw-bold px-2 py-1">FREE</span>
+                } @else {
+                  <span class="fw-semibold text-dark">${{ cartService.shipping() | number: '1.2-2' }} USD</span>
+                }
+              </div>
+
+              <div class="d-flex align-items-center justify-content-between text-secondary">
+                <span>Estimated Tax (5%)</span>
+                <span class="fw-semibold text-dark">${{ cartService.estimatedTax() | number: '1.2-2' }} USD</span>
+              </div>
+
+              @if (promoApplied) {
+                <div class="d-flex align-items-center justify-content-between text-success">
+                  <span>Promo Discount (10%)</span>
+                  <span class="fw-bold">-${{ promoDiscount | number: '1.2-2' }} USD</span>
+                </div>
+              }
+            </div>
+
+            <!-- Divider -->
+            <hr class="my-3">
+
+            <!-- Total Line -->
+            <div class="d-flex align-items-baseline justify-content-between mb-4">
+              <div>
+                <span class="fw-bold text-dark fs-5">Total</span>
+                <span class="text-muted d-block small">Including taxes & delivery</span>
+              </div>
+              <span class="display-6 fw-bold text-dark" style="font-size: 1.75rem; color: #111827;">
+                ${{ finalTotal | number: '1.2-2' }} USD
+              </span>
+            </div>
+
+            <!-- Promo Code Input Group -->
+            <div class="promo-box mb-4">
+              <label for="promoInput" class="form-label text-secondary fw-semibold small mb-1.5">Have a promo code?</label>
+              <div class="input-group">
+                <input id="promoInput" 
+                       type="text" 
+                       class="form-control rounded-start-pill border shadow-none" 
+                       placeholder="Try SAVE10"
+                       [(ngModel)]="promoCode"
+                       style="font-size: 13.5px;">
+                <button type="button" 
+                        class="btn btn-outline-primary rounded-end-pill px-3 fw-bold"
+                        (click)="applyPromo()"
+                        style="border-color: #1748D8; color: #1748D8; font-size: 13px;">
+                  Apply
+                </button>
+              </div>
+              @if (promoApplied) {
+                <div class="mt-1 text-success fw-semibold small d-flex align-items-center gap-1">
+                  <i class="fa-solid fa-circle-check"></i>
+                  <span>Promo code SAVE10 applied!</span>
+                </div>
+              }
+            </div>
+
+            <!-- Checkout Action Button -->
+            <button type="button" 
+                    class="btn btn-primary w-100 py-3 rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm checkout-btn mb-3"
+                    (click)="proceedToCheckout()"
+                    style="background-color: #1748D8; font-size: 15px; letter-spacing: 0.3px;">
+              <i class="fa-solid fa-lock" style="font-size: 13px;"></i>
+              <span>Proceed to Checkout</span>
+            </button>
+
+            <!-- Trust and Security Assurances -->
+            <div class="trust-assurances pt-2 d-flex flex-column gap-2 text-secondary" style="font-size: 12px;">
+              <div class="d-flex align-items-center gap-2">
+                <i class="fa-solid fa-shield-halved text-success" style="font-size: 14px;"></i>
+                <span>Checkout and payment will be enabled when secure payment processing is connected</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <i class="fa-solid fa-box-open text-primary" style="font-size: 14px; color: #1748D8 !important;"></i>
+                <span>30-Day Hassle-Free Returns</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <i class="fa-solid fa-truck-fast text-warning" style="font-size: 14px;"></i>
+                <span>Worldwide express tracked shipping</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    }
+
+    <!-- Empty Cart State -->
+    @if (cartService.isEmpty()) {
+      <div class="empty-cart-container bg-white rounded-4 border p-5 text-center shadow-sm my-4 mx-auto" style="max-width: 680px;">
+        
+        <!-- Large Empty Cart Visual -->
+        <div class="empty-cart-icon-box mx-auto mb-4 d-flex align-items-center justify-content-center rounded-circle shadow-xs">
+          <i class="fa-solid fa-bag-shopping" style="font-size: 44px; color: #1748D8;"></i>
+        </div>
+
+        <h2 class="display-6 fw-bold text-dark mb-2" style="font-size: 1.85rem;">
+          Your cart is empty
+        </h2>
+        
+        <p class="text-secondary mx-auto mb-4" style="max-width: 440px; font-size: 15px;">
+          Looks like you haven't added any products to your shopping cart yet. Discover authentic wellness products, heritage foods, and pantry favorites!
+        </p>
+
+        <!-- Continue Shopping Call to Action -->
+        <a routerLink="/" 
+           class="btn btn-primary rounded-pill px-5 py-3 fw-bold d-inline-flex align-items-center gap-2 shadow-sm"
+           style="background-color: #1748D8; font-size: 15px;">
+          <span>Explore Products</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+
+      </div>
+    }
+
+  </div>
+</main>
+
+<app-footer></app-footer>

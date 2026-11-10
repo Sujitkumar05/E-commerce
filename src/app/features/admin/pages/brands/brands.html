@@ -1,0 +1,358 @@
+<div class="brands-page-container">
+
+  <!-- PAGE HEADER & BREADCRUMBS -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">Brands</h1>
+      <div class="breadcrumbs">
+        <span>Dashboard</span>
+        <i class="bi bi-chevron-right"></i>
+        <span class="active-crumb">Brands</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 STATS CARDS -->
+  <div class="stats-grid">
+    <!-- Total Brands -->
+    <div class="stat-card">
+      <div class="stat-icon-wrapper bg-blue-soft">
+        <i class="bi bi-award-fill"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Total Brands</span>
+        <h3 class="stat-value">{{ totalBrands }}</h3>
+        <div class="stat-trend positive">
+          <i class="bi bi-arrow-up-short"></i>
+          <span>3%</span>
+          <span class="trend-sub">from last month</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Brands -->
+    <div class="stat-card">
+      <div class="stat-icon-wrapper bg-green-soft">
+        <i class="bi bi-patch-check-fill"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Active Brands</span>
+        <h3 class="stat-value">{{ activeBrands }}</h3>
+        <div class="stat-trend positive">
+          <i class="bi bi-arrow-up-short"></i>
+          <span>2%</span>
+          <span class="trend-sub">from last month</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inactive Brands -->
+    <div class="stat-card">
+      <div class="stat-icon-wrapper bg-amber-soft">
+        <i class="bi bi-eye-slash-fill"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Inactive Brands</span>
+        <h3 class="stat-value">{{ inactiveBrands }}</h3>
+        <div class="stat-trend negative">
+          <i class="bi bi-arrow-down-short"></i>
+          <span>1%</span>
+          <span class="trend-sub">from last month</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN 2-COLUMN LAYOUT: Brands Table (Left) + Add New Brand Form (Right) -->
+  <div class="brands-layout-grid">
+
+    <!-- LEFT COLUMN: All Brands Table Panel -->
+    <div class="table-card">
+      
+      <!-- Panel Header -->
+      <div class="panel-header">
+        <h2 class="panel-title">All Brands</h2>
+      </div>
+
+      <!-- Filter Toolbar -->
+      <div class="table-toolbar">
+        <div class="search-wrapper">
+          <i class="bi bi-search"></i>
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            placeholder="Search brands by name, slug or website..."
+            class="search-input"
+          />
+        </div>
+
+        <div class="toolbar-actions">
+          <div class="select-wrapper">
+            <select [(ngModel)]="statusFilter" class="status-select">
+              <option value="All Status">All Status</option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+
+          <button class="btn-primary-add" (click)="saveBrand()">
+            <i class="bi bi-plus"></i>
+            <span>Add Brand</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Brands Data Table -->
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="th-checkbox">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="selectAll"
+                  (change)="toggleSelectAll()"
+                  class="custom-checkbox"
+                />
+              </th>
+              <th class="th-hash">#</th>
+              <th class="th-image">Logo</th>
+              <th class="th-name">Brand Name</th>
+              <th class="th-slug">Slug</th>
+              <th class="th-website">Website</th>
+              <th class="th-status">Status</th>
+              <th class="th-products">Products</th>
+              <th class="th-order">Sort Order</th>
+              <th class="th-actions text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let brand of filteredBrands; let i = index">
+              <td class="td-checkbox">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="brand.selected"
+                  (change)="checkIndividualSelection()"
+                  class="custom-checkbox"
+                />
+              </td>
+              <td class="td-hash">{{ brand.id }}</td>
+              <td class="td-image">
+                <div class="brand-logo-badge" [style.background-color]="brand.logoBg">
+                  <span>{{ brand.logo }}</span>
+                </div>
+              </td>
+              <td class="td-name">
+                <div class="brand-name-wrap">
+                  <span class="brand-name-text">{{ brand.name }}</span>
+                  <span *ngIf="brand.featured" class="featured-badge" title="Featured Brand">
+                    <i class="bi bi-star-fill"></i>
+                  </span>
+                </div>
+              </td>
+              <td class="td-slug">
+                <span class="slug-text">{{ brand.slug }}</span>
+              </td>
+              <td class="td-website">
+                <span class="website-link">{{ brand.website }}</span>
+              </td>
+              <td class="td-status">
+                <span class="status-pill" [ngClass]="brand.status === 'Active' ? 'status-active' : 'status-inactive'">
+                  {{ brand.status }}
+                </span>
+              </td>
+              <td class="td-products">{{ brand.productsCount }}</td>
+              <td class="td-order">{{ brand.sortOrder }}</td>
+              <td class="td-actions text-center">
+                <div class="action-buttons-group">
+                  <button class="action-btn btn-view" (click)="viewBrand(brand)" title="View Details">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button class="action-btn btn-edit" (click)="editBrand(brand)" title="Edit Brand">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="action-btn btn-delete" (click)="deleteBrand(brand)" title="Delete Brand">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <tr *ngIf="filteredBrands.length === 0">
+              <td colspan="10" class="no-records-cell">
+                <div class="empty-state">
+                  <i class="bi bi-inbox"></i>
+                  <p>No brands found matching your criteria.</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Table Footer / Pagination -->
+      <div class="table-footer">
+        <span class="results-count">
+          Showing 1 to {{ filteredBrands.length }} of {{ brands.length }} brands
+        </span>
+        <div class="pagination-controls">
+          <button class="page-arrow" disabled>
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <button class="page-number active">1</button>
+          <button class="page-arrow">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: Add New Brand Form Panel -->
+    <div class="form-card">
+      <h2 class="panel-title form-header-title">Add New Brand</h2>
+
+      <div class="form-body">
+        
+        <!-- Brand Name -->
+        <div class="form-group">
+          <label class="form-label">Brand Name <span class="required">*</span></label>
+          <input
+            type="text"
+            [(ngModel)]="newBrand.name"
+            (ngModelChange)="onNameChange()"
+            placeholder="Enter brand name"
+            class="form-control"
+          />
+        </div>
+
+        <!-- Slug -->
+        <div class="form-group">
+          <label class="form-label">Slug <span class="required">*</span></label>
+          <input
+            type="text"
+            [(ngModel)]="newBrand.slug"
+            placeholder="e.g. himalaya"
+            class="form-control"
+          />
+        </div>
+
+        <!-- Official Website -->
+        <div class="form-group">
+          <label class="form-label">Website URL</label>
+          <input
+            type="text"
+            [(ngModel)]="newBrand.website"
+            placeholder="e.g. himalayawellness.in"
+            class="form-control"
+          />
+        </div>
+
+        <!-- Status Toggle Buttons -->
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <div class="status-toggle-group">
+            <button
+              type="button"
+              class="toggle-btn"
+              [class.active]="newBrand.status === 'Active'"
+              (click)="newBrand.status = 'Active'"
+            >
+              Active
+            </button>
+            <button
+              type="button"
+              class="toggle-btn"
+              [class.active]="newBrand.status === 'Inactive'"
+              (click)="newBrand.status = 'Inactive'"
+            >
+              Inactive
+            </button>
+          </div>
+        </div>
+
+        <!-- Featured Brand Toggle -->
+        <div class="featured-toggle-row">
+          <div>
+            <span class="toggle-label">Featured Brand</span>
+            <small class="toggle-hint">Showcase in top brand filters</small>
+          </div>
+          <button
+            type="button"
+            class="toggle-switch"
+            [class.active]="newBrand.featured"
+            (click)="newBrand.featured = !newBrand.featured"
+          >
+            <span class="switch-handle"></span>
+          </button>
+        </div>
+
+        <!-- Sort Order -->
+        <div class="form-group">
+          <label class="form-label">Sort Order</label>
+          <input
+            type="number"
+            [(ngModel)]="newBrand.sortOrder"
+            placeholder="Enter sort order (e.g. 1)"
+            class="form-control"
+          />
+        </div>
+
+        <!-- Brand Logo Upload Box -->
+        <div class="form-group">
+          <label class="form-label">Brand Logo</label>
+          
+          <input
+            type="file"
+            id="brandLogoInput"
+            style="display: none;"
+            accept="image/*"
+            (change)="onLogoSelected($event)"
+          />
+
+          <div class="upload-dropzone" (click)="triggerLogoUpload()">
+            <div *ngIf="!newBrand.logoPreview" class="upload-placeholder">
+              <div class="cloud-icon-circle">
+                <i class="bi bi-cloud-arrow-up"></i>
+              </div>
+              <p class="upload-title"><strong>Click to upload brand logo</strong></p>
+              <p class="upload-sub">or drag and drop</p>
+              <span class="upload-formats">Supports SVG, PNG, JPG (Max 2MB)</span>
+            </div>
+
+            <div *ngIf="newBrand.logoPreview" class="image-uploaded-preview">
+              <img [src]="newBrand.logoPreview" alt="Brand Logo Preview" />
+              <button type="button" class="btn-change-image" (click)="$event.stopPropagation(); triggerLogoUpload()">
+                Change Logo
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea
+            rows="3"
+            [(ngModel)]="newBrand.description"
+            maxlength="500"
+            placeholder="Enter brand description..."
+            class="form-control form-textarea"
+          ></textarea>
+          <div class="char-count">
+            {{ newBrand.description.length }}/500
+          </div>
+        </div>
+
+        <!-- Save Button -->
+        <button type="button" class="btn-submit-save" (click)="saveBrand()">
+          <i class="bi bi-save"></i>
+          <span>Save Brand</span>
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>

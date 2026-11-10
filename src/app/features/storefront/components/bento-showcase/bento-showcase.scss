@@ -1,0 +1,159 @@
+// Bento Grid Showcase SCSS
+
+.bento-section {
+  background-color: #ffffff;
+  position: relative;
+
+  .view-all-btn {
+    border: 1.5px solid #1748D8 !important;
+    color: #1748D8 !important;
+    background-color: transparent;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #1748D8 !important;
+      color: #ffffff !important;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(23, 72, 216, 0.25) !important;
+    }
+  }
+
+  // Bento Grid Row
+  .bento-grid-row {
+    .bento-card {
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      border-radius: 24px !important;
+      padding: 24px;
+      cursor: pointer;
+      box-sizing: border-box;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+
+      // Heights matching the asymmetric layout in the screenshot
+      &.bento-short {
+        height: 270px;
+
+        .bento-visual-wrapper {
+          height: 165px;
+
+          .bento-product-img {
+            max-height: 155px;
+          }
+        }
+      }
+
+      &.bento-tall {
+        height: 380px;
+
+        .bento-visual-wrapper {
+          height: 270px;
+
+          .bento-product-img {
+            max-height: 255px;
+          }
+        }
+      }
+
+      // Card Header
+      .bento-header {
+        .bento-title {
+          font-size: 21px;
+          font-weight: 800;
+          letter-spacing: -0.4px;
+          color: #111827;
+        }
+
+        .bento-tag {
+          background-color: rgba(255, 255, 255, 0.75);
+          backdrop-filter: blur(8px);
+          border: 1px solid rgba(0, 0, 0, 0.06);
+          font-size: 11px;
+          color: #374151;
+        }
+
+        .shop-now-link {
+          font-size: 11.5px;
+          letter-spacing: 0.8px;
+          color: #1f2937;
+          text-decoration: underline;
+          text-underline-offset: 4px;
+          text-decoration-thickness: 1.5px;
+          transition: color 0.2s ease, text-decoration-color 0.2s ease;
+
+          .arrow-icon {
+            font-size: 11px;
+            transition: transform 0.25s ease;
+          }
+        }
+      }
+
+      // Product Visual Box
+      .bento-visual-wrapper {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .bento-product-img {
+          width: auto;
+          max-width: 100%;
+          object-fit: contain;
+          filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.12));
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .ambient-glow {
+          position: absolute;
+          width: 160px;
+          height: 160px;
+          border-radius: 50%;
+          opacity: 0.16;
+          filter: blur(40px);
+          pointer-events: none;
+        }
+      }
+
+      // Interactive Hover Effects
+      &:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 18px 36px -5px rgba(23, 72, 216, 0.1) !important;
+
+        .shop-now-link {
+          color: #1748D8;
+          text-decoration-color: #1748D8;
+
+          .arrow-icon {
+            transform: translateX(4px);
+          }
+        }
+
+        .bento-product-img {
+          transform: scale(1.06) translateY(-3px);
+        }
+
+        .ambient-glow {
+          opacity: 0.25;
+        }
+      }
+    }
+  }
+
+  // Responsive adjustments for mobile and tablets
+  @media (max-width: 767.98px) {
+    .bento-grid-row {
+      .bento-card {
+        &.bento-short,
+        &.bento-tall {
+          height: 280px;
+
+          .bento-visual-wrapper {
+            height: 180px;
+
+            .bento-product-img {
+              max-height: 165px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

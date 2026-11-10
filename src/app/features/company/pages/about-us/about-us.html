@@ -1,0 +1,135 @@
+<app-storefront-header></app-storefront-header>
+
+<main class="about-us-page bg-light min-vh-100">
+  
+  <!-- Hero Section -->
+  <section class="about-hero text-white py-5 position-relative overflow-hidden" style="background: linear-gradient(135deg, #0b1118 0%, #1748D8 100%);">
+    <div class="container-fluid px-3 px-lg-5 py-4 position-relative z-2">
+      
+      <!-- Breadcrumb -->
+      <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb" style="font-size: 13px;">
+          <li class="breadcrumb-item"><a routerLink="/" class="text-white-50 text-decoration-none"><i class="fa-solid fa-house me-1"></i>Home</a></li>
+          <li class="breadcrumb-item active text-white" aria-current="page">About Us</li>
+        </ol>
+      </nav>
+
+      <div class="row align-items-center g-4">
+        <div class="col-12 col-lg-7">
+          <span class="badge rounded-pill bg-white text-dark fw-bold px-3 py-1.5 mb-3 shadow-xs" style="color: #1748D8 !important; font-size: 11.5px; letter-spacing: 0.8px;">
+            THE YOUR STORE STORY
+          </span>
+          <h1 class="display-4 fw-bold mb-3" style="letter-spacing: -1px; line-height: 1.15;">
+            Bringing the Taste &amp; Soul of India to Your Global Doorstep
+          </h1>
+          <p class="lead text-white-50 mb-4" style="font-size: 17px; line-height: 1.6; max-width: 680px;">
+            Living away from India should never mean leaving behind authentic flavors, trusted herbal wellness remedies, and festive family traditions. Your Store serves as your direct bridge to authentic Indian heritage across 45+ countries.
+          </p>
+          <div class="d-flex flex-wrap align-items-center gap-3">
+            <a routerLink="/products" class="btn btn-light rounded-pill px-4 py-2.5 fw-bold text-dark shadow-sm">
+              Explore Our Catalog
+            </a>
+            <a routerLink="/global-delivery" class="btn btn-outline-light rounded-pill px-4 py-2.5 fw-semibold">
+              Discover Global Network
+            </a>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-5 text-center">
+          <div class="about-hero-card p-4 rounded-4 bg-white bg-opacity-10 border border-white border-opacity-20 shadow-lg backdrop-blur">
+            <div class="d-flex align-items-center justify-content-center mb-3">
+              <span class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 64px; height: 64px; background: #1748D8;">
+                <i class="fa-solid fa-earth-americas fs-3"></i>
+              </span>
+            </div>
+            <h4 class="fw-bold text-white mb-2">Connecting 500,000+ Families</h4>
+            <p class="text-white-50 small mb-0">
+              From fresh Tirupati laddus and A2 cultured ghee to Dr. Reckeweg drops and Isha Life herbs, every parcel is dispatched with love, care, and guaranteed authenticity.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Key Metrics Stats Strip -->
+  <section class="stats-strip bg-white py-4 border-bottom shadow-xs">
+    <div class="container-fluid px-3 px-lg-5">
+      <div class="row g-4 text-center">
+        @for (stat of stats; track stat.label) {
+          <div class="col-6 col-lg-3">
+            <h2 class="display-6 fw-bold text-dark mb-1" style="color: #1748D8 !important;">{{ stat.value }}</h2>
+            <div class="fw-bold text-dark small mb-0.5">{{ stat.label }}</div>
+            <div class="text-secondary" style="font-size: 11.5px;">{{ stat.sub }}</div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Mission & Vision -->
+  <section class="py-5 bg-light">
+    <div class="container-fluid px-3 px-lg-5 py-2">
+      <div class="row g-4 align-items-center">
+        <div class="col-12 col-lg-6">
+          <span class="text-uppercase fw-bold text-primary small" style="letter-spacing: 1.2px;">OUR PURPOSE</span>
+          <h2 class="fw-bold text-dark mb-3 mt-1" style="font-size: 2rem;">A Cultural Lifeline for Diaspora Communities</h2>
+          <p class="text-secondary lh-base mb-3" style="font-size: 15px;">
+            Your Store was founded by members of the global Indian diaspora who experienced the exact same longing: the impossibility of finding authentic, unadulterated regional specialties like Vellanki Foods Ariselu, Pulla Reddy sweets, fresh cold-pressed oils, pure organic turmeric capsules, and genuine homeopathic mother tinctures in local overseas grocery stores.
+          </p>
+          <p class="text-secondary lh-base mb-4" style="font-size: 15px;">
+            We created Your Store to revolutionize how authentic goods travel across borders. By partnering directly with master makers, rural cooperatives, and authorized pharmacies, we eliminate middlemen, shorten the supply chain, and guarantee freshness and verified origin.
+          </p>
+          <div class="p-3.5 bg-white rounded-3 border-start border-4 border-primary shadow-xs">
+            <blockquote class="blockquote mb-0 fs-6 text-dark fst-italic">
+              "We measure our success not simply in packages shipped, but in the smiles of grandparents receiving their hometown snacks, and families lighting authentic brass diyas thousands of miles from India."
+            </blockquote>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+          <div class="row g-3">
+            @for (val of values; track val.title) {
+              <div class="col-12 col-sm-6">
+                <div class="p-4 bg-white rounded-4 border h-100 shadow-xs hover-lift transition-all">
+                  <div class="rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 44px; height: 44px; background-color: #eff6ff; color: #1748D8;">
+                    <i [class]="'fa-solid ' + val.icon" style="font-size: 18px;"></i>
+                  </div>
+                  <h5 class="fw-bold text-dark mb-2" style="font-size: 16px;">{{ val.title }}</h5>
+                  <p class="text-secondary small mb-0 lh-base">{{ val.desc }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Journey Milestones -->
+  <section class="py-5 bg-white border-top">
+    <div class="container-fluid px-3 px-lg-5">
+      <div class="text-center max-w-700 mx-auto mb-5">
+        <span class="text-uppercase fw-bold text-primary small" style="letter-spacing: 1.2px;">OUR JOURNEY</span>
+        <h2 class="fw-bold text-dark mb-2">How Your Store Grew Across the Globe</h2>
+        <p class="text-secondary small">From our first shipment of Andhra festive sweets to a global market of 10,000+ heritage goods.</p>
+      </div>
+
+      <div class="row g-4">
+        @for (item of milestones; track item.year) {
+          <div class="col-12 col-md-6 col-lg-3">
+            <div class="milestone-card p-4 rounded-4 border bg-light h-100">
+              <span class="badge bg-primary rounded-pill px-3 py-1 mb-3 fw-bold" style="background-color: #1748D8 !important;">{{ item.year }}</span>
+              <h5 class="fw-bold text-dark mb-2" style="font-size: 16px;">{{ item.title }}</h5>
+              <p class="text-secondary small mb-0 lh-base">{{ item.desc }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<app-footer></app-footer>

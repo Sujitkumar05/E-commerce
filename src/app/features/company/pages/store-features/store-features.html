@@ -1,0 +1,101 @@
+<app-storefront-header></app-storefront-header>
+
+<main class="store-features-page bg-light min-vh-100">
+  
+  <!-- Hero Section -->
+  <section class="features-hero text-white py-5 position-relative overflow-hidden" style="background: linear-gradient(135deg, #090d16 0%, #1e3a8a 60%, #2563eb 100%);">
+    <div class="container-fluid px-3 px-lg-5 py-4 position-relative z-2">
+      
+      <!-- Breadcrumb -->
+      <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb" style="font-size: 13px;">
+          <li class="breadcrumb-item"><a routerLink="/" class="text-white-50 text-decoration-none"><i class="fa-solid fa-house me-1"></i>Home</a></li>
+          <li class="breadcrumb-item active text-white" aria-current="page">Store Features</li>
+        </ol>
+      </nav>
+
+      <div class="row align-items-center g-4">
+        <div class="col-12 col-lg-8">
+          <span class="badge rounded-pill bg-white text-dark fw-bold px-3 py-1.5 mb-3 shadow-xs" style="color: #2563eb !important; font-size: 11.5px; letter-spacing: 0.8px;">
+            PLATFORM CAPABILITIES
+          </span>
+          <h1 class="display-4 fw-bold mb-3" style="letter-spacing: -1px; line-height: 1.15;">
+            Built to Deliver Heritage Goods with Modern E-Commerce Excellence
+          </h1>
+          <p class="lead text-white-50 mb-4" style="font-size: 17px; line-height: 1.6; max-width: 720px;">
+            Discover the cutting-edge innovations behind Your Store: from verified direct sourcing and cold-chain temperature packaging to multi-currency global checkout and dedicated Homeopathy care.
+          </p>
+          <div class="d-flex flex-wrap align-items-center gap-3">
+            <a routerLink="/products" class="btn btn-light rounded-pill px-4 py-2.5 fw-bold text-dark shadow-sm">
+              Explore Products
+            </a>
+            <a routerLink="/homeopathy" class="btn btn-outline-light rounded-pill px-4 py-2.5 fw-semibold">
+              Visit Homeopathy Plaza
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Features Grid -->
+  <section class="py-5 bg-white">
+    <div class="container-fluid px-3 px-lg-5">
+      <div class="text-center max-w-700 mx-auto mb-5">
+        <span class="text-uppercase fw-bold text-primary small" style="letter-spacing: 1.2px;">ENGINEERED FOR DIASPORA</span>
+        <h2 class="fw-bold text-dark mb-2">Core Platform Advantages</h2>
+        <p class="text-secondary small">Everything you need for safe, authentic, and fast cross-border shopping.</p>
+      </div>
+
+      <div class="row g-4">
+        @for (feat of features; track feat.title) {
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="feature-card p-4 rounded-4 border bg-white h-100 shadow-xs hover-lift transition-all d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <span class="rounded-circle d-flex align-items-center justify-content-center" 
+                        [style.background-color]="feat.bgColor" 
+                        [style.color]="feat.color"
+                        style="width: 48px; height: 48px;">
+                    <i [class]="'fa-solid ' + feat.icon" style="font-size: 20px;"></i>
+                  </span>
+                  <span class="badge rounded-pill fw-bold" 
+                        [style.background-color]="feat.bgColor" 
+                        [style.color]="feat.color"
+                        style="font-size: 10px; letter-spacing: 0.6px;">
+                    {{ feat.badge }}
+                  </span>
+                </div>
+
+                <h4 class="fw-bold text-dark mb-2" style="font-size: 18px;">{{ feat.title }}</h4>
+                <p class="text-secondary small mb-0 lh-base">{{ feat.desc }}</p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Strip -->
+  <section class="py-5 bg-light border-top">
+    <div class="container-fluid px-3 px-lg-5 text-center">
+      <div class="p-5 rounded-4 bg-white border shadow-sm max-w-800 mx-auto">
+        <h3 class="fw-bold text-dark mb-2">Ready to Experience Your Store?</h3>
+        <p class="text-secondary small mb-4">Join over 500,000 customers enjoying the authentic taste and healing wellness of India worldwide.</p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+          <a routerLink="/products" class="btn btn-primary rounded-pill px-4 py-2.5 fw-bold" style="background-color: #1748D8;">
+            Start Shopping Now
+          </a>
+          <a routerLink="/contact-us" class="btn btn-outline-dark rounded-pill px-4 py-2.5 fw-semibold">
+            Contact Support
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<app-footer></app-footer>

@@ -1,0 +1,37 @@
+// Register Styles
+$primary-blue: #1748D8;
+
+.auth-page-wrapper {
+  background: linear-gradient(180deg, #f8fafc 0%, #edf2f7 100%);
+
+  .auth-card {
+    border-color: #e2e8f0;
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04) !important;
+  }
+
+  .auth-tabs-nav {
+    .btn {
+      transition: all 0.2s ease;
+      font-size: 13.5px;
+    }
+
+    .active-tab-pill {
+      border: 1px solid #e2e8f0;
+    }
+  }
+
+  .form-control {
+    border-color: #cbd5e1;
+
+    &:focus {
+      border-color: #93c5fd;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(23, 72, 216, 0.12);
+    }
+  }
+
+  .input-group-text {
+    border-color: #cbd5e1;
+    color: #64748b;
+  }
+}

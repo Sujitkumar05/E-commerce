@@ -1,0 +1,236 @@
+<div class="success-page-container">
+  @if (receipt(); as r) {
+    <div class="success-card">
+      <!-- Animated Success Banner -->
+      <div class="success-header">
+        <div class="success-icon-badge">
+          <i class="fas fa-check"></i>
+        </div>
+        <span class="confetti-dot dot-1"></span>
+        <span class="confetti-dot dot-2"></span>
+        <span class="confetti-dot dot-3"></span>
+        <span class="confetti-dot dot-4"></span>
+        
+        <h1 class="success-title">Payment Successful!</h1>
+        <p class="success-subtitle">
+          Thank you for shopping with us! Your order has been placed and confirmed. A confirmation receipt has been sent to <strong>{{ r.customerEmail }}</strong>.
+        </p>
+      </div>
+
+      <!-- Quick Highlights Grid -->
+      <div class="order-meta-grid">
+        <div class="meta-item">
+          <span class="meta-label">Order ID</span>
+          <div class="meta-value-row">
+            <span class="meta-value font-mono">{{ r.orderId }}</span>
+            <button class="copy-btn" (click)="copyOrderId(r.orderId)" title="Copy Order ID">
+              <i class="fas" [class.fa-check]="copiedOrderId()" [class.fa-copy]="!copiedOrderId()"></i>
+              <span>{{ copiedOrderId() ? 'Copied!' : 'Copy' }}</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="meta-item">
+          <span class="meta-label">Payment ID</span>
+          <span class="meta-value font-mono">{{ r.paymentId }}</span>
+        </div>
+
+        <div class="meta-item">
+          <span class="meta-label">Order Placed</span>
+          <span class="meta-value">{{ r.orderDate }} at {{ r.orderTime }}</span>
+        </div>
+
+        <div class="meta-item">
+          <span class="meta-label">Total Amount Paid</span>
+          <span class="meta-value price-highlight">${{ r.totalAmount.toFixed(2) }}</span>
+        </div>
+
+        <div class="meta-item">
+          <span class="meta-label">Payment Method</span>
+          <span class="meta-value method-tag">
+            <i class="fas fa-shield-alt text-success"></i>
+            {{ r.paymentMethod }}
+          </span>
+        </div>
+
+        <div class="meta-item delivery-meta">
+          <span class="meta-label">Estimated Delivery</span>
+          <span class="meta-value delivery-value">
+            <i class="fas fa-truck text-primary"></i>
+            {{ r.estimatedDeliveryDate }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Main Action Buttons Row -->
+      <div class="success-actions-row">
+        <button type="button" class="btn btn-secondary-outline" (click)="toggleOrderDetails()">
+          <i class="fas" [class.fa-eye]="!showOrderDetails()" [class.fa-eye-slash]="showOrderDetails()"></i>
+          {{ showOrderDetails() ? 'Hide Order Details' : 'View Order Details' }}
+        </button>
+
+        <button type="button" class="btn btn-secondary-outline" (click)="toggleTracking()">
+          <i class="fas fa-map-marker-alt"></i>
+          {{ showTracking() ? 'Hide Tracking' : 'Track Your Order' }}
+        </button>
+
+        <button type="button" class="btn btn-primary" (click)="continueShopping()">
+          <i class="fas fa-shopping-bag"></i>
+          Continue Shopping
+        </button>
+      </div>
+
+      <!-- Expandable Live Order Tracking Section -->
+      @if (showTracking()) {
+        <div id="order-tracking-section" class="tracking-section slide-down">
+          <div class="section-title-bar">
+            <h4><i class="fas fa-shipping-fast text-primary"></i> Real-time Order Tracking</h4>
+            <span class="badge-status in-progress">In Logistics Hub</span>
+          </div>
+          
+          <div class="tracking-timeline">
+            <!-- Step 1: Placed -->
+            <div class="timeline-step step-completed">
+              <div class="step-icon">
+                <i class="fas fa-check"></i>
+              </div>
+              <div class="step-content">
+                <h5>Order Placed & Verified</h5>
+                <p>{{ r.orderDate }} • {{ r.orderTime }}</p>
+                <span class="step-note">Payment confirmed via {{ r.paymentMethod }}</span>
+              </div>
+            </div>
+
+            <!-- Step 2: Processing / Procurement -->
+            <div class="timeline-step step-active">
+              <div class="step-icon">
+                <i class="fas fa-box-open"></i>
+              </div>
+              <div class="step-content">
+                <h5>Item Procurement & Packaging</h5>
+                <p>In Progress • Estimated today</p>
+                <span class="step-note">Quality inspection and barcode verification active</span>
+              </div>
+            </div>
+
+            <!-- Step 3: Dispatched -->
+            <div class="timeline-step step-upcoming">
+              <div class="step-icon">
+                <i class="fas fa-truck-moving"></i>
+              </div>
+              <div class="step-content">
+                <h5>Dispatched from Fulfillment Center</h5>
+                <p>Expected tomorrow</p>
+                <span class="step-note">Express Courier: BlueDart / FedEx Logistics</span>
+              </div>
+            </div>
+
+            <!-- Step 4: Delivered -->
+            <div class="timeline-step step-upcoming">
+              <div class="step-icon">
+                <i class="fas fa-home"></i>
+              </div>
+              <div class="step-content">
+                <h5>Out for Doorstep Delivery</h5>
+                <p>{{ r.estimatedDeliveryDate }}</p>
+                <span class="step-note">Delivering to {{ r.address.city }}, {{ r.address.pincode }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Expandable Order Details Section -->
+      @if (showOrderDetails()) {
+        <div class="order-details-section slide-down">
+          <div class="section-title-bar">
+            <h4><i class="fas fa-receipt text-primary"></i> Order Items & Delivery Breakdown</h4>
+            <button class="print-link" (click)="printReceipt()">
+              <i class="fas fa-print"></i> Print Invoice
+            </button>
+          </div>
+
+          <!-- Shipping Destination Card -->
+          <div class="delivery-dest-card">
+            <div class="dest-header">
+              <span class="type-tag">{{ r.address.type }}</span>
+              <strong class="name">{{ r.address.name }}</strong>
+              <span class="phone"><i class="fas fa-phone-alt"></i> {{ r.address.phone }}</span>
+            </div>
+            <p class="address-text">
+              {{ r.address.houseAddress }}, {{ r.address.locality }}, {{ r.address.city }}, {{ r.address.state }} - {{ r.address.pincode }}
+            </p>
+            @if (r.address.landmark) {
+              <span class="landmark-text"><i class="fas fa-map-pin"></i> Landmark: {{ r.address.landmark }}</span>
+            }
+          </div>
+
+          <!-- Items Ordered List -->
+          <div class="items-list">
+            @for (item of r.items; track item.productId + (item.variant || '')) {
+              <div class="item-row">
+                <img [src]="item.image" [alt]="item.name" class="item-thumb" />
+                <div class="item-info">
+                  <h6 class="item-name">{{ item.name }}</h6>
+                  <span class="item-meta">
+                    @if (item.variant) {
+                      <span class="variant-pill">{{ item.variant }}</span>
+                    }
+                    <span class="qty-pill">Qty: {{ item.quantity }}</span>
+                  </span>
+                </div>
+                <div class="item-price">
+                  ${{ (item.price * item.quantity).toFixed(2) }}
+                  <span class="unit-price">${{ item.price.toFixed(2) }} each</span>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Financial Price Summary -->
+          <div class="price-summary-box">
+            <div class="summary-line">
+              <span>Items Subtotal</span>
+              <span>${{ r.subtotal.toFixed(2) }}</span>
+            </div>
+            @if (r.savings > 0) {
+              <div class="summary-line text-success">
+                <span>Promotional Savings</span>
+                <span>-${{ r.savings.toFixed(2) }}</span>
+              </div>
+            }
+            @if (r.couponDiscount > 0) {
+              <div class="summary-line text-success">
+                <span>Coupon Applied</span>
+                <span>-${{ r.couponDiscount.toFixed(2) }}</span>
+              </div>
+            }
+            <div class="summary-line">
+              <span>Shipping & Delivery Fee</span>
+              <span>{{ r.shipping === 0 ? 'FREE' : '$' + r.shipping.toFixed(2) }}</span>
+            </div>
+            <div class="summary-line">
+              <span>Estimated Taxes & GST</span>
+              <span>${{ r.tax.toFixed(2) }}</span>
+            </div>
+            <div class="summary-line total-line">
+              <strong>Final Amount Paid</strong>
+              <strong class="total-val">${{ r.totalAmount.toFixed(2) }}</strong>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <!-- Empty Fallback -->
+    <div class="empty-state-card text-center py-5">
+      <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+      <h3>No Active Order Found</h3>
+      <p class="text-muted">You have not completed any order in this session yet.</p>
+      <button class="btn btn-primary mt-2" (click)="continueShopping()">
+        Return to Store
+      </button>
+    </div>
+  }
+</div>
+

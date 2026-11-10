@@ -1,0 +1,419 @@
+<div class="dashboard-container">
+
+  <!-- TOP STATS ROW: 4 Stat Cards -->
+  <div class="stats-grid">
+
+    <!-- Total Orders -->
+    <a routerLink="/admin/orders" class="stat-card" style="text-decoration: none;">
+      <div class="stat-icon-wrapper bg-green-soft">
+        <i class="bi bi-cart3"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Total Orders</span>
+        <h3 class="stat-value">{{ metrics.total }}</h3>
+        <div class="stat-trend positive">
+          <i class="bi bi-check2-circle"></i>
+          <span>{{ metrics.delivered }} delivered</span>
+          <span class="trend-sub">({{ metrics.pending + metrics.processing }} pending)</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- Total Customers -->
+    <a routerLink="/admin/customers" class="stat-card" style="text-decoration: none;">
+      <div class="stat-icon-wrapper bg-purple-soft">
+        <i class="bi bi-people-fill"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Total Customers</span>
+        <h3 class="stat-value">{{ totalCustomersCount }}</h3>
+        <div class="stat-trend positive">
+          <i class="bi bi-people"></i>
+          <span>Registered Buyers</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- Total Products -->
+    <a routerLink="/admin/products" class="stat-card" style="text-decoration: none;">
+      <div class="stat-icon-wrapper bg-amber-soft">
+        <i class="bi bi-box-seam"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Stock Shortages / PO</span>
+        <h3 class="stat-value">{{ metrics.procurementRequired }}</h3>
+        <div class="stat-trend" [ngClass]="metrics.procurementRequired > 0 ? 'text-amber' : 'positive'">
+          <i class="bi bi-exclamation-triangle"></i>
+          <span>{{ metrics.stockShortages }} Deficit Items</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- Total Revenue -->
+    <a routerLink="/admin/orders" class="stat-card" style="text-decoration: none;">
+      <div class="stat-icon-wrapper bg-blue-soft">
+        <i class="bi bi-cash-stack"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Total Order Revenue</span>
+        <h3 class="stat-value">₹{{ metrics.totalRevenue.toLocaleString() }}</h3>
+        <div class="stat-trend positive">
+          <i class="bi bi-graph-up-arrow"></i>
+          <span>Active Net Sales</span>
+        </div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- MIDDLE ROW: Sales Overview (Line chart) | Order Status (Donut) | Quick Actions -->
+  <div class="middle-grid">
+
+    <!-- Sales Overview Card -->
+    <div class="card sales-overview-card">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title">Sales Overview</h2>
+          <span class="card-subtitle">Last 7 days</span>
+        </div>
+        <div class="dropdown-pill">
+          <span>Last 7 days</span>
+          <i class="bi bi-chevron-down"></i>
+        </div>
+      </div>
+
+      <!-- High-fidelity SVG Line Chart matching screenshot -->
+      <div class="chart-container">
+        <svg viewBox="0 0 520 220" class="sales-chart-svg" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.22" />
+              <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.0" />
+            </linearGradient>
+          </defs>
+
+          <!-- Horizontal Grid Lines -->
+          <line x1="45" y1="30" x2="510" y2="30" class="grid-line" />
+          <line x1="45" y1="75" x2="510" y2="75" class="grid-line" />
+          <line x1="45" y1="120" x2="510" y2="120" class="grid-line" />
+          <line x1="45" y1="165" x2="510" y2="165" class="grid-line" />
+
+          <!-- Y-Axis Labels -->
+          <text x="35" y="34" class="axis-label">40K</text>
+          <text x="35" y="79" class="axis-label">30K</text>
+          <text x="35" y="124" class="axis-label">20K</text>
+          <text x="35" y="169" class="axis-label">10K</text>
+          <text x="35" y="200" class="axis-label">0</text>
+
+          <!-- Gradient Area Under Curve -->
+          <path d="M 55 160 C 95 140, 115 132, 130 132 C 160 132, 175 142, 205 142 C 240 142, 260 120, 280 120 C 310 120, 330 95, 360 95 C 400 95, 420 85, 440 85 C 475 85, 490 60, 505 52 L 505 195 L 55 195 Z"
+                fill="url(#chartGradient)" />
+
+          <!-- Line Curve -->
+          <path d="M 55 160 C 95 140, 115 132, 130 132 C 160 132, 175 142, 205 142 C 240 142, 260 120, 280 120 C 310 120, 330 95, 360 95 C 400 95, 420 85, 440 85 C 475 85, 490 60, 505 52"
+                fill="none"
+                stroke="#3b82f6"
+                stroke-width="2.5"
+                stroke-linecap="round" />
+
+          <!-- Data Points -->
+          <circle cx="55" cy="160" r="3.5" class="data-dot" />
+          <circle cx="130" cy="132" r="3.5" class="data-dot" />
+          <circle cx="205" cy="142" r="3.5" class="data-dot" />
+          <circle cx="280" cy="120" r="3.5" class="data-dot" />
+          <circle cx="360" cy="95" r="3.5" class="data-dot" />
+          <circle cx="440" cy="85" r="3.5" class="data-dot" />
+          <circle cx="505" cy="52" r="3.5" class="data-dot" />
+
+          <!-- X-Axis Labels -->
+          <text x="55" y="212" text-anchor="middle" class="axis-label x-axis">Apr 21</text>
+          <text x="130" y="212" text-anchor="middle" class="axis-label x-axis">Apr 22</text>
+          <text x="205" y="212" text-anchor="middle" class="axis-label x-axis">Apr 23</text>
+          <text x="280" y="212" text-anchor="middle" class="axis-label x-axis">Apr 24</text>
+          <text x="360" y="212" text-anchor="middle" class="axis-label x-axis">Apr 25</text>
+          <text x="440" y="212" text-anchor="middle" class="axis-label x-axis">Apr 26</text>
+          <text x="505" y="212" text-anchor="middle" class="axis-label x-axis">Apr 27</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Order Status Card (Donut Chart) -->
+    <div class="card order-status-card">
+      <div class="card-header">
+        <h2 class="card-title">Order Status</h2>
+      </div>
+
+      <div class="donut-content-layout">
+        <!-- Donut Chart Canvas -->
+        <div class="donut-chart-wrapper">
+          <svg viewBox="0 0 160 160" class="donut-svg">
+            <!-- Background track ring -->
+            <circle cx="80" cy="80" r="56" fill="none" stroke="#f1f5f9" stroke-width="15" />
+
+            <!-- Delivered (68%) = 239.26 stroke - Green (#10b981) -->
+            <!-- C = 2 * PI * 56 ≈ 351.86 -->
+            <!-- 68% = 239.26, offset = -88 (starts top) -->
+            <circle cx="80" cy="80" r="56" fill="none" stroke="#10b981" stroke-width="15"
+                    stroke-dasharray="239.26 351.86"
+                    stroke-dashoffset="88"
+                    transform="rotate(-90 80 80)"
+                    stroke-linecap="round" />
+
+            <!-- Processing (18%) = 63.33 stroke - Blue (#3b82f6) -->
+            <!-- Starts after Delivered -->
+            <circle cx="80" cy="80" r="56" fill="none" stroke="#3b82f6" stroke-width="15"
+                    stroke-dasharray="63.33 351.86"
+                    stroke-dashoffset="-151.26"
+                    transform="rotate(-90 80 80)" />
+
+            <!-- Shipped (9%) = 31.67 stroke - Yellow/Orange (#f59e0b) -->
+            <circle cx="80" cy="80" r="56" fill="none" stroke="#f59e0b" stroke-width="15"
+                    stroke-dasharray="31.67 351.86"
+                    stroke-dashoffset="-214.59"
+                    transform="rotate(-90 80 80)" />
+
+            <!-- Cancelled (5%) = 17.59 stroke - Red (#ef4444) -->
+            <circle cx="80" cy="80" r="56" fill="none" stroke="#ef4444" stroke-width="15"
+                    stroke-dasharray="17.59 351.86"
+                    stroke-dashoffset="-246.26"
+                    transform="rotate(-90 80 80)" />
+          </svg>
+
+          <div class="donut-center-text">
+            <span class="donut-total">{{ metrics.total }}</span>
+            <span class="donut-sub">Total Orders</span>
+          </div>
+        </div>
+
+        <!-- Legend and Percentages -->
+        <div class="donut-legend">
+          <a routerLink="/admin/orders" [queryParams]="{ tab: 'delivered' }" class="legend-item" style="text-decoration: none; color: inherit;">
+            <span class="legend-bullet bg-green"></span>
+            <span class="legend-name">Delivered</span>
+            <span class="legend-val">{{ deliveredPercent }}% ({{ metrics.delivered }})</span>
+          </a>
+          <a routerLink="/admin/orders" [queryParams]="{ tab: 'processing' }" class="legend-item" style="text-decoration: none; color: inherit;">
+            <span class="legend-bullet bg-blue"></span>
+            <span class="legend-name">Processing</span>
+            <span class="legend-val">{{ processingPercent }}% ({{ metrics.processing + metrics.confirmed }})</span>
+          </a>
+          <a routerLink="/admin/orders" [queryParams]="{ tab: 'shipped' }" class="legend-item" style="text-decoration: none; color: inherit;">
+            <span class="legend-bullet bg-amber"></span>
+            <span class="legend-name">Shipped</span>
+            <span class="legend-val">{{ shippedPercent }}% ({{ metrics.shipped + metrics.inTransit }})</span>
+          </a>
+          <a routerLink="/admin/orders" [queryParams]="{ tab: 'cancelled' }" class="legend-item" style="text-decoration: none; color: inherit;">
+            <span class="legend-bullet bg-red"></span>
+            <span class="legend-name">Cancelled</span>
+            <span class="legend-val">{{ cancelledPercent }}% ({{ metrics.cancelled }})</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions Card -->
+    <div class="card quick-actions-card">
+      <div class="card-header">
+        <h2 class="card-title">Quick Actions</h2>
+      </div>
+
+      <div class="quick-actions-list">
+        <!-- Primary Blue Button -->
+        <a routerLink="/admin/products" class="quick-btn primary">
+          <i class="bi bi-plus-circle"></i>
+          <span>Add New Product</span>
+        </a>
+
+        <!-- Outlined Action Buttons -->
+        <a routerLink="/admin/categories" class="quick-btn secondary">
+          <i class="bi bi-grid"></i>
+          <span>Add Category</span>
+        </a>
+
+        <a routerLink="/admin/brands" class="quick-btn secondary">
+          <i class="bi bi-tag"></i>
+          <span>Add Brand</span>
+        </a>
+
+        <a routerLink="/admin/banners" class="quick-btn secondary">
+          <i class="bi bi-image"></i>
+          <span>Create Banner</span>
+        </a>
+
+        <a routerLink="/admin/blog" class="quick-btn secondary">
+          <i class="bi bi-pencil-square"></i>
+          <span>Add Blog Post</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- LOWER ROW: Recent Products Table | Recent Activity -->
+  <div class="lower-grid">
+
+    <!-- Recent Products Table Card -->
+    <div class="card recent-products-card">
+      <div class="card-header flex-between">
+        <h2 class="card-title">Recent Products</h2>
+        <div class="header-actions">
+          <a routerLink="/admin/products" class="view-all-link">
+            <span>View All Products</span>
+            <i class="bi bi-arrow-right"></i>
+          </a>
+          <a routerLink="/admin/products" class="btn-primary-sm">
+            <i class="bi bi-plus"></i>
+            <span>Add Product</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="products-table">
+          <thead>
+            <tr>
+              <th class="col-hash">#</th>
+              <th class="col-img">Image</th>
+              <th class="col-name">Product Name</th>
+              <th class="col-cat">Category</th>
+              <th class="col-brand">Brand</th>
+              <th class="col-price">Price</th>
+              <th class="col-stock">Stock</th>
+              <th class="col-status">Status</th>
+              <th class="col-action">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(item of recentProducts; track item.id) {
+              <tr>
+                <td class="col-hash text-muted">{{ item.id }}</td>
+                <td class="col-img">
+                  <div class="product-thumb">
+                    <img [src]="item.image" [alt]="item.name" loading="lazy" />
+                  </div>
+                </td>
+                <td class="col-name font-medium">{{ item.name }}</td>
+                <td class="col-cat text-muted">{{ item.category }}</td>
+                <td class="col-brand text-muted">{{ item.brand }}</td>
+                <td class="col-price font-medium">{{ item.price }}</td>
+                <td class="col-stock text-muted">{{ item.stock }}</td>
+                <td class="col-status">
+                  <span class="status-badge active">{{ item.status }}</span>
+                </td>
+                <td class="col-action">
+                  <div class="action-buttons">
+                    <button class="tbl-action-btn" title="View details">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="tbl-action-btn" title="Edit product">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="tbl-action-btn" title="Delete product">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Recent Activity Card -->
+    <div class="card recent-activity-card">
+      <div class="card-header flex-between">
+        <h2 class="card-title">Recent Activity</h2>
+        <a routerLink="/admin/orders" class="view-all-link">
+          <span>View All</span>
+          <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+
+      <div class="activity-timeline">
+        @for(act of recentActivities; track act.id) {
+          <div class="activity-item">
+            <div class="activity-icon-badge" [style.backgroundColor]="act.bgColor">
+              <i class="bi" [ngClass]="act.icon"></i>
+            </div>
+            <div class="activity-details">
+              <span class="activity-title">{{ act.title }}</span>
+              <div class="activity-meta-line">
+                <span class="activity-meta">{{ act.meta }}</span>
+                <span class="bullet-dot">•</span>
+                <span class="activity-time">{{ act.time }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM ROW: 5 Navigation / Management Navigation Shortcut Cards -->
+  <div class="bottom-shortcuts-grid">
+
+    <!-- Manage Products -->
+    <a routerLink="/admin/products" class="shortcut-card">
+      <div class="shortcut-icon bg-blue-pale">
+        <i class="bi bi-box-seam"></i>
+      </div>
+      <div class="shortcut-text">
+        <span class="shortcut-title">Manage Products</span>
+        <span class="shortcut-desc">Add, edit or remove products</span>
+      </div>
+      <i class="bi bi-chevron-right shortcut-arrow"></i>
+    </a>
+
+    <!-- Manage Orders -->
+    <a routerLink="/admin/orders" class="shortcut-card">
+      <div class="shortcut-icon bg-purple-pale">
+        <i class="bi bi-cart3"></i>
+      </div>
+      <div class="shortcut-text">
+        <span class="shortcut-title">Manage Orders</span>
+        <span class="shortcut-desc">View and update order status</span>
+      </div>
+      <i class="bi bi-chevron-right shortcut-arrow"></i>
+    </a>
+
+    <!-- Manage Customers -->
+    <a routerLink="/admin/customers" class="shortcut-card">
+      <div class="shortcut-icon bg-blue-subtle">
+        <i class="bi bi-people"></i>
+      </div>
+      <div class="shortcut-text">
+        <span class="shortcut-title">Manage Customers</span>
+        <span class="shortcut-desc">View customer details</span>
+      </div>
+      <i class="bi bi-chevron-right shortcut-arrow"></i>
+    </a>
+
+    <!-- Manage Banners -->
+    <a routerLink="/admin/banners" class="shortcut-card">
+      <div class="shortcut-icon bg-orange-pale">
+        <i class="bi bi-image"></i>
+      </div>
+      <div class="shortcut-text">
+        <span class="shortcut-title">Manage Banners</span>
+        <span class="shortcut-desc">Update website banners</span>
+      </div>
+      <i class="bi bi-chevron-right shortcut-arrow"></i>
+    </a>
+
+    <!-- Manage Blog Posts -->
+    <a routerLink="/admin/blog" class="shortcut-card">
+      <div class="shortcut-icon bg-pink-pale">
+        <i class="bi bi-pencil-square"></i>
+      </div>
+      <div class="shortcut-text">
+        <span class="shortcut-title">Manage Blog Posts</span>
+        <span class="shortcut-desc">Create and publish blogs</span>
+      </div>
+      <i class="bi bi-chevron-right shortcut-arrow"></i>
+    </a>
+
+  </div>
+
+</div>

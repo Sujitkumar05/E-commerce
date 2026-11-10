@@ -1,0 +1,292 @@
+<div class="products-page-container">
+
+  <!-- PAGE HEADER & BREADCRUMBS -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">Products</h1>
+      <div class="breadcrumbs">
+        <span>Dashboard</span>
+        <i class="bi bi-chevron-right"></i>
+        <span class="active-crumb">Products</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <a routerLink="/admin/products/new" class="btn-add-product">
+        <i class="bi bi-plus"></i>
+        <span>Add New Product</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- TOP 4 STATS CARDS -->
+  <div class="stats-grid">
+    <!-- Total Products -->
+    <div class="stat-card">
+      <div class="stat-icon-wrapper bg-green-soft">
+        <i class="bi bi-cart3"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Total Products</span>
+        <h3 class="stat-value">356</h3>
+        <div class="stat-trend positive">
+          <i class="bi bi-arrow-up-short"></i>
+          <span>12%</span>
+          <span class="trend-sub">from last month</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Products -->
+    <div class="stat-card">
+      <div class="stat-icon-wrapper bg-purple-soft">
+        <i class="bi bi-people-fill"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Active Products</span>
+        <h3 class="stat-value">312</h3>
+        <div class="stat-trend positive">
+          <i class="bi bi-arrow-up-short"></i>
+          <span>8%</span>
+          <span class="trend-sub">from last month</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Out of Stock -->
+    <div class="stat-card">
+      <div class="stat-icon-wrapper bg-amber-soft">
+        <i class="bi bi-box-seam"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Out of Stock</span>
+        <h3 class="stat-value">18</h3>
+        <div class="stat-trend negative">
+          <i class="bi bi-arrow-down-short"></i>
+          <span>5%</span>
+          <span class="trend-sub">from last month</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Featured Products -->
+    <div class="stat-card">
+      <div class="stat-icon-wrapper bg-blue-soft">
+        <i class="bi bi-star"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Featured Products</span>
+        <h3 class="stat-value">24</h3>
+        <div class="stat-trend positive">
+          <i class="bi bi-arrow-up-short"></i>
+          <span>10%</span>
+          <span class="trend-sub">from last month</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN TABLE CARD WITH FILTERS -->
+  <div class="products-table-card">
+
+    <!-- FILTERS AND CONTROLS BAR -->
+    <div class="filters-bar">
+      <!-- Search Input -->
+      <div class="search-input-wrap">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          placeholder="Search products by name, brand or SKU..."
+          [(ngModel)]="searchTerm"
+        />
+      </div>
+
+      <!-- Category Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Category</label>
+        <div class="select-wrapper">
+          <select [(ngModel)]="selectedCategory">
+            <option>All Categories</option>
+            <option>Personal Care</option>
+            <option>Skincare</option>
+            <option>Health Care</option>
+            <option>Food & Beverages</option>
+          </select>
+          <i class="bi bi-chevron-down"></i>
+        </div>
+      </div>
+
+      <!-- Brand Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Brand</label>
+        <div class="select-wrapper">
+          <select [(ngModel)]="selectedBrand">
+            <option>All Brands</option>
+            <option>Himalaya</option>
+            <option>Biotique</option>
+            <option>Patanjali</option>
+            <option>Dabur</option>
+            <option>Medimix</option>
+            <option>Zandu</option>
+            <option>Vicco</option>
+          </select>
+          <i class="bi bi-chevron-down"></i>
+        </div>
+      </div>
+
+      <!-- Status Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Status</label>
+        <div class="select-wrapper">
+          <select [(ngModel)]="selectedStatus">
+            <option>All Status</option>
+            <option>Active</option>
+            <option>Out of Stock</option>
+          </select>
+          <i class="bi bi-chevron-down"></i>
+        </div>
+      </div>
+
+      <!-- Sort By -->
+      <div class="sort-group">
+        <span class="sort-label">Sort by:</span>
+        <div class="select-wrapper sort-select">
+          <select [(ngModel)]="selectedSort">
+            <option>Newest First</option>
+            <option>Price: Low to High</option>
+            <option>Price: High to Low</option>
+            <option>Stock: High to Low</option>
+          </select>
+          <i class="bi bi-chevron-down"></i>
+        </div>
+      </div>
+
+      <!-- View Options / Filter Settings button -->
+      <button class="filter-action-btn" title="Filter Settings">
+        <i class="bi bi-sliders"></i>
+      </button>
+    </div>
+
+    <!-- PRODUCTS DATA TABLE -->
+    <div class="table-responsive">
+      <table class="products-table">
+        <thead>
+          <tr>
+            <th class="col-checkbox">
+              <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()" />
+            </th>
+            <th class="col-hash">#</th>
+            <th class="col-image">Image</th>
+            <th class="col-name">Product Name</th>
+            <th class="col-category">Category</th>
+            <th class="col-brand">Brand</th>
+            <th class="col-price">Price</th>
+            <th class="col-stock">Stock</th>
+            <th class="col-status">Status</th>
+            <th class="col-featured">Featured</th>
+            <th class="col-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of filteredProducts; track p.id) {
+            <tr>
+              <!-- Checkbox -->
+              <td class="col-checkbox">
+                <input type="checkbox" [(ngModel)]="p.selected" />
+              </td>
+
+              <!-- # Index -->
+              <td class="col-hash text-muted">{{ p.id }}</td>
+
+              <!-- Image -->
+              <td class="col-image">
+                <div class="product-thumb">
+                  <img [src]="p.image" [alt]="p.name" loading="lazy" />
+                </div>
+              </td>
+
+              <!-- Name & SKU -->
+              <td class="col-name">
+                <div class="product-info-cell">
+                  <span class="product-title">{{ p.name }}</span>
+                  <span class="product-sku">{{ p.sku }}</span>
+                </div>
+              </td>
+
+              <!-- Category Badge -->
+              <td class="col-category">
+                <span class="cat-badge" [ngClass]="getCategoryBadgeClass(p.category)">
+                  {{ p.category }}
+                </span>
+              </td>
+
+              <!-- Brand -->
+              <td class="col-brand text-dark">{{ p.brand }}</td>
+
+              <!-- Price -->
+              <td class="col-price font-semibold">₹{{ p.price }}</td>
+
+              <!-- Stock -->
+              <td class="col-stock text-dark">{{ p.stock }}</td>
+
+              <!-- Status Badge -->
+              <td class="col-status">
+                <span class="status-pill active">{{ p.status }}</span>
+              </td>
+
+              <!-- Featured Toggle Switch -->
+              <td class="col-featured">
+                <button
+                  type="button"
+                  class="toggle-switch"
+                  [class.active]="p.featured"
+                  (click)="toggleFeatured(p)"
+                  aria-label="Toggle Featured"
+                >
+                  <span class="switch-handle"></span>
+                </button>
+              </td>
+
+              <!-- Actions (View, Edit, Delete) -->
+              <td class="col-actions">
+                <div class="action-buttons-group">
+                  <button class="tbl-action-btn view-btn" title="View Details">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button class="tbl-action-btn edit-btn" title="Edit Product">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="tbl-action-btn delete-btn" title="Delete Product" (click)="deleteProduct(p)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TABLE FOOTER & PAGINATION -->
+    <div class="table-footer">
+      <span class="pagination-info">Showing 1 to 10 of 356 products</span>
+
+      <div class="pagination-controls">
+        <button class="page-btn page-arrow" disabled>
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn">4</button>
+        <button class="page-btn">5</button>
+        <span class="page-dots">...</span>
+        <button class="page-btn">36</button>
+        <button class="page-btn page-arrow">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+</div>

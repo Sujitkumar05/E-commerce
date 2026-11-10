@@ -1,0 +1,410 @@
+<header class="site-header w-100">
+  <!-- Top Utility Bar (Bootstrap 5) -->
+  <div class="top-bar py-2" style="background-color: #1748D8;">
+    <div class="container-fluid px-3 px-lg-4">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+        
+        <!-- Left Spacer: Keeps trust badges centered on wide viewports while dropdowns stay right-aligned -->
+        <div class="d-none d-xl-block" style="width: 140px;"></div>
+
+        <!-- Center Trust / Value Badges Group -->
+        <div class="d-flex flex-wrap align-items-center justify-content-center gap-2 py-1 mx-auto mx-xl-0">
+          
+          <!-- Badge 1: Verified global sellers -->
+          <div class="badge-item d-inline-flex align-items-center px-3 py-1 rounded-pill text-white border border-white border-opacity-25 bg-white bg-opacity-10 text-nowrap" style="font-size: 13px;">
+            <span class="rounded-circle bg-white text-primary d-inline-flex align-items-center justify-content-center me-2" style="width: 20px; height: 20px;">
+              <i class="fa-solid fa-shield-halved" style="font-size: 10px; color: #1748D8;"></i>
+            </span>
+            <span class="fw-medium">Verified global sellers</span>
+          </div>
+
+          <!-- Badge 2: Dates shown Upfront -->
+          <div class="badge-item d-inline-flex align-items-center px-3 py-1 rounded-pill text-white border border-white border-opacity-25 bg-white bg-opacity-10 text-nowrap" style="font-size: 13px;">
+            <i class="fa-regular fa-calendar-check me-2 text-white" style="font-size: 13px;"></i>
+            <span class="fw-medium">Dates shown Upfront</span>
+          </div>
+
+          <!-- Badge 3: Dates shown Upfront (Gift) -->
+          <div class="badge-item d-inline-flex align-items-center px-3 py-1 rounded-pill text-white border border-white border-opacity-25 bg-white bg-opacity-10 text-nowrap" style="font-size: 13px;">
+            <i class="fa-solid fa-gift me-2 text-white" style="font-size: 13px;"></i>
+            <span class="fw-medium">Dates shown Upfront</span>
+          </div>
+
+          <!-- Badge 4: Dates shown Upfront (Security Guarantee) -->
+          <div class="badge-item d-inline-flex align-items-center px-3 py-1 rounded-pill text-white border border-white border-opacity-25 bg-white bg-opacity-10 text-nowrap" style="font-size: 13px;">
+            <i class="fa-solid fa-award me-2 text-white" style="font-size: 13px;"></i>
+            <span class="fw-medium">Dates shown Upfront</span>
+          </div>
+
+        </div>
+
+        <!-- Right Utilities: Currency & Language Dropdowns -->
+        <div class="d-flex align-items-center gap-2 ms-auto ms-xl-0">
+          
+          <!-- Currency Dropdown -->
+          <div class="dropdown">
+            <button class="btn btn-light bg-white rounded-pill px-3 py-1 border-0 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm dropdown-toggle" 
+                    type="button" 
+                    data-bs-toggle="dropdown" 
+                    aria-expanded="false" 
+                    style="font-size: 13px; color: #1748D8;">
+              <i class="fa-solid fa-globe" style="font-size: 13px;"></i>
+              <span>USD</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-1" style="font-size: 13px;">
+              <li><a class="dropdown-item active fw-medium" href="#">USD ($)</a></li>
+              <li><a class="dropdown-item" href="#">EUR (€)</a></li>
+              <li><a class="dropdown-item" href="#">GBP (£)</a></li>
+              <li><a class="dropdown-item" href="#">INR (₹)</a></li>
+            </ul>
+          </div>
+
+          <!-- Language Dropdown -->
+          <div class="dropdown">
+            <button class="btn btn-light bg-white rounded-pill px-3 py-1 border-0 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm dropdown-toggle" 
+                    type="button" 
+                    data-bs-toggle="dropdown" 
+                    aria-expanded="false" 
+                    style="font-size: 13px; color: #1748D8;">
+              <span>English</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-1" style="font-size: 13px;">
+              <li><a class="dropdown-item active fw-medium" href="#">English</a></li>
+              <li><a class="dropdown-item" href="#">Español</a></li>
+              <li><a class="dropdown-item" href="#">Français</a></li>
+              <li><a class="dropdown-item" href="#">Deutsch</a></li>
+            </ul>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Middle Navigation Bar (Bootstrap 5) -->
+  <div class="middle-nav-bar py-3" style="background-color: #0b1118;">
+    <div class="container-fluid px-3 px-lg-4">
+      <div class="d-flex align-items-center justify-content-between gap-3">
+        
+        <!-- 1. Logo Container -->
+        <a routerLink="/" class="text-decoration-none flex-shrink-0">
+          <div class="bg-white rounded-2 px-3 py-1 d-flex flex-column justify-content-center shadow-sm" style="min-width: 140px; height: 48px;">
+            <span class="fw-bold text-dark lh-1" style="font-size: 16px; letter-spacing: -0.3px;">YOUR STORE</span>
+            <span class="text-uppercase fw-bold" style="font-size: 9px; letter-spacing: 1.2px; color: #1748D8;">WORLD MARKET</span>
+          </div>
+        </a>
+
+        <!-- 2. Center Search Bar -->
+        <div class="flex-grow-1 mx-lg-4 mx-2" style="max-width: 720px;">
+          <div class="bg-white rounded-3 p-1 ps-3 d-flex align-items-center shadow-sm w-100" style="height: 48px;">
+            <i class="fa-solid fa-magnifying-glass text-secondary me-2" style="font-size: 15px;"></i>
+            <input type="text" 
+                   class="form-control border-0 shadow-none bg-transparent p-0 flex-grow-1" 
+                   placeholder="Search products, brands, ingredients or needs..." 
+                   [(ngModel)]="searchQuery"
+                   (keyup.enter)="onSearch()"
+                   style="font-size: 14px;">
+            <button class="btn text-white rounded-3 px-4 fw-semibold h-100 d-flex align-items-center justify-content-center flex-shrink-0" 
+                    type="button" 
+                    (click)="onSearch()"
+                    style="background-color: #1748D8; font-size: 14px;">
+              Search
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Right Action Controls (Deliver To, Sign In, Wishlist, Cart) -->
+        <div class="d-flex align-items-center gap-2 gap-lg-3 flex-shrink-0">
+          
+          <!-- Deliver To -->
+          <div class="dropdown">
+            <button class="btn bg-white rounded-3 px-3 py-1 border-0 shadow-sm d-flex align-items-center gap-2" 
+                    type="button" 
+                    data-bs-toggle="dropdown" 
+                    aria-expanded="false" 
+                    style="height: 48px;">
+              <span class="text-dark d-flex align-items-center">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+                </svg>
+              </span>
+              <div class="d-flex flex-column text-start lh-sm">
+                <span class="text-secondary" style="font-size: 11px;">Deliver to</span>
+                <span class="fw-bold text-dark d-flex align-items-center gap-1" style="font-size: 13px;">
+                  United State
+                  <i class="fa-solid fa-chevron-down" style="font-size: 9px; color: #1748D8;"></i>
+                </span>
+              </div>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-1" style="font-size: 13px;">
+              <li><a class="dropdown-item active fw-medium" href="#">United States</a></li>
+              <li><a class="dropdown-item" href="#">Canada</a></li>
+              <li><a class="dropdown-item" href="#">United Kingdom</a></li>
+              <li><a class="dropdown-item" href="#">Australia</a></li>
+              <li><a class="dropdown-item" href="#">India</a></li>
+            </ul>
+          </div>
+
+          <!-- Sign In / Account Dropdown -->
+          <div class="dropdown">
+            <button class="btn bg-white rounded-3 px-3 py-1 border-0 shadow-sm d-flex align-items-center gap-2" 
+                    type="button" 
+                    data-bs-toggle="dropdown" 
+                    aria-expanded="false" 
+                    style="height: 48px;">
+              <span class="text-dark d-flex align-items-center">
+                @if (authService.isAuthenticated()) {
+                  <span class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-xs" style="width: 28px; height: 28px; background-color: #1748D8; font-size: 12px;">
+                    {{ (authService.currentUser()?.name || 'U').charAt(0).toUpperCase() }}
+                  </span>
+                } @else {
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                    <path d="m16 11 2 2 4-4"/>
+                  </svg>
+                }
+              </span>
+              <div class="d-flex flex-column text-start lh-sm">
+                @if (authService.isAuthenticated()) {
+                  <span class="text-secondary" style="font-size: 10.5px;">Hello,</span>
+                  <span class="fw-bold text-dark text-truncate" style="font-size: 13px; max-width: 90px;" [title]="authService.currentUser()?.name">
+                    {{ authService.currentUser()?.name?.split(' ')?.[0] || 'Customer' }}
+                  </span>
+                } @else {
+                  <span class="text-secondary" style="font-size: 11px;">Sign in</span>
+                  <span class="fw-bold text-dark" style="font-size: 13px;">Account</span>
+                }
+              </div>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-1" style="font-size: 13px; min-width: 200px;">
+              @if (authService.isAuthenticated()) {
+                <li class="px-3 py-2 border-bottom">
+                  <span class="d-block fw-bold text-dark text-truncate" style="font-size: 13.5px;">{{ authService.currentUser()?.name }}</span>
+                  <span class="d-block text-secondary small text-truncate" style="font-size: 11.5px;">{{ authService.currentUser()?.email }}</span>
+                </li>
+                <li><a class="dropdown-item fw-medium py-2" routerLink="/cart"><i class="fa-solid fa-bag-shopping me-2 text-primary"></i>My Cart ({{ cartService.totalQuantity() }})</a></li>
+                <li><a class="dropdown-item fw-medium py-2" routerLink="/wishlist"><i class="fa-solid fa-heart me-2 text-danger"></i>My Wishlist</a></li>
+                <li><hr class="dropdown-divider my-1"></li>
+                <li>
+                  <button type="button" class="dropdown-item fw-semibold text-danger py-2 d-flex align-items-center" (click)="authService.logout()">
+                    <i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Sign Out
+                  </button>
+                </li>
+              } @else {
+                <li><a class="dropdown-item fw-medium py-2" routerLink="/login"><i class="fa-solid fa-arrow-right-to-bracket me-2 text-primary"></i>Sign In</a></li>
+                <li><a class="dropdown-item fw-medium py-2" routerLink="/register"><i class="fa-solid fa-user-plus me-2 text-primary"></i>Create Account</a></li>
+              }
+            </ul>
+          </div>
+
+          <!-- Wishlist Badge -->
+          <a routerLink="/wishlist" class="position-relative text-white text-decoration-none p-2 d-flex align-items-center justify-content-center" title="Wishlist">
+            <i class="fa-solid fa-heart fs-4"></i>
+            @if (wishlistService.count() > 0) {
+              <span class="position-absolute badge rounded-circle text-white d-flex align-items-center justify-content-center shadow-sm" 
+                    style="top: 2px; right: 2px; background-color: #1748D8; min-width: 18px; height: 18px; font-size: 10px; padding: 0 4px; font-weight: 700;">
+                {{ wishlistService.count() }}
+              </span>
+            }
+          </a>
+
+          <!-- Cart / Shopping Bag Badge -->
+          <a routerLink="/cart" class="position-relative text-white text-decoration-none p-2 d-flex align-items-center justify-content-center" title="Cart">
+            <i class="fa-solid fa-bag-shopping fs-4"></i>
+            @if (cartService.totalQuantity() > 0) {
+              <span class="position-absolute badge rounded-circle text-white d-flex align-items-center justify-content-center shadow-sm" 
+                    style="top: 2px; right: 2px; background-color: #1748D8; min-width: 18px; height: 18px; font-size: 10px; padding: 0 4px; font-weight: 700;">
+                {{ cartService.totalQuantity() }}
+              </span>
+            }
+          </a>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- 3. Bottom Category Navigation Bar (Bootstrap 5) -->
+  <div class="bottom-nav-bar bg-white border-bottom py-2 shadow-sm">
+    <div class="container-fluid px-3 px-lg-4">
+      <div class="d-flex align-items-center gap-3 overflow-x-auto text-nowrap no-scrollbar py-1">
+        
+        <!-- Shop Categories Button (Toggles Mega Menu) -->
+        <div class="flex-shrink-0">
+          <button class="btn rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center border-0 shadow-none" 
+                  type="button" 
+                  (click)="toggleMegaMenu()"
+                  style="background-color: #eff6ff; color: #1748D8; font-size: 14px;">
+            <i class="fa-solid fa-list-ul me-2"></i>
+            <span>Shop categories</span>
+            <i class="fa-solid fa-chevron-down ms-2" [class.rotate-180]="isMegaMenuOpen" style="font-size: 10px; transition: transform 0.2s;"></i>
+          </button>
+        </div>
+
+        <!-- Category Links -->
+        <div class="d-flex align-items-center gap-4 ms-2">
+          
+          <!-- Brands -->
+          <a [routerLink]="['/products']" class="cat-nav-link d-inline-flex align-items-center text-decoration-none fw-semibold" style="font-size: 14px;">
+            <i class="fa-solid fa-tag me-2 text-dark"></i>
+            <span>Brands</span>
+          </a>
+
+          <!-- Wellness -->
+          <a [routerLink]="['/products']" [queryParams]="{ category: 'wellness' }" class="cat-nav-link d-inline-flex align-items-center text-decoration-none fw-semibold" style="font-size: 14px;">
+            <i class="fa-solid fa-spa me-2 text-dark"></i>
+            <span>Wellness</span>
+          </a>
+
+          <!-- Homeopathy -->
+          <a routerLink="/homeopathy" class="cat-nav-link d-inline-flex align-items-center text-decoration-none fw-semibold" style="font-size: 14px; color: #0f766e;">
+            <i class="fa-solid fa-mortar-pestle me-2"></i>
+            <span>Homeopathy</span>
+          </a>
+
+          <!-- Beauty -->
+          <a [routerLink]="['/products']" [queryParams]="{ category: 'wellness' }" class="cat-nav-link d-inline-flex align-items-center text-decoration-none fw-semibold" style="font-size: 14px;">
+            <span class="d-inline-flex align-items-center me-2 text-dark">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m14 10-5.5 5.5a2.12 2.12 0 0 1-3-3L11 7"/>
+                <path d="m9 5 3-3 7 7-3 3"/>
+                <circle cx="18" cy="18" r="3"/>
+              </svg>
+            </span>
+            <span>Beauty</span>
+          </a>
+
+          <!-- Food & Pantry -->
+          <a [routerLink]="['/products']" [queryParams]="{ category: 'pantry' }" class="cat-nav-link d-inline-flex align-items-center text-decoration-none fw-semibold" style="font-size: 14px;">
+            <i class="fa-solid fa-utensils me-2 text-dark"></i>
+            <span>Food & Pantry</span>
+          </a>
+
+          <!-- Home -->
+          <a [routerLink]="['/products']" [queryParams]="{ category: 'craft-living' }" class="cat-nav-link d-inline-flex align-items-center text-decoration-none fw-semibold" style="font-size: 14px;">
+            <i class="fa-solid fa-house me-2 text-dark"></i>
+            <span>Home</span>
+          </a>
+
+          <!-- Deals -->
+          <a [routerLink]="['/products']" [queryParams]="{ filter: 'deals' }" class="cat-nav-link d-inline-flex align-items-center text-decoration-none fw-semibold" style="font-size: 14px;">
+            <i class="fa-solid fa-certificate me-2 text-dark"></i>
+            <span>Deals</span>
+          </a>
+
+          <!-- New arrivals -->
+          <a [routerLink]="['/products']" [queryParams]="{ filter: 'new' }" class="cat-nav-link d-inline-flex align-items-center text-decoration-none fw-semibold" style="font-size: 14px;">
+            <span class="d-inline-flex align-items-center me-2 text-dark">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                <line x1="12" y1="22.08" x2="12" y2="12"/>
+              </svg>
+            </span>
+            <span>New arrivals</span>
+          </a>
+
+          <!-- All Products -->
+          <a [routerLink]="['/products']" class="cat-nav-link d-inline-flex align-items-center text-decoration-none fw-semibold" style="font-size: 14px; color: #1748D8;">
+            <i class="fa-solid fa-cubes me-2"></i>
+            <span>All Products</span>
+          </a>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mega Menu Dropdown Panel (Bootstrap 5) -->
+    @if (isMegaMenuOpen) {
+      <!-- Backdrop overlay to dismiss on click outside -->
+      <div class="mega-menu-backdrop" (click)="isMegaMenuOpen = false"></div>
+
+      <!-- Mega Menu Container -->
+      <div class="mega-menu-panel shadow-lg">
+        <div class="container-fluid px-0">
+          <div class="d-flex w-100 flex-column flex-lg-row">
+            
+            <!-- Left Categories Sidebar -->
+            <div class="mega-menu-sidebar flex-shrink-0" style="width: 250px;">
+              <ul class="list-unstyled mb-0 py-2">
+                @for (cat of categories; track cat.id; let i = $index) {
+                  <li>
+                    <button type="button" 
+                            class="w-100 btn text-start d-flex align-items-center justify-content-between px-3 py-3 rounded-0 border-0 mega-cat-btn"
+                            [class.active]="selectedCategoryIndex === i"
+                            (mouseenter)="selectCategory(i)"
+                            (click)="selectCategory(i)">
+                      <div class="d-flex align-items-center gap-3">
+                        <i [class]="cat.icon" style="font-size: 15px; width: 18px; text-align: center;"></i>
+                        <span class="cat-name fw-medium" style="font-size: 14px;">{{ cat.name }}</span>
+                      </div>
+                      <i class="fa-solid fa-chevron-right text-muted" style="font-size: 10px;"></i>
+                    </button>
+                  </li>
+                }
+              </ul>
+            </div>
+
+            <!-- Right Content Area (Subcategories & Promo Card) -->
+            <div class="mega-menu-content flex-grow-1 p-4 bg-white">
+              <div class="row g-4 h-100 align-items-start">
+                
+                <!-- 3 Columns of Subcategories -->
+                @for (group of categories[selectedCategoryIndex].groups; track group.title) {
+                  <div class="col-12 col-md-4 col-xl-3">
+                    <h6 class="text-uppercase fw-bold mb-3" style="font-size: 11px; letter-spacing: 0.8px; color: #6b7280;">
+                      {{ group.title }}
+                    </h6>
+                    <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+                      @for (item of group.items; track item) {
+                        <li>
+                          <a href="javascript:void(0)" 
+                             class="mega-subcat-link text-decoration-none d-block py-1" 
+                             (click)="navigateToSearch(item)"
+                             style="font-size: 13.5px;">
+                            {{ item }}
+                          </a>
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                }
+
+                <!-- Column 4: Promo / Bestseller Card -->
+                <div class="col-12 col-md-4 col-xl-3 ms-xl-auto">
+                  <div class="promo-card rounded-4 p-4 d-flex flex-column justify-content-between h-100 shadow-sm"
+                       [style.background-color]="categories[selectedCategoryIndex].promo.bgColor || '#eaf1f8'"
+                       style="min-height: 220px;">
+                    <div>
+                      <span class="badge rounded-pill fw-bold text-uppercase px-2 py-1 mb-3" 
+                            style="background-color: #dcfce7; color: #166534; font-size: 10px; letter-spacing: 0.5px;">
+                        {{ categories[selectedCategoryIndex].promo.tag }}
+                      </span>
+                      <h4 class="fw-bold text-dark mb-1" style="font-size: 20px;">
+                        {{ categories[selectedCategoryIndex].promo.title }}
+                      </h4>
+                    </div>
+                    <div>
+                      <a href="javascript:void(0)" 
+                         (click)="navigateToCategory(categories[selectedCategoryIndex].id)"
+                         class="fw-bold text-decoration-none d-inline-flex align-items-center gap-1" 
+                         style="color: #1748D8; font-size: 13.5px;">
+                        {{ categories[selectedCategoryIndex].promo.linkText }}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</header>

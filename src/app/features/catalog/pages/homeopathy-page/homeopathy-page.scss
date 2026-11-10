@@ -1,0 +1,98 @@
+.homeopathy-catalog-page {
+  .subcat-tab-btn {
+    border: 1.5px solid #e5e7eb;
+    background: #ffffff;
+    color: #4b5563;
+    font-size: 13.5px;
+
+    .subcat-badge {
+      background-color: #f3f4f6;
+      color: #374151;
+      font-size: 11px;
+    }
+
+    &.active {
+      background-color: #0f766e;
+      border-color: #0f766e;
+      color: #ffffff;
+
+      .subcat-badge {
+        background-color: rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+      }
+    }
+
+    &:hover:not(.active) {
+      border-color: #0f766e;
+      color: #0f766e;
+    }
+  }
+
+  .homeopathy-product-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border-color: #e5e7eb;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(15, 118, 110, 0.1) !important;
+
+      .homeopathy-card-img {
+        transform: scale(1.06);
+      }
+
+      .card-prod-title {
+        color: #0f766e !important;
+      }
+    }
+
+    .card-wishlist-btn {
+      transition: all 0.2s ease;
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+
+    .add-to-cart-pill-btn {
+      background-color: #0f766e;
+      color: #ffffff;
+      transition: all 0.2s ease;
+
+      &:hover:not(.btn-success) {
+        background-color: #115e59;
+        box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);
+      }
+    }
+
+    .buy-now-pill-btn {
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+      color: #ffffff;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: linear-gradient(135deg, #b45309 0%, #92400e 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(180, 83, 9, 0.3);
+      }
+    }
+  }
+
+  .btn-outline-teal {
+    border: 1.5px solid #0f766e;
+    color: #0f766e;
+    background: transparent;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #0f766e;
+      color: #ffffff;
+    }
+  }
+
+  .cursor-pointer {
+    cursor: pointer;
+  }
+
+  .hover-bg-light:hover {
+    background-color: #f8fafc;
+  }
+}

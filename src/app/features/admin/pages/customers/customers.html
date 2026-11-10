@@ -1,0 +1,442 @@
+<div class="customers-page-container">
+
+  <!-- 1. PAGE HEADER & ACTIONS -->
+  <div class="page-header">
+    <div class="header-left">
+      <div class="title-with-badge">
+        <h1 class="page-title">Customers & Fulfillment</h1>
+        <span class="badge-header-procure" *ngIf="customersWithDeficitsCount > 0">
+          <i class="bi bi-exclamation-triangle-fill"></i> {{ customersWithDeficitsCount }} with stock shortages
+        </span>
+      </div>
+      <p class="page-subtitle">Track customer orders, monitor stock availability against ordered quantities, and dispatch missing items directly to procurement.</p>
+    </div>
+    <div class="header-actions">
+      <!-- View mode toggle (Table vs Accordion) -->
+      <div class="view-mode-toggle">
+        <button 
+          type="button" 
+          class="btn-toggle-mode" 
+          [class.active]="viewMode === 'table'"
+          (click)="viewMode = 'table'"
+          title="Table view with slide-out drawer"
+        >
+          <i class="bi bi-table"></i>
+          <span>Table View</span>
+        </button>
+        <button 
+          type="button" 
+          class="btn-toggle-mode" 
+          [class.active]="viewMode === 'accordion'"
+          (click)="viewMode = 'accordion'"
+          title="Expandable accordion cards view"
+        >
+          <i class="bi bi-view-stacked"></i>
+          <span>Accordion View</span>
+        </button>
+      </div>
+
+      <button class="btn-export-csv" (click)="exportCsv()">
+        <i class="bi bi-download"></i>
+        <span>Export CSV</span>
+      </button>
+      <button class="btn-add-customer" (click)="addNewCustomer()">
+        <i class="bi bi-plus"></i>
+        <span>Add Customer</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. 4 TOP STATS CARDS -->
+  <div class="stats-grid">
+    <!-- Total Customers -->
+    <div class="stat-card">
+      <div class="stat-icon-wrapper bg-purple-primary">
+        <i class="bi bi-people-fill"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Total Customers</span>
+        <h3 class="stat-value">{{ totalCustomersCount.toLocaleString() }}</h3>
+        <div class="stat-trend positive">
+          <i class="bi bi-arrow-up-short"></i>
+          <span>8%</span>
+          <span class="trend-sub">from last month</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stock Deficit Alerts Card (HIGHLIGHTED) -->
+    <div 
+      class="stat-card stat-alert-card" 
+      [class.has-deficits]="customersWithDeficitsCount > 0"
+      (click)="inventoryFilter = inventoryFilter === 'Deficit' ? 'All' : 'Deficit'"
+      style="cursor: pointer;"
+      title="Click to filter customers with inventory shortages"
+    >
+      <div class="stat-icon-wrapper bg-rose-primary">
+        <i class="bi bi-exclamation-octagon-fill"></i>
+      </div>
+      <div class="stat-content">
+        <div class="stat-label-row">
+          <span class="stat-label">Stock Deficit Alerts</span>
+          <span class="badge-filter-hint">{{ inventoryFilter === 'Deficit' ? 'Filtering' : 'Click to filter' }}</span>
+        </div>
+        <h3 class="stat-value text-rose">{{ customersWithDeficitsCount }} Customers</h3>
+        <div class="stat-trend alert-trend">
+          <i class="bi bi-shield-exclamation"></i>
+          <span>Action required: missing stock flagged</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Customers -->
+    <div class="stat-card">
+      <div class="stat-icon-wrapper bg-emerald-primary">
+        <i class="bi bi-cart-check-fill"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Active Customers</span>
+        <h3 class="stat-value">{{ activeCustomersCount }}</h3>
+        <div class="stat-trend positive">
+          <i class="bi bi-arrow-up-short"></i>
+          <span>6%</span>
+          <span class="trend-sub">from last month</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Procurement Requisitions Dispatched -->
+    <div class="stat-card">
+      <div class="stat-icon-wrapper bg-blue-primary">
+        <i class="bi bi-truck"></i>
+      </div>
+      <div class="stat-content">
+        <span class="stat-label">Procurement POs</span>
+        <h3 class="stat-value">{{ totalProcurementRequisitionsCount }} Active</h3>
+        <div class="stat-trend neutral">
+          <i class="bi bi-arrow-repeat"></i>
+          <span>Dispatched purchase requisitions</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. FILTERS CARD -->
+  <div class="filters-card">
+    <div class="search-input-wrap">
+      <i class="bi bi-search"></i>
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        placeholder="Search by name, email, phone or customer ID..."
+        class="filter-search"
+      />
+    </div>
+
+    <!-- Inventory Stock Filter -->
+    <div class="filter-dropdown-wrap">
+      <span class="dropdown-label">Inventory Status</span>
+      <select [(ngModel)]="inventoryFilter" class="filter-select select-inventory-status">
+        <option value="All">All Stock Statuses</option>
+        <option value="Deficit">⚠️ Has Stock Deficits</option>
+        <option value="Sufficient">✓ All In Stock</option>
+      </select>
+    </div>
+
+    <!-- Customer Type Dropdown -->
+    <div class="filter-dropdown-wrap">
+      <span class="dropdown-label">Customer Type</span>
+      <select [(ngModel)]="customerTypeFilter" class="filter-select">
+        <option value="All">All Types</option>
+        <option value="Retail">Retail</option>
+        <option value="Wholesale">Wholesale</option>
+        <option value="Business">Business</option>
+      </select>
+    </div>
+
+    <!-- Status Dropdown -->
+    <div class="filter-dropdown-wrap">
+      <span class="dropdown-label">Status</span>
+      <select [(ngModel)]="statusFilter" class="filter-select">
+        <option value="All">All Status</option>
+        <option value="Active">Active</option>
+        <option value="Inactive">Inactive</option>
+        <option value="Cancelled">Cancelled</option>
+      </select>
+    </div>
+
+    <!-- Date Range Dropdown -->
+    <div class="filter-dropdown-wrap">
+      <span class="dropdown-label">Join Date</span>
+      <div class="date-select-wrap">
+        <i class="bi bi-calendar3"></i>
+        <select [(ngModel)]="dateRangeFilter" class="filter-select date-select">
+          <option value="Last 30 days">Last 30 days</option>
+          <option value="Last 7 days">Last 7 days</option>
+          <option value="Today">Today</option>
+          <option value="This Year">This Year</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. MAIN CONTENT AREA -->
+
+  <!-- MODE A: DATA TABLE VIEW -->
+  <div class="table-container-card" *ngIf="viewMode === 'table'">
+    <div class="table-responsive">
+      <table class="customers-table">
+        <thead>
+          <tr>
+            <th class="th-check">
+              <input
+                type="checkbox"
+                [(ngModel)]="selectAll"
+                (change)="toggleSelectAll()"
+                class="custom-check"
+              />
+            </th>
+            <th>Customer ID</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Customer Type</th>
+            <th>Status</th>
+            <th>Inventory Stock Check</th>
+            <th>Join Date</th>
+            <th class="text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let cust of filteredCustomers"
+            [class.selected-row]="selectedCustomer?.id === cust.id && drawerOpen"
+            (click)="selectCustomer(cust)"
+          >
+            <td class="td-check" (click)="$event.stopPropagation()">
+              <input
+                type="checkbox"
+                [(ngModel)]="cust.selected"
+                (change)="checkIndividualSelection()"
+                class="custom-check"
+              />
+            </td>
+            <td class="td-cust-id">
+              <span class="cust-id-link">{{ cust.id }}</span>
+            </td>
+            <td class="td-name">
+              <div class="user-cell">
+                <div class="user-avatar" [style.background-color]="cust.avatarBg || '#dbeafe'">
+                  <span>{{ cust.avatarInitials }}</span>
+                </div>
+                <div class="user-meta">
+                  <span class="user-name">{{ cust.name }}</span>
+                  <span class="user-sub-email">{{ cust.email }}</span>
+                </div>
+              </div>
+            </td>
+            <td class="td-phone">
+              {{ cust.phone }}
+            </td>
+            <td class="td-type">
+              <span class="type-badge" [ngClass]="'type-' + cust.customerType.toLowerCase()">
+                {{ cust.customerType }}
+              </span>
+            </td>
+            <td class="td-status">
+              <span class="status-badge" [ngClass]="'status-' + cust.status.toLowerCase()">
+                {{ cust.status }}
+              </span>
+            </td>
+
+            <!-- INVENTORY STOCK AVAILABILITY COLUMN -->
+            <td class="td-inventory-health" (click)="$event.stopPropagation()">
+              <div 
+                class="inventory-health-pill" 
+                [class.pill-deficit]="customerService.getCustomerDeficitCount(cust) > 0"
+                [class.pill-ok]="customerService.getCustomerDeficitCount(cust) === 0 && (cust.recentOrders?.length || 0) > 0"
+                [class.pill-none]="!cust.recentOrders || cust.recentOrders.length === 0"
+                (click)="openCustomerInventoryAudit(cust, $event)"
+                title="Click to open inventory comparison & dispatch to procurement"
+              >
+                <ng-container *ngIf="customerService.getCustomerDeficitCount(cust) > 0">
+                  <i class="bi bi-exclamation-triangle-fill"></i>
+                  <span>{{ customerService.getCustomerDeficitCount(cust) }} Deficit Flagged</span>
+                  <span class="pill-act-link">Procure &rarr;</span>
+                </ng-container>
+
+                <ng-container *ngIf="customerService.getCustomerDeficitCount(cust) === 0 && (cust.recentOrders?.length || 0) > 0">
+                  <i class="bi bi-check-circle-fill"></i>
+                  <span>Stock Sufficient</span>
+                </ng-container>
+
+                <ng-container *ngIf="!cust.recentOrders || cust.recentOrders.length === 0">
+                  <span class="text-muted">No Orders</span>
+                </ng-container>
+              </div>
+            </td>
+
+            <td class="td-date">
+              <div class="date-info">
+                <span class="date-day">{{ cust.joinDate }}</span>
+                <span class="date-time">{{ cust.joinTime }}</span>
+              </div>
+            </td>
+
+            <td class="td-actions text-center" (click)="$event.stopPropagation()">
+              <div class="actions-wrap">
+                <button
+                  type="button"
+                  class="btn-row-action btn-row-orders"
+                  (click)="viewCustomerOrders(cust); $event.stopPropagation()"
+                  title="View this customer's complete orders in Orders module"
+                >
+                  <i class="bi bi-cart3"></i>
+                  <span>Orders</span>
+                </button>
+                <button 
+                  class="btn-row-action" 
+                  (click)="openCustomerInventoryAudit(cust, $event)" 
+                  title="Open Customer Drawer with Order Items & Inventory Comparison"
+                >
+                  <i class="bi bi-layers-half"></i>
+                  <span>Audit Stock</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="filteredCustomers.length === 0">
+            <td colspan="9" class="empty-table-cell">
+              <div class="empty-state">
+                <i class="bi bi-people"></i>
+                <p>No customers found matching your filter criteria.</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div class="table-footer">
+      <span class="results-info">Showing {{ filteredCustomers.length }} of {{ totalCustomersCount }} customers</span>
+      <div class="pagination-wrapper">
+        <button class="pag-arrow" disabled>
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <button class="pag-btn active">1</button>
+        <button class="pag-btn">2</button>
+        <button class="pag-btn">3</button>
+        <span class="pag-dots">...</span>
+        <button class="pag-arrow">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODE B: ACCORDION LIST VIEW -->
+  <div class="accordion-view-container" *ngIf="viewMode === 'accordion'">
+    <div class="accordion-cards-stack">
+      <div 
+        class="customer-accordion-card" 
+        *ngFor="let cust of filteredCustomers"
+        [class.has-deficit-border]="customerService.getCustomerDeficitCount(cust) > 0"
+      >
+        <div class="cust-accordion-head" (click)="selectCustomer(cust)">
+          <div class="c-head-left">
+            <div class="user-avatar" [style.background-color]="cust.avatarBg || '#dbeafe'">
+              <span>{{ cust.avatarInitials }}</span>
+            </div>
+            <div class="c-head-meta">
+              <div class="c-name-row">
+                <h3 class="c-name">{{ cust.name }}</h3>
+                <span class="cust-id-pill">{{ cust.id }}</span>
+                <span class="status-badge" [ngClass]="'status-' + cust.status.toLowerCase()">
+                  {{ cust.status }}
+                </span>
+                <span class="type-badge" [ngClass]="'type-' + cust.customerType.toLowerCase()">
+                  {{ cust.customerType }}
+                </span>
+              </div>
+              <div class="c-sub-row">
+                <span><i class="bi bi-envelope"></i> {{ cust.email }}</span>
+                <span class="dot">•</span>
+                <span><i class="bi bi-telephone"></i> {{ cust.phone }}</span>
+                <span class="dot">•</span>
+                <span><i class="bi bi-geo-alt"></i> {{ cust.location }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="c-head-right">
+            <!-- Inventory Deficit Badge -->
+            <div class="c-deficit-pill" *ngIf="customerService.getCustomerDeficitCount(cust) > 0">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              <span>{{ customerService.getCustomerDeficitCount(cust) }} Item Shortage Flagged</span>
+            </div>
+            <div class="c-ok-pill" *ngIf="customerService.getCustomerDeficitCount(cust) === 0">
+              <i class="bi bi-check-circle-fill"></i>
+              <span>Stock Ready</span>
+            </div>
+
+            <button 
+              type="button" 
+              class="btn-open-drawer-act"
+              (click)="openCustomerInventoryAudit(cust, $event)"
+            >
+              <i class="bi bi-box-arrow-up-right"></i>
+              <span>Open Drawer & Procurement</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Inline preview of recent orders & items -->
+        <div class="cust-accordion-inline-body" *ngIf="cust.recentOrders && cust.recentOrders.length > 0">
+          <div class="inline-order-item" *ngFor="let ord of cust.recentOrders">
+            <div class="inline-order-head">
+              <div class="inline-head-title">
+                <span class="inline-ord-code">{{ ord.orderId }}</span>
+                <span class="inline-ord-date">{{ ord.date }}</span>
+                <span class="status-badge" [ngClass]="'status-' + ord.status.toLowerCase()">{{ ord.status }}</span>
+              </div>
+              <div class="inline-head-amount">
+                <span>Total: ₹{{ ord.amount.toLocaleString() }}</span>
+              </div>
+            </div>
+
+            <!-- Items list with stock badges -->
+            <div class="inline-items-chips-list">
+              <div 
+                class="inline-item-chip" 
+                *ngFor="let itm of ord.items"
+                [class.chip-shortage]="itm.inStock < itm.quantity"
+              >
+                <img 
+                  [src]="itm.image" 
+                  [alt]="itm.name"
+                  (error)="$any($event.target).src = '/images/wellness/neem-bottle-nature.jpg'"
+                  class="chip-thumb"
+                />
+                <span class="chip-title">{{ itm.name }}</span>
+                <span class="chip-qty-tag">Ord: {{ itm.quantity }} | Stock: {{ itm.inStock }}</span>
+                <span class="chip-deficit-tag" *ngIf="itm.inStock < itm.quantity">
+                  Missing {{ itm.quantity - itm.inStock }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. SEPARATE CUSTOMER DRAWER COMPONENT -->
+  <app-customer-drawer
+    [customer]="selectedCustomer"
+    [isOpen]="drawerOpen"
+    (close)="closeDrawer()"
+    (customerChanged)="onCustomerUpdated($event)"
+  ></app-customer-drawer>
+
+</div>

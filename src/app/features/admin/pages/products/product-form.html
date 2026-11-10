@@ -1,0 +1,401 @@
+<div class="add-product-container">
+
+  <!-- TOP HEADER & ACTION BUTTONS -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">Add New Product</h1>
+      <div class="breadcrumbs">
+        <span>Dashboard</span>
+        <i class="bi bi-chevron-right"></i>
+        <a routerLink="/admin/products" class="crumb-link">Products</a>
+        <i class="bi bi-chevron-right"></i>
+        <span class="active-crumb">Add New Product</span>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <a routerLink="/admin/products" class="btn-cancel">Cancel</a>
+      <button class="btn-save" (click)="saveProduct()">
+        <i class="bi bi-floppy"></i>
+        <span>Save Product</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN 2-COLUMN FORM CONTENT -->
+  <div class="form-content-grid">
+
+    <!-- LEFT COLUMN: Product Details & Quick Tips -->
+    <div class="col-left">
+
+      <!-- Product Details Card -->
+      <div class="form-card product-details-card">
+        <h2 class="card-title">Product Details</h2>
+
+        <!-- Product Name -->
+        <div class="form-group">
+          <label class="form-label">Product Name <span class="required">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Enter product name"
+            [(ngModel)]="productName"
+          />
+        </div>
+
+        <!-- Category & Brand -->
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Category <span class="required">*</span></label>
+            <div class="custom-select-wrapper">
+              <select class="form-control" [(ngModel)]="category">
+                <option value="" disabled selected>Select category</option>
+                <option value="Personal Care">Personal Care</option>
+                <option value="Skincare">Skincare</option>
+                <option value="Health Care">Health Care</option>
+                <option value="Food & Beverages">Food & Beverages</option>
+              </select>
+              <i class="bi bi-chevron-down select-chevron"></i>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Brand <span class="required">*</span></label>
+            <div class="custom-select-wrapper">
+              <select class="form-control" [(ngModel)]="brand">
+                <option value="" disabled selected>Select brand</option>
+                <option value="Himalaya">Himalaya</option>
+                <option value="Biotique">Biotique</option>
+                <option value="Patanjali">Patanjali</option>
+                <option value="Dabur">Dabur</option>
+                <option value="Medimix">Medimix</option>
+                <option value="Zandu">Zandu</option>
+                <option value="Vicco">Vicco</option>
+              </select>
+              <i class="bi bi-chevron-down select-chevron"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Price & Compare Price -->
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Price <span class="required">*</span></label>
+            <div class="input-with-symbol">
+              <span class="currency-symbol">₹</span>
+              <input
+                type="number"
+                class="form-control with-symbol-input"
+                placeholder="Enter price"
+                [(ngModel)]="price"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Compare Price <span class="optional">(Optional)</span></label>
+            <div class="input-with-symbol">
+              <span class="currency-symbol">₹</span>
+              <input
+                type="number"
+                class="form-control with-symbol-input"
+                placeholder="Enter compare price"
+                [(ngModel)]="comparePrice"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Stock Quantity & SKU -->
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Stock Quantity <span class="required">*</span></label>
+            <input
+              type="number"
+              class="form-control"
+              placeholder="Enter stock quantity"
+              [(ngModel)]="stockQuantity"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">SKU <span class="optional">(Optional)</span></label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="e.g. HM001"
+              [(ngModel)]="sku"
+            />
+          </div>
+        </div>
+
+        <!-- Short Description -->
+        <div class="form-group">
+          <label class="form-label">Short Description <span class="required">*</span></label>
+          <div class="textarea-wrapper">
+            <textarea
+              class="form-control text-area-field"
+              rows="3"
+              maxlength="200"
+              placeholder="Enter short description (max 200 characters)"
+              [(ngModel)]="shortDescription"
+            ></textarea>
+            <span class="char-count">{{ shortDescription.length }}/200</span>
+          </div>
+        </div>
+
+        <!-- Full Description with Rich Editor Toolbar -->
+        <div class="form-group">
+          <label class="form-label">Full Description <span class="required">*</span></label>
+          <div class="rich-editor-box">
+            <!-- Toolbar -->
+            <div class="editor-toolbar">
+              <div class="toolbar-tools">
+                <button type="button" class="tool-btn" title="Bold"><strong>B</strong></button>
+                <button type="button" class="tool-btn" title="Italic"><em>I</em></button>
+                <button type="button" class="tool-btn" title="Underline"><u>U</u></button>
+                <span class="toolbar-divider"></span>
+                <button type="button" class="tool-btn" title="Bullet List"><i class="bi bi-list-ul"></i></button>
+                <button type="button" class="tool-btn" title="Numbered List"><i class="bi bi-list-ol"></i></button>
+                <span class="toolbar-divider"></span>
+                <button type="button" class="tool-btn" title="Insert Link"><i class="bi bi-link-45deg"></i></button>
+                <button type="button" class="tool-btn" title="Insert Image"><i class="bi bi-image"></i></button>
+              </div>
+
+              <div class="format-dropdown">
+                <span>Normal</span>
+                <i class="bi bi-chevron-down"></i>
+              </div>
+            </div>
+
+            <!-- Content Area -->
+            <textarea
+              class="editor-textarea"
+              rows="6"
+              placeholder="Enter detailed product description..."
+              [(ngModel)]="fullDescription"
+            ></textarea>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quick Tips Box -->
+      <div class="quick-tips-card">
+        <div class="tips-header">
+          <div class="tip-icon-circle">
+            <i class="bi bi-lightbulb-fill"></i>
+          </div>
+          <span class="tips-title">Quick Tips</span>
+        </div>
+        <ul class="tips-list">
+          <li>Use high quality images (JPG/PNG).</li>
+          <li>Write clear and attractive product description.</li>
+          <li>Add relevant tags for better search results.</li>
+          <li>Keep stock quantity updated.</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: Images, Settings, Additional Info, SEO -->
+    <div class="col-right">
+
+      <!-- Product Images Card -->
+      <div class="form-card product-images-card">
+        <h2 class="card-title">Product Images</h2>
+
+        <!-- Hidden input for file picking -->
+        <input
+          type="file"
+          id="imageFileInput"
+          (change)="onFilesSelected($event)"
+          multiple
+          accept="image/*"
+          style="display: none"
+        />
+
+        <div class="images-management-area">
+          <!-- Dropzone -->
+          <div class="image-dropzone" (click)="triggerUpload()">
+            <div class="dropzone-cloud-icon">
+              <svg viewBox="0 0 24 24" width="28" height="28" stroke="#3b82f6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/>
+                <path d="M12 12v9"/>
+                <path d="m16 16-4-4-4 4"/>
+              </svg>
+            </div>
+            <p class="dropzone-main-text">Click to upload images</p>
+            <p class="dropzone-sub-text">or drag and drop</p>
+            <span class="dropzone-hint">Supports JPG, PNG (Max 5MB each)</span>
+          </div>
+
+          <!-- Existing Images row -->
+          <div class="uploaded-previews-list">
+            @for (img of images; track img.id; let i = $index) {
+              <div class="img-preview-box" (click)="setMainImage(i)">
+                @if (img.isMain) {
+                  <span class="main-badge">Main</span>
+                }
+                <button
+                  type="button"
+                  class="remove-img-btn"
+                  (click)="removeImage(i, $event)"
+                  title="Remove image"
+                >
+                  <i class="bi bi-x"></i>
+                </button>
+                <img [src]="img.url" alt="Product thumbnail" />
+              </div>
+            }
+
+            <!-- Add More Button -->
+            <button type="button" class="btn-add-more-img" (click)="triggerUpload()">
+              <i class="bi bi-plus-lg"></i>
+              <span>Add More</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Settings Card -->
+      <div class="form-card product-settings-card">
+        <h2 class="card-title">Product Settings</h2>
+
+        <div class="settings-row">
+          <!-- Status Radios -->
+          <div class="status-setting-group">
+            <label class="form-label">Status <span class="required">*</span></label>
+            <div class="radio-options">
+              <label class="custom-radio">
+                <input
+                  type="radio"
+                  name="productStatus"
+                  value="Active"
+                  [(ngModel)]="status"
+                />
+                <span class="radio-mark"></span>
+                <span class="radio-text">Active</span>
+              </label>
+
+              <label class="custom-radio">
+                <input
+                  type="radio"
+                  name="productStatus"
+                  value="Inactive"
+                  [(ngModel)]="status"
+                />
+                <span class="radio-mark"></span>
+                <span class="radio-text">Inactive</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Featured Product Toggle -->
+          <div class="featured-setting-group">
+            <label class="form-label">Featured Product</label>
+            <div class="toggle-control-box">
+              <button
+                type="button"
+                class="toggle-switch"
+                [class.active]="featuredProduct"
+                (click)="featuredProduct = !featuredProduct"
+              >
+                <span class="switch-handle"></span>
+              </button>
+              <span class="toggle-caption">Show on homepage</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Information Card -->
+      <div class="form-card additional-info-card">
+        <h2 class="card-title">Additional Information</h2>
+
+        <div class="form-row-2">
+          <!-- Tags -->
+          <div class="form-group">
+            <label class="form-label">Tags (comma separated)</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="e.g. herbal, skincare, natural"
+              [(ngModel)]="tags"
+            />
+          </div>
+
+          <!-- Weight -->
+          <div class="form-group">
+            <label class="form-label">Weight <span class="optional">(Optional)</span></label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="e.g. 100g"
+              [(ngModel)]="weight"
+            />
+          </div>
+        </div>
+
+        <!-- Dimensions -->
+        <div class="form-group dimensions-group">
+          <label class="form-label">Dimensions <span class="optional">(Optional)</span></label>
+          <div class="dimensions-row-3">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Length (cm)"
+              [(ngModel)]="length"
+            />
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Width (cm)"
+              [(ngModel)]="width"
+            />
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Height (cm)"
+              [(ngModel)]="height"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- SEO Information Card -->
+      <div class="form-card seo-info-card">
+        <h2 class="card-title">SEO Information <span class="optional">(Optional)</span></h2>
+
+        <!-- Meta Title -->
+        <div class="form-group">
+          <label class="form-label">Meta Title</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Enter meta title"
+            [(ngModel)]="metaTitle"
+          />
+        </div>
+
+        <!-- Meta Description -->
+        <div class="form-group">
+          <label class="form-label">Meta Description</label>
+          <div class="textarea-wrapper">
+            <textarea
+              class="form-control text-area-field"
+              rows="3"
+              maxlength="160"
+              placeholder="Enter meta description"
+              [(ngModel)]="metaDescription"
+            ></textarea>
+            <span class="char-count">{{ metaDescription.length }}/160</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

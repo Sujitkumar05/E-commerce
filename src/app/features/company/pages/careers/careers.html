@@ -1,0 +1,182 @@
+<app-storefront-header></app-storefront-header>
+
+<main class="careers-page bg-light min-vh-100">
+  
+  <!-- Hero Section -->
+  <section class="careers-hero text-white py-5 position-relative overflow-hidden" style="background: linear-gradient(135deg, #092e20 0%, #064e3b 60%, #047857 100%);">
+    <div class="container-fluid px-3 px-lg-5 py-4 position-relative z-2">
+      
+      <!-- Breadcrumb -->
+      <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb" style="font-size: 13px;">
+          <li class="breadcrumb-item"><a routerLink="/" class="text-white-50 text-decoration-none"><i class="fa-solid fa-house me-1"></i>Home</a></li>
+          <li class="breadcrumb-item active text-white" aria-current="page">Careers</li>
+        </ol>
+      </nav>
+
+      <div class="row align-items-center g-4">
+        <div class="col-12 col-lg-8">
+          <span class="badge rounded-pill bg-white text-dark fw-bold px-3 py-1.5 mb-3 shadow-xs" style="color: #047857 !important; font-size: 11.5px; letter-spacing: 0.8px;">
+            JOIN OUR TEAM
+          </span>
+          <h1 class="display-4 fw-bold mb-3" style="letter-spacing: -1px; line-height: 1.15;">
+            Build the Future of Heritage Commerce with Your Store
+          </h1>
+          <p class="lead text-white-50 mb-4" style="font-size: 17px; line-height: 1.6; max-width: 720px;">
+            We are on a mission to connect diaspora families worldwide with the authentic culinary, cultural, and holistic healing treasures of India. Join a fast-growing, remote-first global team.
+          </p>
+          <a href="#openings" class="btn btn-light rounded-pill px-4 py-2.5 fw-bold text-dark shadow-sm">
+            View {{ jobs.length }} Open Roles
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Perks & Culture Strip -->
+  <section class="py-5 bg-white border-bottom">
+    <div class="container-fluid px-3 px-lg-5">
+      <div class="row g-4 text-center">
+        <div class="col-6 col-lg-3">
+          <div class="p-3">
+            <i class="fa-solid fa-laptop-house fs-2 text-success mb-2"></i>
+            <h5 class="fw-bold text-dark mb-1">Remote-First Culture</h5>
+            <p class="text-secondary small mb-0">Work from where you feel most inspired and productive.</p>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="p-3">
+            <i class="fa-solid fa-heart-pulse fs-2 text-danger mb-2"></i>
+            <h5 class="fw-bold text-dark mb-1">Comprehensive Health</h5>
+            <p class="text-secondary small mb-0">Full medical benefits, mental health days &amp; wellness allowances.</p>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="p-3">
+            <i class="fa-solid fa-graduation-cap fs-2 text-primary mb-2"></i>
+            <h5 class="fw-bold text-dark mb-1">Learning Budget</h5>
+            <p class="text-secondary small mb-0">Annual continuous learning and conference sponsorship.</p>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="p-3">
+            <i class="fa-solid fa-gift fs-2 text-warning mb-2"></i>
+            <h5 class="fw-bold text-dark mb-1">Your Store Heritage Credit</h5>
+            <p class="text-secondary small mb-0">Generous monthly store credit for you and your family.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Open Roles Section -->
+  <section class="py-5 bg-light" id="openings">
+    <div class="container-fluid px-3 px-lg-5">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div>
+          <span class="text-uppercase fw-bold text-success small" style="letter-spacing: 1.2px;">CURRENT OPPORTUNITIES</span>
+          <h2 class="fw-bold text-dark mb-0">Open Positions</h2>
+        </div>
+
+        <!-- Department Tabs -->
+        <div class="d-flex flex-wrap gap-2">
+          @for (dept of departments; track dept) {
+            <button type="button" 
+                    class="btn btn-sm rounded-pill px-3 py-1.5 fw-semibold transition-all"
+                    [class.btn-dark]="selectedDepartment === dept"
+                    [class.btn-outline-secondary]="selectedDepartment !== dept"
+                    (click)="selectedDepartment = dept">
+              {{ dept }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Job Cards List -->
+      <div class="d-flex flex-column gap-3">
+        @for (job of filteredJobs; track job.id) {
+          <div class="job-card p-4 rounded-4 bg-white border shadow-xs d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 hover-lift transition-all">
+            <div>
+              <div class="d-flex flex-wrap align-items-center gap-2 mb-1.5">
+                <span class="badge rounded-pill bg-success-subtle text-success fw-bold" style="font-size: 11px;">{{ job.department }}</span>
+                <span class="text-secondary small">•</span>
+                <span class="text-secondary small"><i class="fa-solid fa-location-dot me-1"></i>{{ job.location }}</span>
+                <span class="text-secondary small">•</span>
+                <span class="text-secondary small"><i class="fa-solid fa-clock me-1"></i>{{ job.type }}</span>
+                <span class="text-secondary small">•</span>
+                <span class="text-secondary small"><i class="fa-solid fa-briefcase me-1"></i>{{ job.experience }}</span>
+              </div>
+              <h4 class="fw-bold text-dark mb-1" style="font-size: 19px;">{{ job.title }}</h4>
+              <p class="text-secondary small mb-0 lh-base" style="max-width: 700px;">{{ job.desc }}</p>
+            </div>
+
+            <button type="button" 
+                    class="btn btn-primary rounded-pill px-4 py-2 fw-bold text-nowrap flex-shrink-0"
+                    style="background-color: #047857;"
+                    (click)="openApplyModal(job)">
+              Apply Now
+            </button>
+          </div>
+        }
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Apply Modal Overlay -->
+  @if (selectedJob) {
+    <div class="modal-backdrop-custom d-flex align-items-center justify-content-center p-3" (click)="selectedJob = null">
+      <div class="modal-card bg-white rounded-4 p-4 p-md-5 shadow-lg max-w-600 w-100" (click)="$event.stopPropagation()">
+        
+        <div class="d-flex align-items-start justify-content-between mb-3">
+          <div>
+            <span class="badge bg-success-subtle text-success rounded-pill fw-bold mb-1">{{ selectedJob.department }}</span>
+            <h4 class="fw-bold text-dark mb-0">Apply for {{ selectedJob.title }}</h4>
+          </div>
+          <button type="button" class="btn-close shadow-none" (click)="selectedJob = null" aria-label="Close"></button>
+        </div>
+
+        @if (applicationSubmitted) {
+          <div class="alert alert-success d-flex align-items-center gap-2 rounded-3 my-3">
+            <i class="fa-solid fa-circle-check fs-5"></i>
+            <div>
+              <strong>Application Received!</strong> Thank you for your interest. Our talent team will review your submission and follow up shortly.
+            </div>
+          </div>
+        } @else {
+          <form (submit)="submitApplication($event)" class="d-flex flex-column gap-3 mt-3">
+            <div>
+              <label class="form-label small fw-bold text-dark">Full Name *</label>
+              <input type="text" class="form-control rounded-3" [(ngModel)]="applicantName" name="applicantName" placeholder="e.g. Ananya Sharma" required>
+            </div>
+
+            <div>
+              <label class="form-label small fw-bold text-dark">Email Address *</label>
+              <input type="email" class="form-control rounded-3" [(ngModel)]="applicantEmail" name="applicantEmail" placeholder="ananya@example.com" required>
+            </div>
+
+            <div>
+              <label class="form-label small fw-bold text-dark">LinkedIn / Portfolio URL</label>
+              <input type="url" class="form-control rounded-3" name="portfolioUrl" placeholder="https://linkedin.com/in/...">
+            </div>
+
+            <div>
+              <label class="form-label small fw-bold text-dark">Why Your Store? (Brief note)</label>
+              <textarea class="form-control rounded-3" rows="3" [(ngModel)]="applicantNote" name="applicantNote" placeholder="Tell us about yourself and why you'd love to join us..."></textarea>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 pt-2">
+              <button type="button" class="btn btn-light rounded-pill px-3 py-2 fw-semibold" (click)="selectedJob = null">Cancel</button>
+              <button type="submit" class="btn btn-success rounded-pill px-4 py-2 fw-bold" style="background-color: #047857;">Submit Application</button>
+            </div>
+          </form>
+        }
+
+      </div>
+    </div>
+  }
+
+</main>
+
+<app-footer></app-footer>

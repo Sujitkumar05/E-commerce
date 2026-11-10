@@ -1,0 +1,146 @@
+<section class="bento-section py-5 bg-white position-relative overflow-hidden">
+  <div class="container-fluid px-3 px-lg-5">
+    
+    <!-- Section Header Row -->
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4 pb-2">
+      <div>
+        <!-- Micro Tag -->
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="rounded-circle pulse-dot" style="width: 8px; height: 8px; background-color: #1748D8;"></span>
+          <span class="text-uppercase fw-bold text-secondary" style="font-size: 11.5px; letter-spacing: 1px;">
+            CURATED PANTRY & DELIGHTS
+          </span>
+        </div>
+        
+        <!-- Main Title -->
+        <h2 class="display-6 fw-bold text-dark mb-1" style="font-weight: 800; letter-spacing: -0.6px;">
+          Signature <span style="color: #1748D8;">Picks</span>
+        </h2>
+        
+        <!-- Subtitle -->
+        <p class="text-secondary mb-0" style="font-size: 14.5px;">
+          Authentic staples, artisanal confections, and everyday essentials curated for you.
+        </p>
+      </div>
+
+      <!-- View All Button -->
+      <div>
+        <a [routerLink]="['/products']" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2 view-all-btn">
+          <span>Explore all collections</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- 3-Column Bento Grid -->
+    <div class="row g-4 bento-grid-row">
+
+      <!-- Column 1: Dry Fruits (Short) + Masala Powders (Tall) -->
+      <div class="col-12 col-md-6 col-lg-4 d-flex flex-column gap-4">
+        @for (item of col1Items; track item.id) {
+          <a [routerLink]="['/product', item.id]" 
+             class="bento-card text-decoration-none rounded-4 d-flex flex-column justify-content-between overflow-hidden position-relative shadow-sm"
+             [class.bento-tall]="item.isTall"
+             [class.bento-short]="!item.isTall"
+             [style.background]="item.bgGradient">
+            
+            <!-- Card Header (Title & Shop Now) -->
+            <div class="bento-header position-relative z-2">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <h3 class="bento-title fw-bold text-dark mb-0">{{ item.title }}</h3>
+                @if (item.floatingTag) {
+                  <span class="bento-tag badge rounded-pill px-2 py-1 text-dark fw-semibold">
+                    {{ item.floatingTag }}
+                  </span>
+                }
+              </div>
+              <span class="shop-now-link fw-bold text-uppercase d-inline-flex align-items-center gap-1">
+                <span>SHOP NOW</span>
+                <i class="fa-solid fa-arrow-right arrow-icon"></i>
+              </span>
+            </div>
+
+            <!-- Product Visual with Floating Dynamic Elements -->
+            <div class="bento-visual-wrapper position-relative w-100 mt-auto d-flex align-items-center justify-content-center z-1">
+              <div class="ambient-glow" [style.background]="item.themeColor"></div>
+              <img [src]="item.image" [alt]="item.title" class="img-fluid bento-product-img" loading="lazy" decoding="async">
+            </div>
+
+          </a>
+        }
+      </div>
+
+      <!-- Column 2: Chocolates (Tall) + Spreads (Short) -->
+      <div class="col-12 col-md-6 col-lg-4 d-flex flex-column gap-4">
+        @for (item of col2Items; track item.id) {
+          <a [routerLink]="['/product', item.id]" 
+             class="bento-card text-decoration-none rounded-4 d-flex flex-column justify-content-between overflow-hidden position-relative shadow-sm"
+             [class.bento-tall]="item.isTall"
+             [class.bento-short]="!item.isTall"
+             [style.background]="item.bgGradient">
+            
+            <!-- Card Header (Title & Shop Now) -->
+            <div class="bento-header position-relative z-2">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <h3 class="bento-title fw-bold text-dark mb-0">{{ item.title }}</h3>
+                @if (item.floatingTag) {
+                  <span class="bento-tag badge rounded-pill px-2 py-1 text-dark fw-semibold">
+                    {{ item.floatingTag }}
+                  </span>
+                }
+              </div>
+              <span class="shop-now-link fw-bold text-uppercase d-inline-flex align-items-center gap-1">
+                <span>SHOP NOW</span>
+                <i class="fa-solid fa-arrow-right arrow-icon"></i>
+              </span>
+            </div>
+
+            <!-- Product Visual with Floating Dynamic Elements -->
+            <div class="bento-visual-wrapper position-relative w-100 mt-auto d-flex align-items-center justify-content-center z-1">
+              <div class="ambient-glow" [style.background]="item.themeColor"></div>
+              <img [src]="item.image" [alt]="item.title" class="img-fluid bento-product-img" loading="lazy" decoding="async">
+            </div>
+
+          </a>
+        }
+      </div>
+
+      <!-- Column 3: Biscuits & Cookies (Short) + Drinks (Tall) -->
+      <div class="col-12 col-md-12 col-lg-4 d-flex flex-column gap-4">
+        @for (item of col3Items; track item.id) {
+          <a [routerLink]="['/product', item.id]" 
+             class="bento-card text-decoration-none rounded-4 d-flex flex-column justify-content-between overflow-hidden position-relative shadow-sm"
+             [class.bento-tall]="item.isTall"
+             [class.bento-short]="!item.isTall"
+             [style.background]="item.bgGradient">
+            
+            <!-- Card Header (Title & Shop Now) -->
+            <div class="bento-header position-relative z-2">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <h3 class="bento-title fw-bold text-dark mb-0">{{ item.title }}</h3>
+                @if (item.floatingTag) {
+                  <span class="bento-tag badge rounded-pill px-2 py-1 text-dark fw-semibold">
+                    {{ item.floatingTag }}
+                  </span>
+                }
+              </div>
+              <span class="shop-now-link fw-bold text-uppercase d-inline-flex align-items-center gap-1">
+                <span>SHOP NOW</span>
+                <i class="fa-solid fa-arrow-right arrow-icon"></i>
+              </span>
+            </div>
+
+            <!-- Product Visual with Floating Dynamic Elements -->
+            <div class="bento-visual-wrapper position-relative w-100 mt-auto d-flex align-items-center justify-content-center z-1">
+              <div class="ambient-glow" [style.background]="item.themeColor"></div>
+              <img [src]="item.image" [alt]="item.title" class="img-fluid bento-product-img" loading="lazy" decoding="async">
+            </div>
+
+          </a>
+        }
+      </div>
+
+    </div>
+
+  </div>
+</section>

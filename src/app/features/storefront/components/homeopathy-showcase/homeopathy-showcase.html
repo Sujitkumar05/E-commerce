@@ -1,0 +1,243 @@
+<section class="homeopathy-section py-5 bg-white position-relative overflow-hidden">
+  <div class="container-fluid px-3 px-lg-5">
+    
+    <!-- Outer Row: Left Promotional Banner + Right Product Cards Showcase -->
+    <div class="row g-4 align-items-stretch">
+      
+      <!-- Left Promotional Banner: "Indian Homeopathy" -->
+      <div class="col-12 col-lg-5 col-xl-4">
+        <div class="homeopathy-banner h-100 rounded-4 overflow-hidden position-relative shadow-sm d-flex flex-column justify-content-between p-4 p-xl-5"
+             style="background-image: linear-gradient(180deg, rgba(13, 148, 136, 0.25) 0%, rgba(15, 23, 42, 0.75) 100%), url('/images/homeopathy/homeopathy-banner.jpg'); background-size: cover; background-position: center;">
+          
+          <!-- Top Tag & Title -->
+          <div class="position-relative z-2">
+            <span class="badge rounded-pill bg-white text-dark fw-bold px-3 py-1.5 shadow-sm mb-3 d-inline-flex align-items-center gap-1.5" style="font-size: 11.5px; color: #0f766e !important;">
+              <i class="fa-solid fa-mortar-pestle"></i>
+              <span>NATURAL HEALTHCARE</span>
+            </span>
+            <h2 class="homeopathy-banner-title fw-bold text-white mb-2" style="font-size: 2.2rem; line-height: 1.15; letter-spacing: -0.5px;">
+              Indian &amp; German<br>Homeopathy
+            </h2>
+            <p class="text-white-50 small mb-0" style="max-width: 280px; font-size: 13.5px; line-height: 1.45;">
+              Clinically verified potencies, mother tinctures, biochemic tissue salts, and targeted biological drops.
+            </p>
+          </div>
+
+          <!-- Bottom Action & Feature Pills -->
+          <div class="position-relative z-2 mt-auto pt-4">
+            <div class="d-flex flex-column gap-2 mb-3">
+              <div class="d-flex align-items-center gap-2 text-white small">
+                <i class="fa-solid fa-circle-check text-success"></i>
+                <span class="fw-semibold">100% Genuine Potencies</span>
+              </div>
+              <div class="d-flex align-items-center gap-2 text-white small">
+                <i class="fa-solid fa-circle-check text-success"></i>
+                <span class="fw-semibold">Directly from Authorized Distributorships</span>
+              </div>
+              <div class="d-flex align-items-center gap-2 text-white small">
+                <i class="fa-solid fa-circle-check text-success"></i>
+                <span class="fw-semibold">Dispatched Worldwide with Secure Packing</span>
+              </div>
+            </div>
+
+            <a routerLink="/homeopathy" class="btn btn-light rounded-pill px-4 py-2.5 fw-bold text-dark d-inline-flex align-items-center gap-2 shadow-sm banner-cta-btn" style="font-size: 13.5px;">
+              <span>Browse All Homeopathic Items</span>
+              <i class="fa-solid fa-arrow-right" style="color: #0f766e;"></i>
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Right Column: Section Header + Carousel of Cards -->
+      <div class="col-12 col-lg-7 col-xl-8 d-flex flex-column justify-content-between">
+        
+        <!-- Header Row with "View All Products" on the right -->
+        <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-3 pb-1">
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1.5">
+              <span class="rounded-circle pulse-dot" style="width: 8px; height: 8px; background-color: #0f766e;"></span>
+              <span class="text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 1.2px; color: #0f766e;">
+                INDIAN HOMEOPATHIC MEDICINES &amp; REMEDIES
+              </span>
+            </div>
+            <h3 class="display-6 fw-bold text-dark mb-0" style="font-size: 1.75rem; letter-spacing: -0.5px;">
+              Homeopathic Care &amp; <span style="color: #0f766e;">Remedies</span>
+            </h3>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <!-- Scroll Arrow Buttons -->
+            <button type="button" 
+                    class="btn carousel-nav-btn rounded-circle d-flex align-items-center justify-content-center shadow-xs"
+                    (click)="scrollHomeopathy('left')"
+                    aria-label="Scroll left"
+                    style="width: 36px; height: 36px;">
+              <i class="fa-solid fa-chevron-left" style="font-size: 13px;"></i>
+            </button>
+            <button type="button" 
+                    class="btn carousel-nav-btn rounded-circle d-flex align-items-center justify-content-center shadow-xs"
+                    (click)="scrollHomeopathy('right')"
+                    aria-label="Scroll right"
+                    style="width: 36px; height: 36px;">
+              <i class="fa-solid fa-chevron-right" style="font-size: 13px;"></i>
+            </button>
+
+            <!-- View All Products Button -->
+            <a routerLink="/homeopathy" class="btn btn-outline-teal rounded-pill px-3.5 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5" style="font-size: 13px;">
+              <span>View All Products</span>
+              <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Carousel Container with Navigation -->
+        <div class="position-relative">
+          <div class="homeopathy-cards-grid d-flex gap-3 overflow-x-auto no-scrollbar pb-2" id="homeopathyCardsGrid">
+            @for (prod of products; track prod.id) {
+              <div class="product-item-wrapper d-flex flex-column text-start"
+                   (click)="navigateToProduct(prod.id)"
+                   role="button"
+                   style="cursor: pointer; min-width: 230px; max-width: 250px;">
+                
+                <!-- Box-Style Image Card -->
+                <div class="box-card position-relative rounded-4 overflow-hidden d-flex align-items-center justify-content-center shadow-xs mb-2.5 p-3"
+                     style="background: linear-gradient(180deg, #f0fdfa 0%, #e6f9f5 100%); height: 210px; border: 1px solid #ccfbf1;">
+                  
+                  <!-- Best Seller / Pure Potency Badge -->
+                  @if (prod.isBestSeller) {
+                    <div class="badge-bestseller position-absolute top-0 start-0 m-2 px-2 py-0.5 rounded-1 fw-bold text-white shadow-xs"
+                         style="background-color: #0f766e; font-size: 10px; letter-spacing: 0.5px;">
+                      Best Seller
+                    </div>
+                  } @else {
+                    <div class="badge-bestseller position-absolute top-0 start-0 m-2 px-2 py-0.5 rounded-1 fw-bold text-white shadow-xs"
+                         style="background-color: #0284c7; font-size: 10px; letter-spacing: 0.5px;">
+                      Pure Potency
+                    </div>
+                  }
+
+                  <!-- Wishlist Heart Button -->
+                  <button type="button" 
+                          class="btn wishlist-btn position-absolute top-0 end-0 m-2 rounded-circle shadow-xs bg-white d-flex align-items-center justify-content-center p-0"
+                          [class.active]="wishlistService.isInWishlist(prod.id)"
+                          (click)="toggleFavorite(prod, $event)"
+                          aria-label="Add to Wishlist"
+                          style="width: 32px; height: 32px; border: 1px solid #e5e7eb;">
+                    <i [class]="wishlistService.isInWishlist(prod.id) ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart text-secondary'" style="font-size: 13px;"></i>
+                  </button>
+
+                  <!-- Product Image -->
+                  <a [routerLink]="['/product', prod.id]" (click)="$event.stopPropagation()" class="d-flex align-items-center justify-content-center w-100 h-100 text-decoration-none">
+                    <img [src]="prod.image" [alt]="prod.name" class="img-fluid homeopathy-product-image" loading="lazy" decoding="async" style="max-height: 160px; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(15, 118, 110, 0.12)); transition: transform 0.3s ease;">
+                  </a>
+                </div>
+
+                <!-- Product Details Below Image -->
+                <div class="box-details text-start d-flex flex-column flex-grow-1">
+                  
+                  <!-- Rating Bar (Stars + Count) -->
+                  <div class="rating-bar d-flex align-items-center gap-1 mb-1">
+                    <div class="stars d-inline-flex align-items-center text-warning" style="font-size: 11px;">
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                      <i class="fa-solid fa-star"></i>
+                    </div>
+                    <span class="rating-score fw-bold text-dark ms-1" style="font-size: 11.5px;">({{ prod.reviewCount }})</span>
+                  </div>
+
+                  <!-- Product Name -->
+                  <a [routerLink]="['/product', prod.id]" (click)="$event.stopPropagation()" class="text-decoration-none">
+                    <h4 class="product-name fw-bold text-dark mb-1 text-truncate" [title]="prod.name" style="font-size: 13.5px; line-height: 1.3;">
+                      {{ prod.name }}
+                    </h4>
+                  </a>
+
+                  <!-- Brand Name -->
+                  <span class="product-brand text-uppercase fw-bold text-secondary mb-1 d-block text-truncate" [title]="prod.brand" style="font-size: 10px; letter-spacing: 0.8px; color: #0f766e !important;">
+                    {{ prod.brand }}
+                  </span>
+
+                  <!-- Price Line -->
+                  <div class="d-flex align-items-baseline gap-2 mb-2">
+                    <span class="product-price fw-bold text-dark" style="font-size: 14.5px;">
+                      ${{ getVariantPrice(prod) | number: '1.2-2' }} USD
+                    </span>
+                  </div>
+
+                  <!-- Pack / Variant Option Dropdown -->
+                  <div class="variant-select-box mb-2 mt-auto">
+                    <select class="form-select form-select-sm variant-select shadow-none" 
+                            (click)="$event.stopPropagation()"
+                            (change)="onVariantChange(prod.id, $any($event.target).value)"
+                            style="font-size: 11.5px; border-radius: 8px;">
+                      @for (variant of prod.variants; track variant.label) {
+                        <option [value]="variant.label + ' ' + variant.subLabel" [selected]="(variant.label + ' ' + variant.subLabel) === selectedVariants[prod.id]">
+                          {{ variant.label }} {{ variant.subLabel }}
+                        </option>
+                      }
+                    </select>
+                  </div>
+
+                  <!-- Add to Cart Button -->
+                  <button type="button" 
+                          class="btn homeopathy-add-to-cart-btn w-100 fw-bold py-2 rounded-pill text-uppercase shadow-none d-flex align-items-center justify-content-center gap-1.5"
+                          [class.btn-success]="addedToCartMap[prod.id]"
+                          (click)="addToCart(prod, $event)"
+                          style="font-size: 11.5px; letter-spacing: 0.4px;">
+                    <i [class]="addedToCartMap[prod.id] ? 'fa-solid fa-check' : 'fa-solid fa-cart-shopping'" style="font-size: 11px;"></i>
+                    <span>{{ addedToCartMap[prod.id] ? 'Added!' : 'Add to Cart' }}</span>
+                  </button>
+
+                </div>
+
+              </div>
+            }
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Top Homeopathic Brands Strip (Reckeweg, SBL, Schwabe, Bakson's, Wheezal, Adel) -->
+    <div class="homeopathy-brands-strip mt-5 pt-3 border-top">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+          <h4 class="fw-bold text-dark mb-0" style="font-size: 15px;">
+            Certified Homeopathic Manufacturers
+          </h4>
+          <span class="text-secondary small">
+            Original seal-intact formulations from leading Indian and German laboratories
+          </span>
+        </div>
+
+        <a routerLink="/homeopathy" class="text-decoration-none fw-semibold small d-inline-flex align-items-center gap-1" style="color: #0f766e;">
+          <span>Explore all brands</span>
+          <i class="fa-solid fa-chevron-right" style="font-size: 9px;"></i>
+        </a>
+      </div>
+
+      <!-- Brand Logos Grid -->
+      <div class="row g-2 g-md-3">
+        @for (brand of topBrands; track brand.id) {
+          <div class="col-6 col-md-4 col-xl-2">
+            <a routerLink="/homeopathy" 
+               [queryParams]="{ brand: brand.name }"
+               class="brand-pill-card text-decoration-none rounded-3 p-2.5 d-flex flex-column align-items-center justify-content-center text-center h-100 bg-light border shadow-xs transition-all">
+              <span class="fw-bold text-dark brand-name-text mb-0.5" style="font-size: 13px;">
+                {{ brand.name }}
+              </span>
+              <span class="text-muted text-uppercase fw-semibold" style="font-size: 9px; letter-spacing: 0.6px;">
+                {{ brand.tagline }}
+              </span>
+            </a>
+          </div>
+        }
+      </div>
+    </div>
+
+  </div>
+</section>
