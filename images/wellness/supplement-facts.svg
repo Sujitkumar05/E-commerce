@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520" width="100%" height="100%">
+  <rect width="400" height="520" fill="#ffffff" stroke="#111827" stroke-width="6"/>
+  <rect x="12" y="12" width="376" height="496" fill="#ffffff"/>
+  
+  <text x="20" y="45" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="900" fill="#111827">Supplement Facts</text>
+  <text x="20" y="68" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#374151">Serving Size: 2 Capsules</text>
+  <text x="20" y="86" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#374151">Servings Per Container: 30</text>
+  
+  <line x1="20" y1="96" x2="380" y2="96" stroke="#111827" stroke-width="8"/>
+  
+  <text x="20" y="116" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#111827">Amount Per Serving</text>
+  <text x="310" y="116" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#111827">% Daily Value</text>
+  
+  <line x1="20" y1="124" x2="380" y2="124" stroke="#111827" stroke-width="4"/>
+  
+  <!-- Row 1 -->
+  <text x="20" y="146" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#111827">Organic Neem Leaf Extract</text>
+  <text x="270" y="146" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#111827">250 mg</text>
+  <text x="350" y="146" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#111827">*</text>
+  <text x="28" y="164" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#4b5563">(Azadirachta indica)</text>
+  <line x1="20" y1="172" x2="380" y2="172" stroke="#e5e7eb" stroke-width="1.5"/>
+
+  <!-- Row 2 -->
+  <text x="20" y="196" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#111827">Organic Turmeric Rhizome Extract</text>
+  <text x="270" y="196" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#111827">250 mg</text>
+  <text x="350" y="196" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#111827">*</text>
+  <text x="28" y="214" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#4b5563">(Curcuma longa, standardized to 95% curcuminoids)</text>
+  <line x1="20" y1="222" x2="380" y2="222" stroke="#e5e7eb" stroke-width="1.5"/>
+
+  <!-- Row 3 -->
+  <text x="20" y="246" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#111827">Organic Black Pepper Extract</text>
+  <text x="270" y="246" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#111827">5 mg</text>
+  <text x="350" y="246" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="#111827">*</text>
+  <text x="28" y="264" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#4b5563">(Piper nigrum, fruit, 95% Piperine)</text>
+  <line x1="20" y1="274" x2="380" y2="274" stroke="#111827" stroke-width="6"/>
+
+  <text x="20" y="296" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#374151">* Daily Value (DV) not established.</text>
+  
+  <line x1="20" y1="312" x2="380" y2="312" stroke="#e5e7eb" stroke-width="1.5"/>
+
+  <text x="20" y="336" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#111827">Other Ingredients:</text>
+  <text x="20" y="356" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#4b5563">Plant-derived Cellulose (capsule), Organic Rice Flour.</text>
+  <text x="20" y="376" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#4b5563">Contains NO: gluten, dairy, soy, eggs, preservatives, artificial</text>
+  <text x="20" y="394" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#4b5563">colors or flavors.</text>
+
+  <rect x="20" y="420" width="360" height="70" rx="8" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+  <text x="32" y="445" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" fill="#166534">✓ 100% Certified Organic</text>
+  <text x="32" y="465" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#15803d">Non-GMO Project Verified • Vegan Friendly • Heavy Metals Tested</text>
+</svg>
