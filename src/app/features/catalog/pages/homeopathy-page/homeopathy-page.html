@@ -31,15 +31,15 @@
           
           <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill bg-white bg-opacity-15 border border-white border-opacity-25 text-white mb-3 shadow-xs">
             <i class="fa-solid fa-leaf text-warning" style="font-size: 12px;"></i>
-            <span class="fw-bold" style="font-size: 11.5px; letter-spacing: 0.8px;">CERTIFIED INDIAN HOMEOPATHY &amp; HEALTHCARE</span>
+            <span class="fw-bold" style="font-size: 11.5px; letter-spacing: 0.8px;">{{ headerBanner.badgeText || 'CERTIFIED INDIAN HOMEOPATHY & HEALTHCARE' }}</span>
           </div>
 
           <h1 class="display-5 fw-bold text-white mb-2" style="letter-spacing: -0.5px;">
-            Indian Homeopathic Remedies
+            {{ headerBanner.title }}
           </h1>
 
           <p class="text-white text-opacity-80 mb-4" style="max-width: 680px; font-size: 15px; line-height: 1.6;">
-            Discover authentic homeopathic formulations from India’s leading trusted laboratories: Dr. Reckeweg, SBL Homeopathy, Dr. Willmar Schwabe, Bakson's, and Wheezal. Sealed, seal-intact dilutions, biochemic salts, mother tinctures, and specialized healthcare items.
+            {{ headerBanner.subtitle }}
           </p>
 
           <!-- 4 Feature Trust Badges -->

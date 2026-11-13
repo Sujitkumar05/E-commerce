@@ -1,0 +1,56 @@
+
+<section
+  class="hero-section"
+  (mouseenter)="pauseSlider()"
+  (mouseleave)="resumeSlider()"
+>
+
+  <div class="hero-bg"></div>
+
+  <div
+    class="carousel-stage"
+    [class.dragging]="isDragging"
+    (mousedown)="onDragStart($event)"
+    (mouseenter)="pauseSlider()"
+    (mouseleave)="onMouseLeave()"
+    (dragstart)="$event.preventDefault()"
+  >
+
+    <div
+      #card
+      class="carousel-card"
+      *ngFor="let slide of slides; let i = index"
+      [class.is-main]="isMain(i)"
+      [attr.aria-hidden]="!isMain(i)"
+      (click)="onCardClick(i)"
+    >
+      <img
+        class="card-cover-image"
+        [src]="slide.image"
+        [alt]="slide.title"
+        draggable="false"
+      />
+    </div>
+
+  </div>
+
+  <!-- Navigation arrows -->
+  <button
+    type="button"
+    class="nav-arrow prev-arrow"
+    (click)="previousSlide($event)"
+    aria-label="Previous"
+  >
+    &#10094;
+  </button>
+
+  <button
+    type="button"
+    class="nav-arrow next-arrow"
+    (click)="nextSlide($event)"
+    aria-label="Next"
+  >
+    &#10095;
+  </button>
+
+</section>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 90" width="220" height="90">
+    <g transform="translate(18, 14)">
+      <!-- Royal Crown Motif -->
+      <path d="M 88 4 L 92 12 L 100 8 L 97 18 L 79 18 L 76 8 L 84 12 Z" fill="#ffd54f"/>
+      <text x="88" y="38" font-family="'Playfair Display', 'Georgia', serif" font-size="26" font-weight="bold" fill="#7f0000" text-anchor="middle">Manyavar</text>
+      <text x="88" y="52" font-family="'Segoe UI', sans-serif" font-size="8" font-weight="700" fill="#b78103" text-anchor="middle" letter-spacing="2.5">TAIYAAR HOKAR AAIYE</text>
+    </g>
+  </svg>

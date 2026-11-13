@@ -286,13 +286,13 @@
         <div class="text-center max-w-700 mx-auto mb-4">
           <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill bg-white border shadow-xs text-primary fw-bold mb-2" style="font-size: 11.5px; letter-spacing: 0.5px;">
             <i class="fa-solid fa-shield-halved text-success"></i>
-            <span>100% VERIFIED CUSTOMER REVIEWS &bull; 4.8 / 5.0 GLOBAL SCORE</span>
+            <span>{{ (trustBanner && trustBanner.badgeText) || '100% VERIFIED CUSTOMER REVIEWS • 4.8 / 5.0 GLOBAL SCORE' }}</span>
           </div>
           <h3 class="fw-bold text-dark mb-1" style="font-size: 21px; letter-spacing: -0.4px;">
-            Trusted by 80,000+ Happy Diaspora Customers
+            {{ trustBanner ? trustBanner.title : 'Trusted by 80,000+ Happy Diaspora Customers' }}
           </h3>
           <p class="text-secondary small mb-0" style="font-size: 12.5px;">
-            Authentic feedback from real shoppers receiving direct-from-India parcels across USA, UK, Canada, and Europe.
+            {{ (trustBanner && trustBanner.subtitle) || 'Authentic feedback from real shoppers receiving direct-from-India parcels across USA, UK, Canada, and Europe.' }}
           </p>
         </div>
 

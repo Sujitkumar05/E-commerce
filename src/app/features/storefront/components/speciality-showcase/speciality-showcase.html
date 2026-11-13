@@ -48,7 +48,7 @@
     </div>
 
     <!-- 8 Clean Box-Style Image Cards Row -->
-    <div class="box-products-grid d-flex gap-3 overflow-x-auto no-scrollbar pb-3 mb-5" id="boxProductsGrid">
+    <div class="box-products-grid d-flex gap-4 overflow-x-auto pb-3 mb-5" id="boxProductsGrid">
       @for (prod of products; track prod.id) {
         <div class="product-item-wrapper d-flex flex-column text-center"
              [routerLink]="['/product', prod.id]"

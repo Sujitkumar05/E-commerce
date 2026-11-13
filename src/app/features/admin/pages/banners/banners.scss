@@ -839,6 +839,15 @@
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s ease;
+
+  &.mobile-view-card {
+    max-width: 240px;
+    height: 140px;
+    margin: 0 auto;
+    border: 2px solid #2563eb;
+    border-radius: 14px;
+  }
 }
 
 .preview-hero-img {
@@ -926,4 +935,233 @@
   .toolbar-actions {
     justify-content: space-between;
   }
+}
+
+
+/* Additional Enhancement Styles for Centralized Banner Management */
+.banner-alert {
+  border-left: 4px solid #10b981;
+}
+
+.section-summary-card.active-section {
+  border-color: #2563eb;
+  background-color: #f0f7ff;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.sec-actions-row {
+  margin-top: 10px;
+}
+
+.btn-filter-sec {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+  }
+
+  &.active {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+  }
+}
+
+.row-editing {
+  background-color: #eff6ff !important;
+  outline: 2px solid #3b82f6;
+}
+
+.form-card.editing-mode {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
+}
+
+.banner-preview-box {
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+
+  &:hover .btn-quick-replace {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.btn-quick-replace {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(15, 23, 42, 0.85);
+  color: #ffffff;
+  border: none;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: #2563eb;
+  }
+}
+
+.status-toggle-btn {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+.preview-empty-stage {
+  width: 100%;
+  height: 95px;
+  background: #f1f5f9;
+  border: 1px dashed #cbd5e1;
+  border-radius: 6px;
+}
+
+.preview-tag-pill {
+  font-size: 9px;
+  text-transform: uppercase;
+  font-weight: 700;
+  background: #ffffff;
+  color: #10b981;
+  padding: 2px 6px;
+  border-radius: 10px;
+  align-self: flex-start;
+  margin-bottom: 3px;
+}
+
+.text-banner-placeholder {
+  width: 100%;
+  height: 48px;
+  background: #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #475569;
+}
+
+/* ---------------- 7. BENTO GRID IMAGE MANAGEMENT ---------------- */
+.banner-tabs-nav {
+  .tab-pill-btn {
+    border: none;
+    background: transparent;
+    padding: 8px 16px;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+
+    &.active {
+      background-color: #1748D8;
+      color: #ffffff;
+
+      .badge {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        color: #ffffff !important;
+      }
+    }
+  }
+}
+
+.bento-admin-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+  }
+}
+
+.bento-preview-stage {
+  width: 100%;
+  height: 220px;
+  background-color: #0f172a;
+
+  &.tall-stage {
+    height: 300px;
+  }
+
+  .bento-stage-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  &:hover .bento-stage-img {
+    transform: scale(1.04);
+  }
+
+  .bento-stage-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.65) 100%);
+    pointer-events: none;
+  }
+
+  .bento-stage-content {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .bento-stage-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.95);
+    color: #1748D8;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.bento-modal-backdrop {
+  backdrop-filter: blur(4px);
 }

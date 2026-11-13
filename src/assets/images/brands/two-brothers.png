@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 90" width="220" height="90">
+    <g transform="translate(15, 12)">
+      <circle cx="24" cy="26" r="18" fill="#e65100"/>
+      <path d="M 12 32 Q 24 16 36 32 Z" fill="#ffd54f"/>
+      <circle cx="24" cy="20" r="4" fill="#ffffff"/>
+      <text x="50" y="24" font-family="'Georgia', serif" font-size="15" font-weight="bold" fill="#212121">TWO BROTHERS</text>
+      <text x="51" y="38" font-family="'Segoe UI', sans-serif" font-size="9" font-weight="700" fill="#e65100" letter-spacing="1.5">ORGANIC FARMS</text>
+      <text x="51" y="50" font-family="'Segoe UI', sans-serif" font-size="7.5" font-weight="500" fill="#666">4th Generation Farmers</text>
+    </g>
+  </svg>

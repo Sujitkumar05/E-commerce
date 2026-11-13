@@ -5,6 +5,7 @@ import { ProductService, ProductDetailModel } from '../../../../core/services/pr
 import { CartService } from '../../../../core/services/cart.service';
 import { WishlistService } from '../../../../core/services/wishlist.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { BannerService } from '../../../../core/services/banner.service';
 
 export interface HomeopathyBrandItem {
   id: string;
@@ -25,7 +26,26 @@ export class HomeopathyShowcase implements OnInit {
   readonly cartService = inject(CartService);
   readonly wishlistService = inject(WishlistService);
   readonly authService = inject(AuthService);
+  readonly bannerService = inject(BannerService);
   private readonly router = inject(Router);
+
+  get homeopathyBanner() {
+    const list = this.bannerService.getActiveBannersBySection('Homeopathy Showcase Banner');
+    return list.length > 0
+      ? list[0]
+      : {
+          title: 'Indian & German Homeopathy',
+          subtitle:
+            'Clinically verified potencies, mother tinctures, biochemic tissue salts, and targeted biological drops.',
+          image: '/images/homeopathy/homeopathy-banner.jpg',
+          badgeText: 'NATURAL HEALTHCARE',
+        };
+  }
+
+  get bannerBackgroundStyle(): string {
+    const img = this.homeopathyBanner.image || '/images/homeopathy/homeopathy-banner.jpg';
+    return `linear-gradient(180deg, rgba(13, 148, 136, 0.25) 0%, rgba(15, 23, 42, 0.75) 100%), url('${img}')`;
+  }
 
   products: ProductDetailModel[] = [];
   selectedVariants: Record<string, string> = {};

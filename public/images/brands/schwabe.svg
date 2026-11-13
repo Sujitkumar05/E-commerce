@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 90" width="220" height="90">
+    <g transform="translate(15, 12)">
+      <!-- German Shield -->
+      <g transform="translate(4, 4)">
+        <path d="M 6 4 L 32 4 C 32 24 24 36 19 40 C 14 36 6 24 6 4 Z" fill="#0d233a"/>
+        <!-- Caduceus Serpent Motif -->
+        <circle cx="19" cy="14" r="3.5" fill="#fbc02d"/>
+        <path d="M 19 14 L 19 32" stroke="#fbc02d" stroke-width="2"/>
+        <path d="M 13 20 Q 19 16 25 20 Q 19 26 13 22" stroke="#ffffff" stroke-width="1.5" fill="none"/>
+      </g>
+      <!-- Schwabe Wordmark -->
+      <text x="48" y="26" font-family="'Georgia', serif" font-size="20" font-weight="bold" fill="#0d233a" letter-spacing="0.5">SCHWABE</text>
+      <text x="49" y="39" font-family="'Segoe UI', sans-serif" font-size="8.5" font-weight="700" fill="#b78103" letter-spacing="1">Dr. Willmar Schwabe · Germany</text>
+      <text x="49" y="50" font-family="'Segoe UI', sans-serif" font-size="8" font-weight="600" fill="#555">Since 1866 · World Leader</text>
+    </g>
+  </svg>

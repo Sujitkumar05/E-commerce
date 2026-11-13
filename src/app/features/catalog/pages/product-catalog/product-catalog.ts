@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
@@ -7,11 +7,13 @@ import { Footer } from '../../../storefront/components/footer/footer';
 import { CartService } from '../../../../core/services/cart.service';
 import { WishlistService } from '../../../../core/services/wishlist.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { BannerService } from '../../../../core/services/banner.service';
 import {
   ProductService,
   ProductDetailModel,
-  ProductVariant,
+ 
 } from '../../../../core/services/product.service';
+
 
 export interface CategoryTab {
   id: string;
@@ -25,6 +27,46 @@ export interface BrandFilterItem {
   count: number;
 }
 
+export interface CategoryBrand {
+  name: string;
+  logo: string;
+}
+
+export interface CategorySubcategory {
+  id: string;
+  name: string;
+  icon?: string;
+  query?: string;
+}
+
+export interface CategoryBenefitItem {
+  label: string;
+  icon: string;
+}
+
+export interface CatalogBannerItem {
+  id: string;
+  categoryId: string;
+  title: string;
+  image: string;
+}
+
+export interface CategoryShowcase {
+  id: string;
+  name: string;
+  title: string;
+  subtitle: string;
+  button: string;
+  background: string;
+  accentColor: string;
+  bannerImage: string;
+  fallbackImage: string;
+  benefits: string[];
+  detailedBenefits?: CategoryBenefitItem[];
+  brands: CategoryBrand[];
+  subcategories: CategorySubcategory[];
+}
+
 @Component({
   selector: 'app-product-catalog',
   standalone: true,
@@ -33,12 +75,462 @@ export interface BrandFilterItem {
   styleUrl: './product-catalog.scss',
 })
 export class ProductCatalogPage implements OnInit {
+
   readonly cartService = inject(CartService);
   readonly wishlistService = inject(WishlistService);
   readonly authService = inject(AuthService);
+  readonly bannerService = inject(BannerService);
   private readonly productService = inject(ProductService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+
+  activeCategory = signal('wellness');
+  currentBannerIndex: number = 0;
+
+  readonly defaultBannerList: CatalogBannerItem[] = [
+    {
+      id: 'wellness',
+      categoryId: 'wellness',
+      title: 'Wellness & Ayurveda',
+      image: 'assets/images/product-catalog-banner/wellness-banner.jpg',
+    },
+    {
+      id: 'homeopathy',
+      categoryId: 'homeopathy',
+      title: 'Homeopathy & Natural Care',
+      image: 'assets/images/product-catalog-banner/homeopathy-banner.jpg',
+    },
+    {
+      id: 'beauty',
+      categoryId: 'beauty',
+      title: 'Beauty & Personal Care',
+      image: 'assets/images/product-catalog-banner/beauty-banner.jpg',
+    },
+    {
+      id: 'pantry',
+      categoryId: 'pantry',
+      title: 'Food & Pantry',
+      image: 'assets/images/product-catalog-banner/pantry-banner.jpg',
+    },
+    {
+      id: 'ethnic',
+      categoryId: 'fashion',
+      title: 'Ethnic Clothing & Handlooms',
+      image: 'assets/images/product-catalog-banner/ethnic-banner.jpg',
+    },
+  ];
+
+  get bannerList(): CatalogBannerItem[] {
+    const list = this.bannerService.getActiveBannersBySection('Product Catalog Banners');
+    if (list && list.length > 0) {
+      return list.map((b) => ({
+        id: b.categoryKey || 'wellness',
+        categoryId: b.categoryKey || 'wellness',
+        title: b.title,
+        image: b.image,
+      }));
+    }
+    return this.defaultBannerList;
+  }
+
+  categoryData: Record<string, CategoryShowcase> = {
+    wellness: {
+      id: 'wellness',
+      name: 'Wellness & Ayurveda',
+      title: 'Wellness & Ayurveda',
+      subtitle: 'Live Healthy, Live Better With Pure Botanicals',
+      button: 'Explore Wellness Products',
+      background: 'linear-gradient(135deg, #eff5d9 0%, #e2ecd0 100%)',
+      accentColor: '#144927',
+      bannerImage: 'assets/images/product-catalog-banner/wellness-banner.jpg',
+      fallbackImage: 'assets/images/product-catalog-banner/wellness-banner.jpg',
+      benefits: [
+        '100% Certified Natural',
+        'Ayurvedic Heritage',
+        'Holistic Immunity',
+        'Lab-Tested Purity',
+      ],
+      detailedBenefits: [
+        { label: '100% Natural', icon: 'fa-solid fa-leaf' },
+        { label: 'Ayurvedic Heritage', icon: 'fa-solid fa-mortar-pestle' },
+        { label: 'Holistic Care', icon: 'fa-solid fa-spa' },
+        { label: 'Lab-Tested Purity', icon: 'fa-solid fa-shield-halved' },
+      ],
+      brands: [
+        { name: 'Baidyanath', logo: 'assets/images/brands/baidyanath.svg' },
+        { name: 'Upakarma Ayurveda', logo: 'assets/images/brands/upakarma.svg' },
+        { name: 'Himalaya', logo: 'assets/images/brands/himalaya.svg' },
+        { name: 'Dabur', logo: 'assets/images/brands/dabur.svg' },
+        { name: 'Patanjali', logo: 'assets/images/brands/patanjali.svg' },
+        { name: 'Zandu', logo: 'assets/images/brands/zandu.svg' },
+        { name: 'Organic India', logo: 'assets/images/brands/organic-india.svg' },
+        { name: 'Kerala Ayurveda', logo: 'assets/images/brands/kerala.svg' },
+      ],
+      subcategories: [
+        { id: 'all', name: 'All Wellness' },
+        { id: 'ayurveda', name: 'Classical Rasayana', icon: 'fa-solid fa-leaf', query: 'ayurveda' },
+        { id: 'immunity', name: 'Immunity Boosters', icon: 'fa-solid fa-shield-virus', query: 'immunity' },
+        { id: 'supplements', name: 'Herbal Capsules', icon: 'fa-solid fa-capsules', query: 'capsule' },
+        { id: 'detox', name: 'Digestive & Detox', icon: 'fa-solid fa-seedling', query: 'triphala' },
+        { id: 'superfoods', name: 'Daily Superfoods', icon: 'fa-solid fa-bowl-food', query: 'balance' },
+      ],
+    },
+
+    homeopathy: {
+      id: 'homeopathy',
+      name: 'Homeopathy & Natural Care',
+      title: 'Homeopathy',
+      subtitle: 'Gentle Healing. Lasting Wellness.',
+      button: 'Explore Homeopathy',
+      background: 'linear-gradient(135deg, #e6f4f2 0%, #d1ebe8 100%)',
+      accentColor: '#134e27',
+      bannerImage: 'assets/images/product-catalog-banner/homeopathy-banner.jpg',
+      fallbackImage: 'assets/images/product-catalog-banner/homeopathy-banner.jpg',
+      benefits: [
+        '100% Natural',
+        'Safe & Effective',
+        'Holistic Care',
+        'No Side Effects',
+      ],
+      detailedBenefits: [
+        { label: '100% Natural', icon: 'fa-solid fa-leaf' },
+        { label: 'Safe & Effective', icon: 'fa-solid fa-mortar-pestle' },
+        { label: 'Holistic Care', icon: 'fa-solid fa-spa' },
+        { label: 'No Side Effects', icon: 'fa-solid fa-shield-halved' },
+      ],
+      brands: [
+        { name: 'Dr. Reckeweg', logo: 'assets/images/brands/reckeweg.svg' },
+        { name: 'SBL Homeopathy', logo: 'assets/images/brands/sbl.svg' },
+        { name: 'Boiron', logo: 'assets/images/brands/boiron.svg' },
+        { name: "Bakson's", logo: 'assets/images/brands/bakson.svg' },
+        { name: 'Dr. Willmar Schwabe', logo: 'assets/images/brands/schwabe.svg' },
+        { name: 'Dr. Mantra', logo: 'assets/images/brands/dr-mantra.svg' },
+        { name: 'Adel Pharma', logo: 'assets/images/brands/adel.svg' },
+        { name: 'Wheezal', logo: 'assets/images/brands/wheezal.svg' },
+      ],
+      subcategories: [
+        { id: 'all', name: 'All Homeopathy' },
+        { id: 'tinctures', name: 'Mother Tinctures', icon: 'fa-solid fa-flask', query: 'tincture' },
+        { id: 'drops', name: 'Remedy Drops & Syrups', icon: 'fa-solid fa-droplet', query: 'drops' },
+        { id: 'hair-scalp', name: 'Hair & Scalp Health', icon: 'fa-solid fa-wind', query: 'scalp' },
+        { id: 'eye-care', name: 'Eye Drops & Vision', icon: 'fa-solid fa-eye', query: 'eye' },
+        { id: 'joint-pain', name: 'Joint & Muscular Relief', icon: 'fa-solid fa-bone', query: 'joint' },
+      ],
+    },
+
+    beauty: {
+      id: 'beauty',
+      name: 'Beauty & Personal Care',
+      title: 'Beauty & Personal Care',
+      subtitle: 'Nourish Your Natural Glow With Pure Botanicals',
+      button: 'Explore Beauty Care',
+      background: 'linear-gradient(135deg, #fcecf0 0%, #fae2e8 100%)',
+      accentColor: '#164827',
+      bannerImage: 'assets/images/product-catalog-banner/beauty-banner.jpg',
+      fallbackImage: 'assets/images/product-catalog-banner/beauty-banner.jpg',
+      benefits: [
+        'Clean & Cruelty-Free',
+        'Botanical Extracts',
+        'Dermatologist Tested',
+        'Natural Radiance',
+      ],
+      detailedBenefits: [
+        { label: '100% Natural', icon: 'fa-solid fa-leaf' },
+        { label: 'Clean Botanical', icon: 'fa-solid fa-mortar-pestle' },
+        { label: 'Gentle on Skin', icon: 'fa-solid fa-spa' },
+        { label: 'Toxin Free', icon: 'fa-solid fa-shield-halved' },
+      ],
+      brands: [
+        { name: 'Mamaearth', logo: 'assets/images/brands/mamaearth.svg' },
+        { name: 'Biotique', logo: 'assets/images/brands/biotique.svg' },
+        { name: 'Forest Essentials', logo: 'assets/images/brands/forest-essentials.svg' },
+        { name: 'Bella Vita Organic', logo: 'assets/images/brands/bella-vita.svg' },
+        { name: 'Kama Ayurveda', logo: 'assets/images/brands/kama-ayurveda.svg' },
+        { name: 'Plum', logo: 'assets/images/brands/plum.svg' },
+        { name: 'Minimalist', logo: 'assets/images/brands/minimalist.svg' },
+        { name: 'Khadi Natural', logo: 'assets/images/brands/khadi.svg' },
+      ],
+      subcategories: [
+        { id: 'all', name: 'All Beauty Care' },
+        { id: 'skincare', name: 'Face Care & Cleansers', icon: 'fa-solid fa-spa', query: 'skin' },
+        { id: 'fragrances', name: 'Fragrances & Mists', icon: 'fa-solid fa-spray-can-sparkles', query: 'fragrance' },
+        { id: 'lipcare', name: 'Lip Care & Glow', icon: 'fa-solid fa-wand-magic-sparkles', query: 'lip' },
+        { id: 'haircare', name: 'Hair Care & Tonics', icon: 'fa-solid fa-feather', query: 'hair' },
+        { id: 'lotions', name: 'Body Lotions & Oils', icon: 'fa-solid fa-hand-holding-heart', query: 'lotion' },
+      ],
+    },
+
+    pantry: {
+      id: 'pantry',
+      name: 'Food & Pantry',
+      title: 'Taste the Tradition',
+      subtitle: 'Pure Spices. Rich Flavor. A Healthier You.',
+      button: 'Explore Food & Pantry',
+      background: 'linear-gradient(135deg, #fef7ea 0%, #f7eccb 100%)',
+      accentColor: '#842020',
+      bannerImage: 'assets/images/product-catalog-banner/pantry-banner.jpg',
+      fallbackImage: 'assets/images/product-catalog-banner/pantry-banner.jpg',
+      benefits: [
+        '100% Natural',
+        'No Added Preservatives',
+        'Pure & Fresh',
+        'Rich Aroma Rich Taste',
+      ],
+      detailedBenefits: [
+        { label: '100% Natural', icon: 'fa-solid fa-leaf' },
+        { label: 'No Added Preservatives', icon: 'fa-solid fa-shield-halved' },
+        { label: 'Pure & Fresh', icon: 'fa-solid fa-mortar-pestle' },
+        { label: 'Rich Aroma Rich Taste', icon: 'fa-solid fa-heart' },
+      ],
+      brands: [
+        { name: 'Aashirvaad', logo: 'assets/images/brands/aashirvaad.svg' },
+        { name: 'Tata Sampann', logo: 'assets/images/brands/tata-sampann.svg' },
+        { name: 'MDH', logo: 'assets/images/brands/mdh.svg' },
+        { name: 'Fortune', logo: 'assets/images/brands/fortune.svg' },
+        { name: 'Everest', logo: 'assets/images/brands/everest.svg' },
+        { name: 'Dabur', logo: 'assets/images/brands/dabur.svg' },
+        { name: 'Organic India', logo: 'assets/images/brands/organic-india.svg' },
+        { name: 'Two Brothers', logo: 'assets/images/brands/two-brothers.svg' },
+      ],
+      subcategories: [
+        { id: 'all', name: 'All Food & Pantry' },
+        { id: 'ghee', name: 'A2 Gir Cow Ghee', icon: 'fa-solid fa-jar', query: 'ghee' },
+        { id: 'spices', name: 'Heritage Spice Blends', icon: 'fa-solid fa-pepper-hot', query: 'spice' },
+        { id: 'millets', name: 'Ancient Millets & Grains', icon: 'fa-solid fa-wheat-awn', query: 'millet' },
+        { id: 'sweets', name: 'Traditional Confections', icon: 'fa-solid fa-cookie-bite', query: 'sweet' },
+        { id: 'snacks', name: 'Crunchy Namkeen & Snacks', icon: 'fa-solid fa-bowl-rice', query: 'snack' },
+        { id: 'pickles', name: 'Regional Pickles', icon: 'fa-solid fa-lemon', query: 'pickle' },
+      ],
+    },
+
+    fashion: {
+      id: 'fashion',
+      name: 'Ethnic Clothing',
+      title: 'Ethnic Clothing',
+      subtitle: 'Artisan Handloom Silks & Timeless Weaves',
+      button: 'Explore Ethnic Wear',
+      background: 'linear-gradient(135deg, #f5effe 0%, #ede3fd 100%)',
+      accentColor: '#5a1526',
+      bannerImage: 'assets/images/product-catalog-banner/ethnic-banner.jpg',
+      fallbackImage: 'assets/images/product-catalog-banner/ethnic-banner.jpg',
+      benefits: [
+        'Handloom Weaving',
+        'Pure Natural Silks',
+        'Intricate Zari Work',
+        'Ethical Artisan Craft',
+      ],
+      detailedBenefits: [
+        { label: 'Handloom Pure', icon: 'fa-solid fa-vest' },
+        { label: 'Artisan Craft', icon: 'fa-solid fa-hands-holding' },
+        { label: 'Pure Silks', icon: 'fa-solid fa-feather' },
+        { label: 'Festive Luxury', icon: 'fa-solid fa-gem' },
+      ],
+      brands: [
+        { name: 'Fabindia', logo: 'assets/images/brands/fabindia.svg' },
+        { name: 'Manyavar', logo: 'assets/images/brands/manyavar.svg' },
+        { name: 'W for Woman', logo: 'assets/images/brands/w-woman.svg' },
+        { name: 'Biba', logo: 'assets/images/brands/biba.svg' },
+        { name: 'Anokhi', logo: 'assets/images/brands/anokhi.svg' },
+        { name: 'Raw Mango', logo: 'assets/images/brands/raw-mango.svg' },
+        { name: 'Raymond Ethnic', logo: 'assets/images/brands/raymond.svg' },
+      ],
+      subcategories: [
+        { id: 'all', name: 'All Ethnic Clothing' },
+        { id: 'sarees', name: 'Handcrafted Sarees', icon: 'fa-solid fa-vest', query: 'dress' },
+        { id: 'kurtas', name: 'Kurta & Sets', icon: 'fa-solid fa-shirt', query: 'shirt' },
+        { id: 'dupattas', name: 'Dupattas & Stoles', icon: 'fa-solid fa-scroll', query: 'fashion' },
+        { id: 'jewelry', name: 'Ethnic Jewelry & Accessories', icon: 'fa-solid fa-gem', query: 'jewel' },
+        { id: 'footwear', name: 'Traditional Footwear', icon: 'fa-solid fa-shoe-prints', query: 'shoe' },
+      ],
+    },
+
+    all: {
+      id: 'all',
+      name: 'All Products',
+      title: 'World Market',
+      subtitle: 'Authentic Heritage Essentials & Artisanal Wellness',
+      button: 'Explore All Products',
+      background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
+      accentColor: '#134e27',
+      bannerImage: 'assets/images/product-catalog-banner/wellness-banner.jpg',
+      fallbackImage: 'assets/images/product-catalog-banner/wellness-banner.jpg',
+      benefits: [
+        'Worldwide Shipping',
+        '100% Verified Sellers',
+        'Escrow Protected Payments',
+        'Direct Heritage Sourcing',
+      ],
+      detailedBenefits: [
+        { label: '100% Genuine', icon: 'fa-solid fa-award' },
+        { label: 'Global Market', icon: 'fa-solid fa-globe' },
+        { label: 'Secure Delivery', icon: 'fa-solid fa-box' },
+        { label: 'Verified Sellers', icon: 'fa-solid fa-shield-halved' },
+      ],
+      brands: [
+        { name: 'Dabur', logo: 'assets/images/brands/dabur.svg' },
+        { name: 'Dr. Reckeweg', logo: 'assets/images/brands/reckeweg.svg' },
+        { name: 'Forest Essentials', logo: 'assets/images/brands/forest-essentials.svg' },
+        { name: 'Two Brothers', logo: 'assets/images/brands/two-brothers.svg' },
+        { name: 'Fabindia', logo: 'assets/images/brands/fabindia.svg' },
+        { name: 'Himalaya', logo: 'assets/images/brands/himalaya.svg' },
+        { name: 'Organic India', logo: 'assets/images/brands/organic-india.svg' },
+        { name: 'Patanjali', logo: 'assets/images/brands/patanjali.svg' },
+      ],
+      subcategories: [
+        { id: 'all', name: 'All Categories' },
+        { id: 'wellness', name: 'Wellness', icon: 'fa-solid fa-spa', query: 'wellness' },
+        { id: 'homeopathy', name: 'Homeopathy', icon: 'fa-solid fa-mortar-pestle', query: 'homeopathy' },
+        { id: 'beauty', name: 'Beauty Care', icon: 'fa-solid fa-wand-magic-sparkles', query: 'beauty' },
+        { id: 'pantry', name: 'Food & Pantry', icon: 'fa-solid fa-utensils', query: 'pantry' },
+        { id: 'fashion', name: 'Ethnic Clothing', icon: 'fa-solid fa-vest', query: 'fashion' },
+      ],
+    },
+  };
+
+  normalizeCategory(cat: string | null): string {
+    if (!cat) return 'all';
+    const c = cat.toLowerCase().trim();
+    if (['wellness', 'ayurveda'].includes(c)) return 'wellness';
+    if (['homeopathy', 'homeopathic'].includes(c)) return 'homeopathy';
+    if (['beauty', 'beauty-care', 'beauty-personal-care'].includes(c)) return 'beauty';
+    if (['food-pantry', 'pantry', 'sweets-snacks', 'groceries'].includes(c)) return 'pantry';
+    if (['ethnic-clothing', 'ethnic', 'ethnic-wear', 'fashion'].includes(c)) return 'fashion';
+    return c;
+  }
+
+  get currentCategory(): CategoryShowcase {
+    const cat = this.activeCategory();
+    return this.getBannerData(cat);
+  }
+
+  selectCategory(categoryId: string): void {
+    this.setCategory(categoryId);
+  }
+
+  filterByBrand(brandName: string): void {
+    const idx = this.selectedBrands.indexOf(brandName);
+    if (idx > -1) {
+      this.selectedBrands = [];
+    } else {
+      this.selectedBrands = [brandName];
+    }
+    this.updateQueryParams();
+    this.scrollToProducts();
+  }
+
+  clearBrandFilter(): void {
+    this.selectedBrands = [];
+    this.updateQueryParams();
+  }
+
+  selectSubcategory(sub: CategorySubcategory): void {
+    this.selectedSubcategory = sub.id;
+    if (sub.id === 'all') {
+      this.searchQuery = '';
+      this.selectedBrands = [];
+    } else if (['wellness', 'homeopathy', 'beauty', 'pantry', 'fashion'].includes(sub.id)) {
+      this.setCategory(sub.id);
+      return;
+    } else if (sub.query) {
+      this.searchQuery = sub.query;
+    }
+    this.updateQueryParams();
+    this.scrollToProducts();
+  }
+
+  scrollToProducts(): void {
+    if (typeof document !== 'undefined') {
+      const el = document.getElementById('catalog-products-anchor');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }
+
+  getBrandLogoSvg(name: string, accentColor?: string): string {
+    const slug = (name || 'brand').toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    return `assets/images/brands/${slug}.svg`;
+  }
+
+  onBrandLogoError(event: any, brandName: string): void {
+    if (!event?.target) return;
+    if (event.target.dataset.fallbackTried) {
+      return;
+    }
+    event.target.dataset.fallbackTried = 'true';
+    const slug = (brandName || 'brand').toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    event.target.src = `assets/images/brands/${slug}.svg`;
+  }
+
+  prevBanner(): void {
+    const newIdx = (this.currentBannerIndex - 1 + this.bannerList.length) % this.bannerList.length;
+    this.goToBanner(newIdx);
+  }
+
+  nextBanner(): void {
+    const newIdx = (this.currentBannerIndex + 1) % this.bannerList.length;
+    this.goToBanner(newIdx);
+  }
+
+  goToBanner(index: number): void {
+    this.currentBannerIndex = index;
+    const banner = this.bannerList[index];
+    if (banner) {
+      this.setCategory(banner.categoryId);
+    }
+  }
+
+  syncBannerWithCategory(catId: string): void {
+    const idx = this.bannerList.findIndex((b) => b.categoryId === catId);
+    if (idx !== -1) {
+      this.currentBannerIndex = idx;
+    }
+  }
+
+  onBannerImageError(event: any): void {
+    const fallback = 'assets/images/product-catalog-banner/wellness-banner.jpg';
+    if (event?.target && !event.target.src.includes(fallback)) {
+      event.target.src = fallback;
+    }
+  }
+
+  getBannerData(categoryId: string): CategoryShowcase {
+    const base = this.categoryData[categoryId] || this.categoryData['wellness'];
+    const serviceBanner = this.bannerService.getCategoryBanner(categoryId);
+    if (serviceBanner) {
+      return {
+        ...base,
+        title: serviceBanner.title || base.title,
+        subtitle: serviceBanner.subtitle || base.subtitle,
+        bannerImage: serviceBanner.image || base.bannerImage,
+        fallbackImage: serviceBanner.image || base.fallbackImage,
+      };
+    }
+    return base;
+  }
+
+  getBannerBenefits(categoryId: string): CategoryBenefitItem[] {
+    const data = this.getBannerData(categoryId);
+    return data.detailedBenefits || [
+      { label: '100% Natural', icon: 'fa-solid fa-leaf' },
+      { label: 'Safe & Effective', icon: 'fa-solid fa-mortar-pestle' },
+      { label: 'Holistic Care', icon: 'fa-solid fa-spa' },
+      { label: 'No Side Effects', icon: 'fa-solid fa-shield-halved' },
+    ];
+  }
+
+
+
+
+
+
+
+ 
+
+
+
+
+
 
   // All catalog products
   allProducts: ProductDetailModel[] = [];
@@ -46,6 +538,7 @@ export class ProductCatalogPage implements OnInit {
   // Filter & Search State
   searchQuery: string = '';
   selectedCategory: string = 'all';
+  selectedSubcategory: string = 'all';
   selectedBrands: string[] = [];
   selectedPriceRange: string = 'all';
   selectedRating: number = 0;
@@ -92,17 +585,17 @@ export class ProductCatalogPage implements OnInit {
 
     // Listen to query params for search, category, brand, sort
     this.route.queryParamMap.subscribe((params) => {
-      const catParam = params.get('category');
+      const rawCat = params.get('category');
       const searchParam = params.get('search');
       const brandParam = params.get('brand');
       const sortParam = params.get('sort');
       const filterParam = params.get('filter');
+      const subParam = params.get('subcategory');
 
-      if (catParam) {
-        this.selectedCategory = catParam;
-      } else {
-        this.selectedCategory = 'all';
-      }
+      const catParam = this.normalizeCategory(rawCat);
+      this.selectedCategory = catParam;
+      this.activeCategory.set(catParam === 'all' ? 'wellness' : catParam);
+      this.syncBannerWithCategory(this.activeCategory());
 
       // Always derive query-driven state from the current URL. Resetting absent
       // parameters prevents filters leaking between catalog navigations.
@@ -110,6 +603,7 @@ export class ProductCatalogPage implements OnInit {
       this.selectedBrands = brandParam ? [brandParam] : [];
       this.sortBy = sortParam ?? 'featured';
       this.onlyBestSellers = filterParam === 'deals' || filterParam === 'bestseller';
+      this.selectedSubcategory = subParam ?? 'all';
 
       if (typeof window !== 'undefined') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -197,9 +691,15 @@ export class ProductCatalogPage implements OnInit {
 
     // 1. Filter by category
     if (this.selectedCategory !== 'all') {
-      result = result.filter(
-        (p) => this.productService.getCategoryGroup(p) === this.selectedCategory
-      );
+      result = result.filter((p) => {
+        const grp = this.productService.getCategoryGroup(p);
+        if (this.selectedCategory === 'wellness') return grp === 'wellness';
+        if (this.selectedCategory === 'homeopathy') return grp === 'homeopathy';
+        if (this.selectedCategory === 'beauty') return grp === 'beauty';
+        if (this.selectedCategory === 'pantry') return grp === 'pantry' || grp === 'sweets-snacks';
+        if (this.selectedCategory === 'fashion') return grp === 'fashion';
+        return grp === this.selectedCategory;
+      });
     }
 
     // 2. Filter by search query
@@ -292,7 +792,13 @@ export class ProductCatalogPage implements OnInit {
   }
 
   setCategory(catId: string): void {
-    this.selectedCategory = catId;
+    const normalized = this.normalizeCategory(catId);
+    this.selectedCategory = normalized;
+    this.activeCategory.set(normalized === 'all' ? 'wellness' : normalized);
+    this.syncBannerWithCategory(this.activeCategory());
+    this.selectedSubcategory = 'all';
+    this.selectedBrands = [];
+    this.searchQuery = '';
     this.updateQueryParams();
   }
 
@@ -337,6 +843,9 @@ export class ProductCatalogPage implements OnInit {
     if (this.selectedCategory !== 'all') {
       queryParams['category'] = this.selectedCategory;
     }
+    if (this.selectedSubcategory !== 'all') {
+      queryParams['subcategory'] = this.selectedSubcategory;
+    }
     if (this.searchQuery.trim()) {
       queryParams['search'] = this.searchQuery.trim();
     }
@@ -351,7 +860,7 @@ export class ProductCatalogPage implements OnInit {
     }
 
     // Replace the complete query state so removed filters disappear from the URL.
-    this.router.navigate([], {
+   void this.router.navigate([], {
       relativeTo: this.route,
       queryParams,
       replaceUrl: true,
@@ -432,8 +941,8 @@ export class ProductCatalogPage implements OnInit {
   }
 
   navigateToProduct(prodId: string): void {
-    this.router.navigate(['/product', prodId]);
-  }
+  void this.router.navigate(['/product', prodId]);
+}
 
   // --- Reference Design Card Interaction Helpers ---
   getQuantity(productId: string): number {
@@ -550,6 +1059,6 @@ export class ProductCatalogPage implements OnInit {
       qty
     );
 
-    this.router.navigate(['/cart']);
+   void this.router.navigate(['/cart']);
   }
 }

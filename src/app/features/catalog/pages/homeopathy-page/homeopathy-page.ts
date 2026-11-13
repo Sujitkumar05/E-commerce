@@ -7,6 +7,7 @@ import { Footer } from '../../../storefront/components/footer/footer';
 import { CartService } from '../../../../core/services/cart.service';
 import { WishlistService } from '../../../../core/services/wishlist.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { BannerService } from '../../../../core/services/banner.service';
 import {
   ProductService,
   ProductDetailModel,
@@ -30,9 +31,23 @@ export class HomeopathyPage implements OnInit {
   readonly cartService = inject(CartService);
   readonly wishlistService = inject(WishlistService);
   readonly authService = inject(AuthService);
+  readonly bannerService = inject(BannerService);
   private readonly productService = inject(ProductService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+
+  get headerBanner() {
+    const list = this.bannerService.getActiveBannersBySection('Homeopathy Header Banner');
+    return list.length > 0
+      ? list[0]
+      : {
+          title: 'Indian Homeopathic Remedies',
+          subtitle:
+            "Discover authentic homeopathic formulations from India’s leading trusted laboratories: Dr. Reckeweg, SBL Homeopathy, Dr. Willmar Schwabe, Bakson's, and Wheezal. Sealed, seal-intact dilutions, biochemic salts, mother tinctures, and specialized healthcare items.",
+          badgeText: 'CERTIFIED INDIAN HOMEOPATHY & HEALTHCARE',
+          image: '/images/wellness/triphala-capsules.jpg',
+        };
+  }
 
   // All Homeopathy products
   allProducts: ProductDetailModel[] = [];

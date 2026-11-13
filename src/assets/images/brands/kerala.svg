@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 90" width="220" height="90">
+    <g transform="translate(15, 12)">
+      <!-- Golden Diya / Lamp Motif -->
+      <g transform="translate(6, 6)">
+        <path d="M 18 4 C 18 4 24 12 21 17 C 19 20 15 20 14 17 C 12 12 18 4 18 4 Z" fill="#fbc02d"/>
+        <path d="M 6 22 C 6 30 30 30 30 22 Z" fill="#004d40"/>
+        <rect x="15" y="30" width="6" height="8" fill="#004d40"/>
+        <rect x="10" y="38" width="16" height="3" rx="1.5" fill="#fbc02d"/>
+      </g>
+      <!-- Wordmark -->
+      <text x="48" y="28" font-family="'Georgia', serif" font-size="19" font-weight="bold" fill="#004d40" letter-spacing="0.3">KERALA</text>
+      <text x="49" y="44" font-family="'Georgia', serif" font-size="13" font-weight="bold" fill="#b78103" letter-spacing="2">AYURVEDA</text>
+      <text x="50" y="55" font-family="'Segoe UI', sans-serif" font-size="7.5" font-weight="600" fill="#666" letter-spacing="1">LEADERSHIP IN WELLNESS</text>
+    </g>
+  </svg>

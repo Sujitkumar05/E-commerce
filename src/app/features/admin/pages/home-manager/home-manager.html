@@ -1,309 +1,613 @@
 <div class="home-manager-container">
-  <!-- PAGE HEADER & BREADCRUMBS -->
-  <div class="page-header">
+
+  <!-- TOAST NOTIFICATION -->
+  @if (notificationMessage) {
+    <div class="alert alert-success d-flex align-items-center justify-content-between rounded-3 py-2 px-3 mb-3 shadow-sm alert-floating">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+        <span class="fw-semibold">{{ notificationMessage }}</span>
+      </div>
+      <button type="button" class="btn-close" (click)="notificationMessage = ''" aria-label="Close"></button>
+    </div>
+  }
+
+  <!-- PAGE HEADER & ACTIONS -->
+  <div class="page-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
     <div class="header-left">
-      <h1 class="page-title">Storefront Home Manager</h1>
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <h1 class="page-title mb-0">Homepage Section &amp; Layout Builder</h1>
+        @if (hasUnsavedChanges) {
+          <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">
+            <i class="bi bi-circle-fill text-warning me-1" style="font-size: 7px;"></i>Draft Changes Pending
+          </span>
+        } @else {
+          <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">
+            <i class="bi bi-check2-all me-1"></i>Live Synchronized
+          </span>
+        }
+      </div>
       <div class="breadcrumbs">
         <span>Admin</span>
         <i class="bi bi-chevron-right"></i>
         <span>Storefront</span>
         <i class="bi bi-chevron-right"></i>
-        <span class="active-crumb">Home Layout</span>
+        <span class="active-crumb">Homepage Builder</span>
       </div>
-      <p class="page-desc">
-        Configure, reorder, enable, or customize the dynamic sections rendered on the storefront homepage.
+      <p class="page-desc text-muted mb-0">
+        Design, rearrange, hide, duplicate, or customize homepage sections and product displays without code changes.
       </p>
     </div>
-    <div class="header-actions">
-      <button class="btn btn-secondary" (click)="saveAllLayout()">
-        <i class="bi bi-cloud-arrow-up"></i>
-        <span>Publish Layout</span>
+
+    <!-- Header Actions -->
+    <div class="header-actions d-flex align-items-center gap-2 flex-wrap">
+      <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" (click)="resetAllToDefaults()" title="Reset to factory original order">
+        <i class="bi bi-arrow-counterclockwise"></i>
+        <span>Reset Defaults</span>
       </button>
-      <button class="btn btn-primary" (click)="openAddModal()">
+
+      @if (hasUnsavedChanges) {
+        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" (click)="restorePublished()" title="Discard draft and revert to live layout">
+          <i class="bi bi-x-circle"></i>
+          <span>Discard Draft</span>
+        </button>
+      }
+
+      <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3.5" (click)="openAddModal()">
         <i class="bi bi-plus-lg"></i>
         <span>Add Section</span>
       </button>
+
+      <button type="button" class="btn btn-success btn-sm rounded-pill px-4 fw-bold shadow-sm d-inline-flex align-items-center gap-1.5"
+              (click)="publishLayout()">
+        <i class="bi bi-cloud-arrow-up-fill"></i>
+        <span>Publish to Live Storefront</span>
+      </button>
     </div>
   </div>
 
-  <!-- STATS BAR -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon-wrapper bg-blue-soft">
-        <i class="bi bi-layers-fill"></i>
-      </div>
-      <div class="stat-content">
-        <span class="stat-label">Total Sections</span>
-        <h3 class="stat-value">{{ sections.length }}</h3>
-        <span class="stat-sub">Configured layout blocks</span>
-      </div>
+  <!-- VIEW SWITCHER (BUILDER VS LIVE PREVIEW) & STATS -->
+  <div class="builder-nav-bar d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 p-2 bg-white rounded-4 border shadow-xs">
+    <!-- View Tabs -->
+    <div class="nav-pills-group d-flex align-items-center gap-1">
+      <button type="button" class="view-pill-btn" [class.active]="activeView === 'builder'" (click)="activeView = 'builder'">
+        <i class="bi bi-diagram-3-fill me-1.5"></i>
+        <span>Section Structure &amp; Order</span>
+        <span class="badge bg-light text-dark rounded-pill ms-1.5">{{ sections.length }}</span>
+      </button>
+      <button type="button" class="view-pill-btn" [class.active]="activeView === 'categories'" (click)="activeView = 'categories'">
+        <i class="bi bi-grid-fill me-1.5 text-success"></i>
+        <span>Explore by Category</span>
+        <span class="badge bg-success-subtle text-success rounded-pill ms-1.5">{{ exploreCategories.length }}</span>
+      </button>
+      <button type="button" class="view-pill-btn" [class.active]="activeView === 'preview'" (click)="activeView = 'preview'">
+        <i class="bi bi-phone-flip me-1.5"></i>
+        <span>Visual Responsive Preview</span>
+      </button>
     </div>
 
-    <div class="stat-card">
-      <div class="stat-icon-wrapper bg-emerald-soft">
-        <i class="bi bi-eye-fill"></i>
+    <!-- Device Frame Switcher (Shows only in Preview mode) -->
+    @if (activeView === 'preview') {
+      <div class="device-switcher d-flex align-items-center gap-1 bg-light p-1 rounded-pill border">
+        <button type="button" class="device-btn" [class.active]="previewDevice === 'desktop'" (click)="previewDevice = 'desktop'" title="Desktop View (1200px+)">
+          <i class="bi bi-laptop"></i>
+          <span class="d-none d-sm-inline">Desktop</span>
+        </button>
+        <button type="button" class="device-btn" [class.active]="previewDevice === 'tablet'" (click)="previewDevice = 'tablet'" title="Tablet View (768px)">
+          <i class="bi bi-tablet"></i>
+          <span class="d-none d-sm-inline">Tablet</span>
+        </button>
+        <button type="button" class="device-btn" [class.active]="previewDevice === 'mobile'" (click)="previewDevice = 'mobile'" title="Mobile View (375px)">
+          <i class="bi bi-phone"></i>
+          <span class="d-none d-sm-inline">Mobile</span>
+        </button>
       </div>
-      <div class="stat-content">
-        <span class="stat-label">Active on Home</span>
-        <h3 class="stat-value">{{ activeCount }}</h3>
-        <span class="stat-sub">Visible to customers</span>
-      </div>
-    </div>
+    }
 
-    <div class="stat-card">
-      <div class="stat-icon-wrapper bg-amber-soft">
-        <i class="bi bi-eye-slash-fill"></i>
-      </div>
-      <div class="stat-content">
-        <span class="stat-label">Hidden / Draft</span>
-        <h3 class="stat-value">{{ inactiveCount }}</h3>
-        <span class="stat-sub">Disabled from display</span>
-      </div>
+    <!-- Quick Stats -->
+    <div class="quick-stats-strip d-flex align-items-center gap-3 pe-2">
+      <span class="small text-muted"><strong class="text-success">{{ activeCount }}</strong> Active</span>
+      <span class="text-muted">•</span>
+      <span class="small text-muted"><strong class="text-secondary">{{ inactiveCount }}</strong> Hidden</span>
     </div>
   </div>
 
-  <!-- CONTROLS & FILTER BAR -->
-  <div class="table-card">
-    <div class="filter-bar">
-      <div class="search-box">
-        <i class="bi bi-search"></i>
-        <input
-          type="text"
-          [(ngModel)]="searchTerm"
-          placeholder="Search by section name, tag, or component..."
-        />
-        @if (searchTerm) {
-          <button class="clear-search" (click)="searchTerm = ''">
-            <i class="bi bi-x"></i>
-          </button>
+  <!-- VIEW 1: SECTION STRUCTURE & REORDER BUILDER -->
+  @if (activeView === 'builder') {
+    <div class="builder-view-wrapper">
+      
+      <!-- Filter and Search Row -->
+      <div class="card p-3 mb-3 bg-white rounded-4 border shadow-xs">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+          <div class="search-box position-relative flex-grow-1" style="max-width: 480px;">
+            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+            <input
+              type="text"
+              [(ngModel)]="searchTerm"
+              placeholder="Search by section name, title, tag, or component..."
+              class="form-control rounded-pill ps-5"
+            />
+            @if (searchTerm) {
+              <button type="button" class="btn btn-sm position-absolute top-50 end-0 translate-middle-y me-2 border-0" (click)="searchTerm = ''">
+                <i class="bi bi-x"></i>
+              </button>
+            }
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <span class="small text-muted text-nowrap">Filter Type:</span>
+            <select [(ngModel)]="typeFilter" class="form-select form-select-sm rounded-pill" style="min-width: 140px;">
+              <option value="All">All Types</option>
+              <option value="Hero">Hero Slider</option>
+              <option value="Showcase">Showcase</option>
+              <option value="Grid">Product Grid</option>
+              <option value="Banner">Banner Showcase</option>
+              <option value="Features">Trust Features</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sections List (Ordered) -->
+      <div class="sections-accordion d-flex flex-column gap-3">
+        @for (sec of filteredSections; track sec.id; let i = $index; let isFirst = $first; let isLast = $last) {
+          <div class="section-builder-card rounded-4 border bg-white p-3 p-md-3.5 shadow-xs transition-all"
+               [class.section-disabled]="!sec.enabled"
+               [class.dragging-card]="draggedId === sec.id"
+               [class.drop-target-card]="dragOverId === sec.id && draggedId !== sec.id"
+               [draggable]="true"
+               (dragstart)="onDragStart($event, sec)"
+               (dragover)="onDragOver($event, sec)"
+               (dragleave)="onDragLeave(sec)"
+               (drop)="onDrop($event, sec)"
+               (dragend)="onDragEnd()">
+            
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+              
+              <!-- Left: Order Handle & Information -->
+              <div class="d-flex align-items-center gap-2 gap-md-3 flex-grow-1 min-w-0">
+                
+                <!-- Drag Grip Handle -->
+                <div class="drag-handle-grip text-muted d-flex align-items-center justify-content-center"
+                     title="Drag and drop to reorder"
+                     style="cursor: grab; width: 20px;">
+                  <i class="bi bi-grip-vertical fs-5"></i>
+                </div>
+
+                <!-- Position Chip -->
+                <div class="order-badge d-flex flex-column align-items-center justify-content-center rounded-3 fw-bold"
+                     [class.bg-primary-subtle]="sec.enabled" [class.text-primary]="sec.enabled"
+                     [class.bg-light]="!sec.enabled" [class.text-muted]="!sec.enabled"
+                     style="width: 42px; height: 42px; font-size: 14px;">
+                  <span class="order-num">#{{ sec.order }}</span>
+                </div>
+
+                <!-- Reorder Up / Down Buttons -->
+                <div class="d-flex flex-column gap-1">
+                  <button type="button" class="btn-order-arrow" [disabled]="isFirst" (click)="moveUp(sec.id)" title="Move section up">
+                    <i class="bi bi-chevron-up"></i>
+                  </button>
+                  <button type="button" class="btn-order-arrow" [disabled]="isLast" (click)="moveDown(sec.id)" title="Move section down">
+                    <i class="bi bi-chevron-down"></i>
+                  </button>
+                </div>
+
+                <!-- Meta Details -->
+                <div class="section-meta d-flex flex-column min-w-0">
+                  <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                    <span class="fw-bold text-dark section-name-text text-truncate">{{ sec.name }}</span>
+                    <span class="badge rounded-pill sec-type-badge text-uppercase" [ngClass]="'badge-' + sec.type.toLowerCase()">
+                      {{ sec.type }}
+                    </span>
+                    <span class="text-muted small d-none d-lg-inline">&bull; {{ sec.componentId }}</span>
+                  </div>
+
+                  <div class="d-flex align-items-center gap-2 flex-wrap text-muted small">
+                    <span class="badge bg-light text-secondary border rounded-pill">{{ sec.tag }}</span>
+                    <span class="text-truncate" style="max-width: 400px;">{{ sec.title }}</span>
+                    @if (sec.productConfig) {
+                      <span class="badge bg-blue-soft text-white rounded-pill px-2 py-0.5" style="font-size: 10px;">
+                        {{ sec.productConfig.productLimit }} Prods &bull; {{ sec.productConfig.displayLayout }}
+                      </span>
+                    }
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Right: Controls & Actions -->
+              <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                
+                <!-- Active / Hidden Switch -->
+                <div class="form-check form-switch me-2" title="Toggle section visibility">
+                  <input
+                    type="checkbox"
+                    class="form-check-input"
+                    role="switch"
+                    [id]="'switch-' + sec.id"
+                    [checked]="sec.enabled"
+                    (change)="toggleSectionEnabled(sec)"
+                  />
+                  <label class="form-check-label small fw-semibold" [for]="'switch-' + sec.id">
+                    {{ sec.enabled ? 'Visible' : 'Hidden' }}
+                  </label>
+                </div>
+
+                <!-- Manage Categories button if Explore by Category section -->
+                @if (sec.componentId === 'sec-shop-categories') {
+                  <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-2.5 d-inline-flex align-items-center gap-1"
+                          (click)="activeView = 'categories'" title="Manage individual category cards">
+                    <i class="bi bi-grid-fill"></i>
+                    <span>Manage Categories ({{ exploreCategories.length }})</span>
+                  </button>
+                }
+
+                <!-- Edit Button -->
+                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" (click)="openEditModal(sec)">
+                  <i class="bi bi-pencil me-1"></i>
+                  <span>Edit Layout</span>
+                </button>
+
+                <!-- Duplicate Button -->
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-circle p-2" (click)="duplicateSection(sec)" title="Duplicate Section">
+                  <i class="bi bi-copy"></i>
+                </button>
+
+                <!-- Delete Button -->
+                <button type="button" class="btn btn-outline-danger btn-sm rounded-circle p-2" (click)="deleteSection(sec)" title="Delete Section">
+                  <i class="bi bi-trash"></i>
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+        }
+
+        @if (filteredSections.length === 0) {
+          <div class="p-5 text-center bg-white rounded-4 border">
+            <i class="bi bi-inbox display-4 text-muted mb-3 d-block"></i>
+            <h5 class="fw-bold text-dark">No homepage sections found</h5>
+            <p class="text-secondary mb-3">Try adjusting your search query or type filter.</p>
+            <button type="button" class="btn btn-outline-primary rounded-pill px-4" (click)="searchTerm = ''; typeFilter = 'All'">
+              Reset Filters
+            </button>
+          </div>
         }
       </div>
 
-      <div class="filter-controls">
-        <div class="select-wrapper">
-          <label>Type:</label>
-          <select [(ngModel)]="typeFilter">
-            <option value="All">All Types</option>
-            <option value="Hero">Hero</option>
-            <option value="Showcase">Showcase</option>
-            <option value="Grid">Grid</option>
-            <option value="Banner">Banner</option>
-            <option value="Features">Features</option>
-          </select>
-        </div>
-      </div>
     </div>
+  }
 
-    <!-- SECTIONS LIST -->
-    <div class="sections-list">
-      @if (filteredSections.length === 0) {
-        <div class="empty-state">
-          <div class="empty-icon"><i class="bi bi-search"></i></div>
-          <h4>No sections found</h4>
-          <p>Try refining your search or filter criteria, or add a new section.</p>
-        </div>
-      }
-
-      @for (sec of filteredSections; track sec.id; let idx = $index) {
-        <div class="section-item-card" [class.disabled-section]="!sec.enabled">
-          <!-- Order & Move Handles -->
-          <div class="order-col">
-            <span class="order-badge">#{{ sec.order }}</span>
-            <div class="move-btns">
-              <button
-                class="btn-icon"
-                (click)="moveUp(idx)"
-                [disabled]="idx === 0"
-                title="Move Up"
-              >
-                <i class="bi bi-chevron-up"></i>
-              </button>
-              <button
-                class="btn-icon"
-                (click)="moveDown(idx)"
-                [disabled]="idx === filteredSections.length - 1"
-                title="Move Down"
-              >
-                <i class="bi bi-chevron-down"></i>
-              </button>
-            </div>
+  <!-- VIEW 2: VISUAL RESPONSIVE LIVE PREVIEW -->
+  @if (activeView === 'preview') {
+    <div class="preview-stage-container d-flex justify-content-center p-3 p-md-4 bg-light rounded-4 border">
+      <div class="device-viewport-frame transition-all shadow-lg rounded-4 overflow-hidden bg-white"
+           [class.frame-desktop]="previewDevice === 'desktop'"
+           [class.frame-tablet]="previewDevice === 'tablet'"
+           [class.frame-mobile]="previewDevice === 'mobile'">
+        
+        <!-- Mock Browser Top Chrome -->
+        <div class="browser-chrome d-flex align-items-center justify-content-between px-3 py-2 bg-dark text-white-50 small border-bottom">
+          <div class="d-flex align-items-center gap-1.5">
+            <span class="rounded-circle bg-danger d-inline-block" style="width: 10px; height: 10px;"></span>
+            <span class="rounded-circle bg-warning d-inline-block" style="width: 10px; height: 10px;"></span>
+            <span class="rounded-circle bg-success d-inline-block" style="width: 10px; height: 10px;"></span>
           </div>
-
-          <!-- Section Preview / Thumbnail -->
-          <div class="preview-col">
-            <div class="thumb-container">
-              <img [src]="sec.previewImage" [alt]="sec.name" loading="lazy" />
-              <span class="type-pill" [attr.data-type]="sec.type">{{ sec.type }}</span>
-            </div>
+          <div class="chrome-address-bar bg-secondary bg-opacity-25 text-white rounded-pill px-3 py-0.5 text-center small text-truncate" style="max-width: 320px;">
+            https://herbalmart.store/ ({{ previewDevice | titlecase }} Preview)
           </div>
-
-          <!-- Section Info -->
-          <div class="info-col">
-            <div class="info-header">
-              <span class="tag-label">{{ sec.tag }}</span>
-              <h3 class="section-title">{{ sec.name }}</h3>
-            </div>
-            <p class="section-desc">{{ sec.description }}</p>
-            <div class="meta-row">
-              <span class="meta-item">
-                <i class="bi bi-code-slash"></i>
-                <code>{{ sec.componentName }}</code>
-              </span>
-              <span class="meta-item">
-                <i class="bi bi-boxes"></i>
-                <span>{{ sec.itemsCount }} items</span>
-              </span>
-              <span class="meta-item">
-                <i class="bi bi-clock"></i>
-                <span>Updated {{ sec.lastUpdated }}</span>
-              </span>
-            </div>
-          </div>
-
-          <!-- Status & Actions -->
-          <div class="actions-col">
-            <!-- Toggle Active / Inactive -->
-            <label class="switch-control" [title]="sec.enabled ? 'Click to disable' : 'Click to enable'">
-              <input
-                type="checkbox"
-                [checked]="sec.enabled"
-                (change)="toggleSectionEnabled(sec)"
-              />
-              <span class="slider"></span>
-              <span class="status-text">{{ sec.enabled ? 'Visible' : 'Hidden' }}</span>
-            </label>
-
-            <!-- Action Buttons -->
-            <div class="btn-group">
-              <button
-                class="action-btn edit"
-                (click)="openEditModal(sec)"
-                title="Edit Section"
-              >
-                <i class="bi bi-pencil-square"></i>
-              </button>
-              <button
-                class="action-btn delete"
-                (click)="deleteSection(sec)"
-                title="Delete Section"
-              >
-                <i class="bi bi-trash"></i>
-              </button>
-            </div>
+          <div class="small text-white-50">
+            <i class="bi bi-shield-lock me-1"></i>Secure
           </div>
         </div>
-      }
-    </div>
-  </div>
 
-  <!-- ADD / EDIT MODAL DRAWER -->
-  @if (isModalOpen) {
-    <div class="modal-overlay" (click)="closeModal()">
-      <div class="modal-card" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <h2>{{ isEditing ? 'Edit Section' : 'Add New Section' }}</h2>
-          <button class="close-btn" (click)="closeModal()" aria-label="Close modal">
-            <i class="bi bi-x-lg"></i>
-          </button>
+        <!-- Scrollable Storefront Canvas -->
+        <div class="preview-scroll-canvas overflow-y-auto no-scrollbar" style="max-height: 750px;">
+          
+          @for (sec of sections; track sec.id) {
+            @if (sec.enabled) {
+              <div class="preview-section-block position-relative border-bottom"
+                   [style.background]="sec.styling.background"
+                   [style.color]="sec.styling.textColor">
+
+                <!-- Section Hover Edit Badge -->
+                <div class="preview-edit-overlay position-absolute top-0 end-0 m-2 z-3">
+                  <button type="button" class="btn btn-sm btn-dark bg-opacity-75 rounded-pill px-2.5 py-1 text-white border-0 shadow-sm"
+                          (click)="openEditModal(sec)">
+                    <i class="bi bi-pencil me-1"></i>Edit {{ sec.name }}
+                  </button>
+                </div>
+
+                <!-- Preview based on componentId -->
+                <div class="p-4 p-md-5">
+                  <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge bg-primary text-white rounded-pill px-2.5 py-1" style="font-size: 10px;">{{ sec.tag }}</span>
+                    <span class="small opacity-75">Order #{{ sec.order }}</span>
+                  </div>
+                  <h3 class="fw-bold mb-1" style="letter-spacing: -0.5px;">{{ sec.title }}</h3>
+                  <p class="opacity-75 small mb-4" style="max-width: 600px;">{{ sec.subtitle }}</p>
+
+                  <!-- Visual Content Representation based on Component -->
+                  @if (sec.componentId === 'sec-hero-banner') {
+                    <div class="preview-hero-mock rounded-4 overflow-hidden position-relative shadow-sm" style="height: 240px; background: linear-gradient(135deg, #1e3a8a, #0d9488);">
+                      <div class="position-absolute bottom-0 start-0 p-4 text-white">
+                        <span class="badge bg-white text-dark rounded-pill px-3 py-1 fw-bold mb-2">3D Hero Carousel</span>
+                        <h4 class="fw-bold mb-1">Ayurvedic, Ethnic &amp; Homeopathy Showcase</h4>
+                        <p class="small mb-0 opacity-75">Configured via Centralized Banner Management</p>
+                      </div>
+                    </div>
+                  } @else if (sec.componentId === 'sec-shop-categories') {
+                    <div class="row g-2">
+                      @for (c of ['Wellness', 'Homeopathy', 'Beauty Care', 'Food & Pantry', 'Ethnic Wear']; track c) {
+                        <div class="col">
+                          <div class="p-3 rounded-3 text-center border bg-light shadow-xs">
+                            <i class="bi bi-tag-fill text-primary mb-1 d-block"></i>
+                            <span class="fw-bold small d-block">{{ c }}</span>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  } @else if (sec.componentId === 'sec-wellness-showcase' || sec.componentId === 'sec-homeopathy-showcase') {
+                    <div class="row g-3 align-items-center">
+                      <div class="col-12 col-md-5">
+                        <div class="p-4 rounded-4 text-white h-100 shadow-sm" style="background: linear-gradient(135deg, #064e3b, #0f766e); min-height: 180px;">
+                          <span class="badge bg-white text-success rounded-pill px-2 py-0.5 mb-2">Promotional Banner</span>
+                          <h5 class="fw-bold">{{ sec.title }}</h5>
+                          <p class="small opacity-75 mb-0">{{ sec.subtitle }}</p>
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-7">
+                        <div class="row g-2">
+                          @for (p of previewProducts.slice(0, 3); track p.id) {
+                            <div class="col-4">
+                              <div class="card p-2 rounded-3 border h-100 text-center shadow-xs">
+                                <img [src]="p.image" [alt]="p.name" class="img-fluid rounded mb-2" style="height: 70px; object-fit: contain;">
+                                <span class="small fw-bold text-truncate d-block">{{ p.name }}</span>
+                                <span class="text-primary small fw-semibold">${{ p.price | number:'1.2-2' }}</span>
+                              </div>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  } @else {
+                    <!-- Standard Product Grid Representation -->
+                    <div class="row g-2 g-md-3">
+                      @for (p of previewProducts.slice(0, sec.productConfig?.productLimit || 4); track p.id) {
+                        <div class="col-6 col-md-3">
+                          <div class="card p-2.5 rounded-3 border bg-white h-100 shadow-xs text-center">
+                            <div class="position-relative mb-2">
+                              <img [src]="p.image" [alt]="p.name" class="img-fluid rounded" style="height: 90px; object-fit: contain;">
+                              <span class="badge bg-success position-absolute top-0 end-0 m-1 rounded-pill" style="font-size: 9px;">In Stock</span>
+                            </div>
+                            <span class="small fw-bold text-truncate d-block mb-1">{{ p.name }}</span>
+                            <span class="text-primary fw-bold small">${{ p.price | number:'1.2-2' }}</span>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+
+                </div>
+
+              </div>
+            }
+          }
+
         </div>
 
-        <form (ngSubmit)="saveSection()" class="modal-body">
-          <div class="form-group">
-            <label>Section Name *</label>
-            <input
-              type="text"
-              name="sectionName"
-              [(ngModel)]="currentSection.name"
-              placeholder="e.g. Hero Banner Showcase"
-              required
-            />
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Section Sub-Tag / Subtitle</label>
-              <input
-                type="text"
-                name="sectionTag"
-                [(ngModel)]="currentSection.tag"
-                placeholder="e.g. PREMIUM PROMOTIONS"
-              />
-            </div>
-            <div class="form-group">
-              <label>Section Type</label>
-              <select name="sectionType" [(ngModel)]="currentSection.type">
-                <option value="Hero">Hero</option>
-                <option value="Showcase">Showcase</option>
-                <option value="Grid">Grid</option>
-                <option value="Banner">Banner</option>
-                <option value="Features">Features</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Component / Selector</label>
-              <input
-                type="text"
-                name="componentName"
-                [(ngModel)]="currentSection.componentName"
-                placeholder="e.g. <app-hero-banner>"
-              />
-            </div>
-            <div class="form-group">
-              <label>Items Display Count</label>
-              <input
-                type="number"
-                name="itemsCount"
-                [(ngModel)]="currentSection.itemsCount"
-                min="1"
-                max="24"
-              />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Preview Image URL</label>
-            <input
-              type="text"
-              name="previewImage"
-              [(ngModel)]="currentSection.previewImage"
-              placeholder="/images/wellness/wellness-banner.jpg"
-            />
-          </div>
-
-          <div class="form-group">
-            <label>Description</label>
-            <textarea
-              name="description"
-              [(ngModel)]="currentSection.description"
-              rows="3"
-              placeholder="Brief details about what this section renders..."
-            ></textarea>
-          </div>
-
-          <div class="form-group">
-            <label class="checkbox-label">
-              <input
-                type="checkbox"
-                name="sectionEnabled"
-                [(ngModel)]="currentSection.enabled"
-              />
-              <span>Enable this section on the storefront homepage</span>
-            </label>
-          </div>
-
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" (click)="closeModal()">
-              Cancel
-            </button>
-            <button type="submit" class="btn btn-primary">
-              {{ isEditing ? 'Update Section' : 'Create Section' }}
-            </button>
-          </div>
-        </form>
       </div>
     </div>
   }
+
+  <!-- SECTION EDIT / CREATE MODAL -->
+  @if (isModalOpen) {
+    <div class="modal-backdrop-custom d-flex align-items-center justify-content-center p-3" (click)="closeModal()">
+      <div class="modal-panel bg-white rounded-4 shadow-xl border overflow-hidden" (click)="$event.stopPropagation()" style="max-width: 680px; width: 100%;">
+        
+        <!-- Modal Header -->
+        <div class="modal-header d-flex align-items-center justify-content-between p-3.5 border-bottom bg-light">
+          <div>
+            <h5 class="modal-title fw-bold text-dark mb-0">
+              {{ isEditing ? 'Edit Section: ' + currentSection.name : 'Create New Homepage Section' }}
+            </h5>
+            <span class="small text-muted">Configure copy, layout design, and dynamic product rules</span>
+          </div>
+          <button type="button" class="btn-close" (click)="closeModal()"></button>
+        </div>
+
+        <!-- Modal Tabs -->
+        <div class="modal-tab-strip d-flex align-items-center border-bottom px-3 pt-2 bg-white gap-2">
+          <button type="button" class="modal-tab-btn" [class.active]="activeModalTab === 'content'" (click)="activeModalTab = 'content'">
+            <i class="bi bi-pencil-square me-1"></i>Copy &amp; Content
+          </button>
+          <button type="button" class="modal-tab-btn" [class.active]="activeModalTab === 'styling'" (click)="activeModalTab = 'styling'">
+            <i class="bi bi-palette me-1"></i>Layout &amp; Styling
+          </button>
+          <button type="button" class="modal-tab-btn" [class.active]="activeModalTab === 'products'" (click)="activeModalTab = 'products'">
+            <i class="bi bi-boxes me-1"></i>Product Display Rules
+          </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="modal-body p-4" style="max-height: 480px; overflow-y: auto;">
+          
+          <!-- TAB 1: CONTENT & COPY -->
+          @if (activeModalTab === 'content') {
+            <div class="d-flex flex-column gap-3">
+              
+              <!-- Quick Template Picker (When creating new) -->
+              @if (!isEditing) {
+                <div>
+                  <label class="form-label fw-semibold small mb-1.5">Choose Section Template</label>
+                  <div class="row g-2">
+                    @for (tpl of sectionTemplates; track tpl.id) {
+                      <div class="col-6">
+                        <div class="template-select-card p-2.5 rounded-3 border d-flex align-items-center gap-2"
+                             [class.active]="currentSection.componentId === tpl.id"
+                             (click)="applyTemplate(tpl)" role="button">
+                          <i [class]="'bi ' + tpl.icon + ' text-primary fs-5'"></i>
+                          <div class="min-w-0">
+                            <span class="fw-bold small d-block text-truncate">{{ tpl.name }}</span>
+                            <span class="text-muted" style="font-size: 10.5px;">{{ tpl.type }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+              <div class="form-group">
+                <label class="form-label fw-semibold small">Section Name (Admin Identifier) <span class="text-danger">*</span></label>
+                <input type="text" [(ngModel)]="currentSection.name" placeholder="e.g. Signature Picks, Summer Specials..." class="form-control" />
+              </div>
+
+              <div class="row g-3">
+                <div class="col-12 col-md-4">
+                  <label class="form-label fw-semibold small">Section Tagline / Micro Tag</label>
+                  <input type="text" [(ngModel)]="currentSection.tag" placeholder="e.g. CURATED HERITAGE" class="form-control" />
+                </div>
+                <div class="col-12 col-md-8">
+                  <label class="form-label fw-semibold small">Main Heading Title <span class="text-danger">*</span></label>
+                  <input type="text" [(ngModel)]="currentSection.title" placeholder="e.g. Explore Regional Delicacies" class="form-control" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label fw-semibold small">Subtitle Description</label>
+                <textarea [(ngModel)]="currentSection.subtitle" rows="2" placeholder="e.g. Direct from verified traditional farms across India..." class="form-control"></textarea>
+              </div>
+
+            </div>
+          }
+
+          <!-- TAB 2: LAYOUT & VISUAL STYLING -->
+          @if (activeModalTab === 'styling') {
+            <div class="d-flex flex-column gap-3">
+              
+              <!-- Background Preset Pills -->
+              <div>
+                <label class="form-label fw-semibold small mb-1.5">Background Style Presets</label>
+                <div class="d-flex flex-wrap gap-2">
+                  @for (bg of backgroundPresets; track bg.value) {
+                    <button type="button" class="btn btn-sm rounded-pill px-3 py-1.5 border d-inline-flex align-items-center gap-2"
+                            [class.active-preset]="currentSection.styling.background === bg.value"
+                            (click)="applyBackgroundPreset(bg)">
+                      <span class="rounded-circle border d-inline-block" [style.background]="bg.value" style="width: 14px; height: 14px;"></span>
+                      <span class="small fw-semibold">{{ bg.label }}</span>
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <!-- Custom Color / Gradient Input -->
+              <div class="form-group">
+                <label class="form-label fw-semibold small">Custom Background CSS (Hex or Gradient)</label>
+                <input type="text" [(ngModel)]="currentSection.styling.background" placeholder="#ffffff or linear-gradient(...)" class="form-control" />
+              </div>
+
+              <div class="row g-3">
+                <div class="col-6">
+                  <label class="form-label fw-semibold small">Vertical Spacing (Padding)</label>
+                  <select [(ngModel)]="currentSection.styling.padding" class="form-select">
+                    <option value="py-0">No Padding (py-0)</option>
+                    <option value="py-3">Compact (py-3)</option>
+                    <option value="py-4">Medium (py-4)</option>
+                    <option value="py-5">Spacious (py-5)</option>
+                  </select>
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-semibold small">Layout Grid Columns</label>
+                  <select [(ngModel)]="currentSection.styling.columns" class="form-select">
+                    <option [ngValue]="2">2 Columns</option>
+                    <option [ngValue]="3">3 Columns</option>
+                    <option [ngValue]="4">4 Columns (Standard)</option>
+                    <option [ngValue]="6">6 Columns (Compact)</option>
+                  </select>
+                </div>
+              </div>
+
+            </div>
+          }
+
+          <!-- TAB 3: PRODUCT DISPLAY RULES -->
+          @if (activeModalTab === 'products') {
+            <div class="d-flex flex-column gap-3">
+              
+              <!-- Product Source Selector -->
+              <div class="form-group" *ngIf="currentSection.productConfig">
+                <label class="form-label fw-semibold small">Product Source</label>
+                <select [(ngModel)]="currentSection.productConfig.source" class="form-select">
+                  <option value="all">All Storefront Products</option>
+                  <option value="category">Filter by Specific Category</option>
+                  <option value="trending">Trending High-Velocity Items</option>
+                  <option value="bestsellers">Best Sellers &amp; Highest Rated</option>
+                </select>
+              </div>
+
+              <!-- Category Filter (Shows when source is category) -->
+              @if (currentSection.productConfig && currentSection.productConfig.source === 'category') {
+                <div class="form-group">
+                  <label class="form-label fw-semibold small">Target Category</label>
+                  <select [(ngModel)]="currentSection.productConfig.categoryFilter" class="form-select">
+                    <option value="wellness">Wellness &amp; Ayurveda</option>
+                    <option value="homeopathy">Homeopathy &amp; Natural Care</option>
+                    <option value="beauty">Beauty &amp; Personal Care</option>
+                    <option value="pantry">Food &amp; Pantry</option>
+                    <option value="fashion">Ethnic Clothing &amp; Handlooms</option>
+                  </select>
+                </div>
+              }
+
+              <div class="row g-3" *ngIf="currentSection.productConfig">
+                <div class="col-6">
+                  <label class="form-label fw-semibold small">Display Format</label>
+                  <div class="btn-group w-100" role="group">
+                    <button type="button" class="btn btn-sm btn-outline-primary"
+                            [class.active]="currentSection.productConfig.displayLayout === 'grid'"
+                            (click)="currentSection.productConfig.displayLayout = 'grid'">
+                      <i class="bi bi-grid-fill me-1"></i>Grid
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary"
+                            [class.active]="currentSection.productConfig.displayLayout === 'carousel'"
+                            (click)="currentSection.productConfig.displayLayout = 'carousel'">
+                      <i class="bi bi-arrows-expand me-1"></i>Carousel
+                    </button>
+                  </div>
+                </div>
+
+                <div class="col-6">
+                  <label class="form-label fw-semibold small">Max Products Visible</label>
+                  <select [(ngModel)]="currentSection.productConfig.productLimit" class="form-select">
+                    <option [ngValue]="4">4 Products</option>
+                    <option [ngValue]="6">6 Products</option>
+                    <option [ngValue]="8">8 Products</option>
+                    <option [ngValue]="12">12 Products</option>
+                    <option [ngValue]="16">16 Products</option>
+                  </select>
+                </div>
+              </div>
+
+            </div>
+          }
+
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer d-flex align-items-center justify-content-between p-3 border-top bg-light">
+          <button type="button" class="btn btn-outline-secondary rounded-pill px-4" (click)="closeModal()">
+            Cancel
+          </button>
+          <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold" (click)="saveSection()">
+            <i class="bi bi-check-lg me-1"></i>
+            <span>{{ isEditing ? 'Save Section Changes' : 'Add Section to Homepage' }}</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
 </div>

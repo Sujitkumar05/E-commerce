@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
+import { BannerService } from '../../../../core/services/banner.service';
 
 export interface TopProductLink {
   name: string;
@@ -17,6 +18,12 @@ export interface TopProductLink {
 })
 export class Footer {
   private readonly router = inject(Router);
+  readonly bannerService = inject(BannerService);
+
+  get trustBanner() {
+    const list = this.bannerService.getActiveBannersBySection('Footer Trust Banner');
+    return list.length > 0 ? list[0] : null;
+  }
 
   // Country tabs for Serving Cities exactly as shown in screenshot
   selectedCountry: 'USA' | 'UK' | 'Others' = 'USA';

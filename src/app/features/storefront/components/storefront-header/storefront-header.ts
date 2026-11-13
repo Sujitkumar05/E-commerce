@@ -5,6 +5,7 @@ import { RouterLink, Router } from '@angular/router';
 import { CartService } from '../../../../core/services/cart.service';
 import { WishlistService } from '../../../../core/services/wishlist.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { BannerService } from '../../../../core/services/banner.service';
 
 export interface SubCategoryGroup {
   title: string;
@@ -34,7 +35,13 @@ export class StorefrontHeader {
   readonly cartService = inject(CartService);
   readonly wishlistService = inject(WishlistService);
   readonly authService = inject(AuthService);
+  readonly bannerService = inject(BannerService);
   private readonly router = inject(Router);
+
+  get topAnnouncement() {
+    const list = this.bannerService.getActiveBannersBySection('Top Announcement Bar');
+    return list.length > 0 ? list[0] : null;
+  }
 
   isMegaMenuOpen = false;
   searchQuery: string = '';
@@ -52,14 +59,13 @@ export class StorefrontHeader {
 
   navigateToCategory(catId: string): void {
     this.isMegaMenuOpen = false;
-    if (catId === 'homeopathy') {
-      this.router.navigate(['/homeopathy']);
-      return;
-    }
     let categoryGroup = 'wellness';
-    if (catId === 'sweets-snacks') categoryGroup = 'sweets-snacks';
-    if (catId === 'food-pantry') categoryGroup = 'pantry';
-    if (catId === 'pooja-rituals') categoryGroup = 'craft-living';
+    if (catId === 'homeopathy') categoryGroup = 'homeopathy';
+    else if (catId === 'beauty' || catId === 'beauty-personal-care' || catId === 'beauty-care') categoryGroup = 'beauty';
+    else if (catId === 'food-pantry' || catId === 'pantry' || catId === 'sweets-snacks') categoryGroup = 'pantry';
+    else if (catId === 'ethnic-clothing' || catId === 'ethnic-wear' || catId === 'fashion') categoryGroup = 'fashion';
+    else if (catId === 'wellness' || catId === 'ayurveda') categoryGroup = 'wellness';
+    else categoryGroup = catId;
 
     this.router.navigate(['/products'], {
       queryParams: { category: categoryGroup },
@@ -68,26 +74,34 @@ export class StorefrontHeader {
 
   navigateToSearch(term: string): void {
     this.isMegaMenuOpen = false;
-    const currentCat = this.categories[this.selectedCategoryIndex]?.id;
-    if (currentCat === 'homeopathy') {
-      this.router.navigate(['/homeopathy'], {
-        queryParams: { search: term },
-      });
-      return;
-    }
+    const currentCat = this.categories[this.selectedCategoryIndex]?.id || 'wellness';
     this.router.navigate(['/products'], {
-      queryParams: { search: term },
+      queryParams: { category: currentCat, search: term },
     });
+  }
+
+  isCategoryActive(catId: string): boolean {
+    const currentUrl = this.router.url;
+    if (!currentUrl.startsWith('/products')) return false;
+    const urlTree = this.router.parseUrl(currentUrl);
+    const activeCat = urlTree.queryParams['category'] || 'all';
+    if (catId === 'all') return activeCat === 'all' || !urlTree.queryParams['category'];
+    if (catId === 'wellness') return ['wellness', 'ayurveda'].includes(activeCat);
+    if (catId === 'homeopathy') return activeCat === 'homeopathy';
+    if (catId === 'beauty') return ['beauty', 'beauty-care', 'beauty-personal-care'].includes(activeCat);
+    if (catId === 'pantry') return ['pantry', 'food-pantry', 'sweets-snacks'].includes(activeCat);
+    if (catId === 'fashion') return ['fashion', 'ethnic', 'ethnic-clothing', 'ethnic-wear'].includes(activeCat);
+    return activeCat === catId;
   }
 
   categories: CategoryItem[] = [
     {
-      id: 'ayurveda',
-      name: 'Ayurveda',
-      icon: 'fa-solid fa-leaf text-success',
+      id: 'wellness',
+      name: 'Wellness',
+      icon: 'fa-solid fa-spa text-success',
       groups: [
         {
-          title: 'AYURVEDA BESTSELLERS',
+          title: 'WELLNESS BESTSELLERS',
           items: ['Chyawanprash', 'Ashwagandha', 'Triphala & Guggulu', 'Giloy & Neem Juice', 'Herbal Shilajit'],
         },
         {
@@ -101,64 +115,39 @@ export class StorefrontHeader {
       ],
       promo: {
         tag: 'BESTSELLERS',
-        title: 'Ayurveda',
-        linkText: 'Shop now →',
+        title: 'Wellness & Ayurveda',
+        linkText: 'Shop Wellness →',
         bgColor: '#f1f8f3',
       },
     },
     {
       id: 'homeopathy',
       name: 'Homeopathy',
-      icon: 'fa-solid fa-stethoscope text-success',
+      icon: 'fa-solid fa-mortar-pestle text-success',
       groups: [
         {
           title: 'HOMEOPATHY BESTSELLERS',
-          items: ['Dr. Reckeweg', 'SBL Homeopathy', 'Dr Willmar Schwabe', "Bakson's Homeopathy", 'Allen Homeopathy'],
+          items: ['Dr. Reckeweg R-Series', 'SBL Mother Tinctures', 'Dr Willmar Schwabe', "Bakson's Homeopathy", 'Allen Homeopathy'],
         },
         {
           title: 'TOP BRANDS',
-          items: ['Adel Homeopathy', 'Excel Pharma', 'Haslab Homeopathy', 'Wheezal Homeopathy', 'Bjain Homeopathy'],
+          items: ['Dr. Reckeweg', 'SBL Homeopathy', 'Dr. Willmar Schwabe', 'Adel Pharma', 'Wheezal Homeopathy'],
         },
         {
           title: 'COMMON CONCERNS',
-          items: ['Cough, Cold & Flu', 'Digestive Health', 'Hair & Skin Care', 'Pain Relief', 'Stress & Anxiety'],
+          items: ['Cough, Cold & Flu', 'Digestive Health', 'Hair & Scalp Care', 'Joint & Pain Relief', 'Eye Care Drops'],
         },
       ],
       promo: {
-        tag: 'BESTSELLERS',
-        title: 'Homeopathy',
-        linkText: 'Shop now →',
+        tag: 'GERMAN QUALITY',
+        title: 'Homeopathy Care',
+        linkText: 'Shop Homeopathy →',
         bgColor: '#eaf1f8',
       },
     },
     {
-      id: 'sweets-snacks',
-      name: 'Sweets & Snacks',
-      icon: 'fa-solid fa-cookie-bite text-warning',
-      groups: [
-        {
-          title: 'AUTHENTIC SWEETS',
-          items: ['Gulab Jamun & Rasgulla', 'Kaju Katli', 'Soan Papdi', 'Motichoor Laddoo', 'Milk Cake & Peda'],
-        },
-        {
-          title: 'TOP BRANDS',
-          items: ["Haldiram's", 'Bikaji', 'Bikanervala', 'Maiyas', 'Chitale Bandhu'],
-        },
-        {
-          title: 'NAMKEEN & CRUNCHIES',
-          items: ['Aloo Bhujia', 'Diet Chivda', 'Roasted Makhana', 'Banana Chips', 'Mathri & Khakhra'],
-        },
-      ],
-      promo: {
-        tag: 'FRESH SPECIALS',
-        title: 'Sweets & Snacks',
-        linkText: 'Shop now →',
-        bgColor: '#fef7ee',
-      },
-    },
-    {
-      id: 'beauty-personal-care',
-      name: 'Beauty & Personal Care',
+      id: 'beauty',
+      name: 'Beauty Care',
       icon: 'fa-solid fa-wand-magic-sparkles text-info',
       groups: [
         {
@@ -167,7 +156,7 @@ export class StorefrontHeader {
         },
         {
           title: 'TOP BRANDS',
-          items: ['Khadi Natural', 'Biotique', 'Forest Essentials', 'Mamaearth', 'Lotus Herbals'],
+          items: ['Forest Essentials', 'Kama Ayurveda', 'Plum Goodness', 'Minimalist', 'Mamaearth'],
         },
         {
           title: 'HAIRCARE SOLUTIONS',
@@ -176,14 +165,39 @@ export class StorefrontHeader {
       ],
       promo: {
         tag: 'ORGANIC PICKS',
-        title: 'Beauty & Care',
-        linkText: 'Shop now →',
+        title: 'Beauty & Personal Care',
+        linkText: 'Shop Beauty Care →',
         bgColor: '#fbf2f6',
       },
     },
     {
-      id: 'ethnic-wear',
-      name: 'Ethnic Wear',
+      id: 'pantry',
+      name: 'Food & Pantry',
+      icon: 'fa-solid fa-utensils text-warning',
+      groups: [
+        {
+          title: 'HERITAGE PANTRY',
+          items: ['Cultured A2 Gir Cow Ghee', 'Single-Estate Spices', 'Ancient Millets & Grains', 'Cold-Pressed Oils', 'Raw Forest Honey'],
+        },
+        {
+          title: 'TOP BRANDS',
+          items: ['Two Brothers Organic', 'Organic India', "Haldiram's", 'Bikaji', '24 Mantra Organic'],
+        },
+        {
+          title: 'SWEETS & SNACKS',
+          items: ['Authentic Gulab Jamun', 'Roasted Makhana', 'Kaju Katli', 'Diet Namkeen Chivda', 'Banana Chips'],
+        },
+      ],
+      promo: {
+        tag: 'FARM FRESH',
+        title: 'Food & Pantry',
+        linkText: 'Shop Food & Pantry →',
+        bgColor: '#fef7ee',
+      },
+    },
+    {
+      id: 'fashion',
+      name: 'Ethnic Clothing',
       icon: 'fa-solid fa-vest text-danger',
       groups: [
         {
@@ -191,44 +205,19 @@ export class StorefrontHeader {
           items: ['Designer Sarees', 'Salwar & Anarkali Suits', 'Daily Wear Kurtis', 'Lehenga Choli', 'Festive Dupattas'],
         },
         {
-          title: "MEN'S COLLECTION",
-          items: ['Kurta Pajama Sets', 'Nehru & Modi Jackets', 'Dhoti Kurta', 'Embroidered Sherwanis', 'Short Casual Kurtas'],
+          title: "MEN'S ETHNIC",
+          items: ['Kurta Pajama Sets', 'Nehru & Modi Jackets', 'Dhoti Kurta Sets', 'Embroidered Sherwanis', 'Short Casual Kurtas'],
         },
         {
-          title: 'FABRICS & REGIONS',
+          title: 'FABRICS & WEAVES',
           items: ['Chanderi & Banarasi Silk', 'Pure Cotton & Linen', 'Bandhani & Chikankari', 'Kalamkari Prints', 'Handloom Specials'],
         },
       ],
       promo: {
-        tag: 'NEW ARRIVALS',
-        title: 'Ethnic Wear',
-        linkText: 'Shop now →',
+        tag: 'HERITAGE WEAVES',
+        title: 'Ethnic Clothing',
+        linkText: 'Shop Ethnic Clothing →',
         bgColor: '#fdf2f2',
-      },
-    },
-    {
-      id: 'pooja-festivals',
-      name: 'Pooja & Festivals',
-      icon: 'fa-solid fa-fire-flame-curved text-warning',
-      groups: [
-        {
-          title: 'POOJA ESSENTIALS',
-          items: ['Brass Diyas & Bells', 'Pure Camphor & Dhoop', 'Natural Agarbatti (Incense)', 'Cotton Wicks & Til Oil', 'Puja Thali Sets'],
-        },
-        {
-          title: 'IDOLS & SACRED ITEMS',
-          items: ['Brass & Silver Idols', 'Rudraksha Beads & Malas', 'Yantras & Sacred Chants', 'Gangajal & Gomutra', 'Chandan & Roli Kumkum'],
-        },
-        {
-          title: 'FESTIVAL SPECIALS',
-          items: ['Diwali Lights & Lamps', 'Navratri Garba Props', 'Havan Samagri Herbs', 'Rangoli Color Sets', 'Vedic Torans & Hangings'],
-        },
-      ],
-      promo: {
-        tag: 'SPIRITUAL',
-        title: 'Pooja & Rituals',
-        linkText: 'Shop now →',
-        bgColor: '#fdf9ee',
       },
     },
   ];

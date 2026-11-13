@@ -4,6 +4,7 @@ import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { CartService } from '../../../../core/services/cart.service';
 import { WishlistService } from '../../../../core/services/wishlist.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { BannerService } from '../../../../core/services/banner.service';
 import {
   ProductService,
   ProductDetailModel,
@@ -39,9 +40,24 @@ export class ProductDetails implements OnInit {
   readonly cartService = inject(CartService);
   readonly wishlistService = inject(WishlistService);
   readonly authService = inject(AuthService);
+  private readonly bannerService = inject(BannerService);
   private readonly productService = inject(ProductService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+
+  get activePowerBanner() {
+    const list = this.bannerService.getActiveBannersBySection('Product Details Power Card');
+    if (list && list.length > 0) {
+      const b = list[0];
+      return {
+        title: b.title,
+        subtitle: b.subtitle,
+        checkItems: this.powerBanner.checkItems,
+        image: b.image || this.powerBanner.image,
+      };
+    }
+    return this.powerBanner;
+  }
 
   @Input() productId: string = 'isha-neem-turmeric';
 

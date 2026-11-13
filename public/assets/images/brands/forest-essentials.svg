@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 90" width="220" height="90">
+    <g transform="translate(14, 12)">
+      <!-- Royal Gold Filigree Crest -->
+      <g transform="translate(6, 4)">
+        <circle cx="18" cy="18" r="16" fill="#fffdf5" stroke="#b78103" stroke-width="1.5"/>
+        <path d="M 18 6 C 22 12 26 14 26 20 C 26 24 22 26 18 26 C 14 26 10 24 10 20 C 10 14 14 12 18 6 Z" fill="#b78103"/>
+      </g>
+      <text x="50" y="24" font-family="'Cinzel', 'Trajan Pro', 'Georgia', serif" font-size="13" font-weight="bold" fill="#212121" letter-spacing="1.2">FOREST ESSENTIALS</text>
+      <text x="51" y="38" font-family="'Georgia', serif" font-size="8.5" font-style="italic" fill="#b78103" letter-spacing="1.5">Luxurious Ayurveda</text>
+      <text x="51" y="50" font-family="'Segoe UI', sans-serif" font-size="7.5" font-weight="600" fill="#666" letter-spacing="1">MADE IN INDIA</text>
+    </g>
+  </svg>

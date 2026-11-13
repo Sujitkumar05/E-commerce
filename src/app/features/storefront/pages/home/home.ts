@@ -12,6 +12,9 @@ import { CartService } from '../../../../core/services/cart.service';
 import { WishlistService } from '../../../../core/services/wishlist.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { ProductService, ProductDetailModel } from '../../../../core/services/product.service';
+import { BannerService } from '../../../../core/services/banner.service';
+import { HomepageBuilderService, HomepageSection } from '../../../../core/services/homepage-builder.service';
+import { ExploreCategoryService, ExploreCategory } from '../../../../core/services/explore-category.service';
 
 export interface TrustFeature {
   id: string;
@@ -20,15 +23,7 @@ export interface TrustFeature {
   subtitle: string;
 }
 
-export interface ExploreCategory {
-  id: string;
-  title: string;
-  subtitle: string;
-  image: string;
-  bgGradient: string;
-  arrowBg: string;
-  arrowColor: string;
-}
+export type { ExploreCategory };
 
 export interface WellnessProduct {
   id: string;
@@ -57,7 +52,37 @@ export class Home implements OnInit {
   readonly cartService = inject(CartService);
   readonly wishlistService = inject(WishlistService);
   readonly authService = inject(AuthService);
+  readonly bannerService = inject(BannerService);
+  readonly homeLayoutService = inject(HomepageBuilderService);
+  readonly exploreCategoryService = inject(ExploreCategoryService);
   private readonly productService = inject(ProductService);
+
+  get activeSections(): HomepageSection[] {
+    return this.homeLayoutService.activePublishedSections();
+  }
+
+  getSectionProducts(sec: HomepageSection): ProductDetailModel[] {
+    const config = sec.productConfig;
+    let list = [...this.products];
+    if (config?.categoryFilter && config.categoryFilter !== 'all') {
+      const cat = config.categoryFilter.toLowerCase();
+      list = list.filter((p) => p.category?.toLowerCase() === cat);
+    }
+    const limit = config?.productLimit || 4;
+    return list.slice(0, limit);
+  }
+
+  get wellnessBanner() {
+    const list = this.bannerService.getActiveBannersBySection('Home Wellness Banner');
+    return list.length > 0
+      ? list[0]
+      : {
+          title: 'Wellness',
+          subtitle: 'Authentic Ayurveda & Care',
+          image: '/images/wellness/wellness-banner.jpg',
+          badgeText: 'Authentic Ayurveda & Care',
+        };
+  }
   private readonly router = inject(Router);
 
   // Live DummyJSON Products State
@@ -345,71 +370,9 @@ export class Home implements OnInit {
   }
 
 
-categories: ExploreCategory[] = [
-    {
-      id: 'electronics',
-      title: 'Electronics',
-      subtitle: 'Latest tech & gadgets',
-      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&auto=format&fit=crop&q=80',
-      bgGradient: 'linear-gradient(180deg, #edf4fe 0%, #e2ecfc 100%)',
-      arrowBg: '#dbeafe',
-      arrowColor: '#1748D8',
-    },
-    {
-      id: 'home-living',
-      title: 'Home & Living',
-      subtitle: 'Comfort for every space',
-      image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&auto=format&fit=crop&q=80',
-      bgGradient: 'linear-gradient(180deg, #fdf6ea 0%, #fbf0dc 100%)',
-      arrowBg: '#faeed7',
-      arrowColor: '#b45309',
-    },
-    {
-      id: 'beauty',
-      title: 'Beauty',
-      subtitle: 'Skincare, makeup & more',
-      image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&auto=format&fit=crop&q=80',
-      bgGradient: 'linear-gradient(180deg, #fcf0f5 0%, #fae2ed 100%)',
-      arrowBg: '#fce7f3',
-      arrowColor: '#be185d',
-    },
-    {
-      id: 'fashion',
-      title: 'Fashion',
-      subtitle: 'Style for every you',
-      image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&auto=format&fit=crop&q=80',
-      bgGradient: 'linear-gradient(180deg, #edf2fe 0%, #e1e9fd 100%)',
-      arrowBg: '#e0e7ff',
-      arrowColor: '#4338ca',
-    },
-    {
-      id: 'food-pantry',
-      title: 'Food & Pantry',
-      subtitle: 'Global tastes, local comfort',
-      image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&auto=format&fit=crop&q=80',
-      bgGradient: 'linear-gradient(180deg, #eefaf1 0%, #e1f5e6 100%)',
-      arrowBg: '#dcfce7',
-      arrowColor: '#15803d',
-    },
-    {
-      id: 'ayurveda',
-      title: 'Ayurveda',
-      subtitle: 'Traditional wellness',
-      image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&auto=format&fit=crop&q=80',
-      bgGradient: 'linear-gradient(180deg, #eef7ed 0%, #e2f2e0 100%)',
-      arrowBg: '#dcfce7',
-      arrowColor: '#166534',
-    },
-    {
-      id: 'gifts',
-      title: 'Gifts',
-      subtitle: 'Thoughtful finds',
-      image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=400&auto=format&fit=crop&q=80',
-      bgGradient: 'linear-gradient(180deg, #f3f0fd 0%, #e9e3fc 100%)',
-      arrowBg: '#ede9fe',
-      arrowColor: '#6d28d9',
-    },
-  ];
+  get categories(): ExploreCategory[] {
+    return this.exploreCategoryService.categories();
+  }
 
   trustFeatures: TrustFeature[] = [
     {

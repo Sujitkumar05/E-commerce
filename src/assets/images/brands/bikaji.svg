@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 90" width="220" height="90">
+    <g transform="translate(18, 14)">
+      <!-- Red Shield / Ribbon -->
+      <rect x="10" y="6" width="160" height="42" rx="21" fill="#d50000"/>
+      <text x="90" y="35" font-family="'Brush Script MT', cursive, sans-serif" font-size="27" font-weight="bold" fill="#ffffff" text-anchor="middle">Bikaji</text>
+      <text x="90" y="58" font-family="'Segoe UI', sans-serif" font-size="8.5" font-weight="800" fill="#d50000" text-anchor="middle" letter-spacing="1">ASLEE BIKANERI</text>
+    </g>
+  </svg>

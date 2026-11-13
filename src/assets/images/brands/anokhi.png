@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 90" width="220" height="90">
+    <g transform="translate(18, 14)">
+      <rect x="8" y="6" width="36" height="36" fill="#1a237e" rx="4"/>
+      <path d="M 26 12 C 20 18 20 30 26 36 C 32 30 32 18 26 12 Z" fill="#ffd54f"/>
+      <text x="54" y="28" font-family="'Georgia', serif" font-size="20" font-weight="bold" fill="#1a237e" letter-spacing="1.5">ANOKHI</text>
+      <text x="55" y="42" font-family="'Segoe UI', sans-serif" font-size="8.5" font-weight="600" fill="#b78103" letter-spacing="1">HAND BLOCK PRINTING</text>
+    </g>
+  </svg>

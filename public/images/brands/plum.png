@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 90" width="220" height="90">
+    <g transform="translate(18, 16)">
+      <circle cx="24" cy="24" r="18" fill="#4a148c"/>
+      <path d="M 24 10 C 27 16 31 18 31 24 C 31 28 28 32 24 32 C 20 32 17 28 17 24 C 17 18 21 16 24 10 Z" fill="#ba68c8"/>
+      <text x="52" y="32" font-family="'Varela Round', 'Arial Rounded MT Bold', sans-serif" font-size="28" font-weight="bold" fill="#4a148c" letter-spacing="-0.5">plum</text>
+      <text x="54" y="48" font-family="'Segoe UI', sans-serif" font-size="8.5" font-weight="600" fill="#7b1fa2">goodness that does good</text>
+    </g>
+  </svg>

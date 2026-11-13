@@ -385,13 +385,13 @@
                   <div class="power-banner-card rounded-4 p-4 position-relative overflow-hidden">
                     <div class="row align-items-center">
                       <div class="col-7">
-                        <h4 class="power-card-title fw-bold mb-1" [innerHTML]="powerBanner.title"></h4>
+                        <h4 class="power-card-title fw-bold mb-1" [innerHTML]="activePowerBanner.title"></h4>
                         <p class="power-card-subtitle text-secondary mb-3">
-                          {{ powerBanner.subtitle }}
+                          {{ activePowerBanner.subtitle }}
                         </p>
 
                         <div class="d-flex flex-column gap-2">
-                          @for (ci of powerBanner.checkItems; track ci) {
+                          @for (ci of activePowerBanner.checkItems; track ci) {
                             <div class="d-flex align-items-center gap-2 power-check-item">
                               <i class="fa-solid fa-circle-check text-success"></i>
                               <span class="fw-semibold text-dark">{{ ci }}</span>
@@ -401,7 +401,7 @@
                       </div>
 
                       <div class="col-5 text-end">
-                        <img [src]="powerBanner.image" 
+                        <img [src]="activePowerBanner.image" 
                              [alt]="title" 
                              class="img-fluid rounded-3 shadow-xs power-card-img">
                       </div>

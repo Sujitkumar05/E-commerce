@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 90" width="220" height="90">
+    <g transform="translate(15, 20)">
+      <!-- Main Wordmark -->
+      <text x="10" y="36" font-family="'Helvetica Neue', Arial, sans-serif" font-size="32" font-weight="700" fill="#00695c" letter-spacing="-0.5">Himalaya</text>
+      <!-- Iconic Orange Leaf Crossbar on 'H' -->
+      <path d="M 17 23 C 20 17 26 15 31 16 C 30 21 27 26 21 28 Z" fill="#f57c00"/>
+      <path d="M 21 28 C 24 25 28 22 33 20" stroke="#fff" stroke-width="0.8" fill="none"/>
+      <!-- Subtitle -->
+      <text x="12" y="52" font-family="'Segoe UI', Roboto, sans-serif" font-size="9" font-weight="600" fill="#f57c00" letter-spacing="3.5">SINCE 1930</text>
+    </g>
+  </svg>

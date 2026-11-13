@@ -1,11 +1,14 @@
-<section class="hero-banner-section py-4 py-lg-5 overflow-hidden bg-white">
+<section class="hero-banner-section py-4 py-lg-5 overflow-hidden">
   <div class="container-fluid px-3 px-lg-5">
     
     <!-- Top Row: Hero Text & 3D Showcase Carousel -->
-    <div class="row align-items-center g-4 g-xl-5 mb-5">
+    <div class="row align-items-center g-4 g-xl-5 mb-2">
       
       <!-- Left Column: Headlines & Call to Actions -->
-      <div class="col-12 col-lg-5 col-xl-5 d-flex flex-column justify-content-center">
+      
+
+
+<div class="col-12 col-lg-5 col-xl-5 hero-content-overlay d-flex flex-column justify-content-center">
         
         <!-- Main Headline -->
         <h1 class="hero-heading mb-2">
@@ -18,13 +21,14 @@
           Shop the world, all in one place.
         </h2>
 
+        
         <!-- Description Paragraph -->
         <p class="text-secondary mb-4 hero-description">
           Shop verified brands from around the world — with transparent pricing, trusted sellers, and reliable global delivery.
         </p>
 
         <!-- CTA Buttons Row -->
-        <div class="d-flex align-items-center gap-3 mb-4 mb-lg-5 flex-wrap">
+        <div class="d-flex align-items-center gap-3 mb-4 mb-lg-4 flex-wrap">
           
           <!-- Start Exploring Button -->
           <a href="#" class="btn btn-primary rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm start-exploring-btn">
@@ -42,7 +46,7 @@
         </div>
 
         <!-- Trust Features Row (4 Micro-Badges) -->
-        <div class="d-flex align-items-center gap-3 gap-xl-4 flex-wrap text-secondary pt-2">
+        <div class="d-flex align-items-center gap-2 gap-xl-4 flex-wrap text-secondary pt-1">
           
           <!-- 1. Verified Sellers -->
           <div class="d-flex align-items-center gap-2">
@@ -92,134 +96,20 @@
 
       </div>
 
+
+      
+
       <!-- Right Column: 3D Stacked Carousel Cards Deck -->
-      <div class="col-12 col-lg-7 col-xl-7 position-relative">
-        <div class="showcase-deck-container d-flex align-items-center justify-content-start position-relative">
-          
-          <!-- Card 0: Featured Active Card (Headphones / Audio) -->
-          <div class="showcase-card showcase-card-active rounded-4 overflow-hidden position-relative shadow-lg text-white"
-               [style.background]="showcaseCards[0].bgGradient"
-               (click)="selectCard(0)">
-            
-            <!-- Card Header Texts -->
-            <div class="position-absolute top-0 start-0 p-4 z-2">
-              <span class="text-uppercase fw-bold text-white-50 d-block" style="font-size: 11px; letter-spacing: 1.5px;">
-                {{ showcaseCards[0].category }}
-              </span>
-              @if (showcaseCards[0].taglineTop) {
-                <span class="d-block fw-medium text-white" style="font-size: 13px; margin-top: 4px;">
-                  {{ showcaseCards[0].taglineTop }}
-                </span>
-                <span class="d-block text-white-50" style="font-size: 12px;">
-                  {{ showcaseCards[0].taglineBottom }}
-                </span>
-              }
-            </div>
+<div class="hero-Carousel-section">
+  <app-hero-carousel></app-hero-carousel>
+</div>
 
-            <!-- Central Product Image -->
-            <div class="product-img-wrapper d-flex align-items-center justify-content-center h-100 position-relative z-1">
-              <img [src]="showcaseCards[0].image" 
-                   [alt]="showcaseCards[0].category"
-                   class="featured-product-image img-fluid">
-              
-              <!-- Floating Center Play Button -->
-              @if (showcaseCards[0].hasPlayButton) {
-                <button type="button" 
-                        class="btn position-absolute top-50 start-50 translate-middle rounded-circle bg-white shadow-lg p-0 d-flex align-items-center justify-content-center play-btn-overlay">
-                  <i class="fa-solid fa-play" style="color: #1748D8; font-size: 15px; margin-left: 2px;"></i>
-                </button>
-              }
-            </div>
-
-            <!-- Floating Pill Badge (Bottom-Left) -->
-            @if (showcaseCards[0].badgeTitle) {
-              <div class="position-absolute bottom-0 start-0 m-3 m-sm-4 p-2 px-3 rounded-3 d-flex align-items-center gap-2 audio-spec-pill z-2">
-                <div class="sound-wave-icon d-flex align-items-center gap-1">
-                  <span class="wave-bar"></span>
-                  <span class="wave-bar tall"></span>
-                  <span class="wave-bar medium"></span>
-                  <span class="wave-bar"></span>
-                </div>
-                <div class="d-flex flex-column lh-1">
-                  <span class="fw-bold text-white" style="font-size: 11.5px;">{{ showcaseCards[0].badgeTitle }}</span>
-                  <span class="text-white-50" style="font-size: 10px;">{{ showcaseCards[0].badgeSubtitle }}</span>
-                </div>
-              </div>
-            }
-          </div>
-
-          <!-- Card 1: Peeked Card (Wearables) -->
-          @if (showcaseCards.length > 1) {
-            <div class="showcase-card showcase-card-sub showcase-card-1 rounded-4 overflow-hidden position-relative shadow-sm"
-                 [style.background]="showcaseCards[1].bgGradient"
-                 (click)="selectCard(1)">
-              <div class="p-3 text-center h-100 d-flex flex-column justify-content-between position-relative">
-                <div class="peek-img-box my-auto">
-                  <img [src]="showcaseCards[1].image" [alt]="showcaseCards[1].category" class="img-fluid peek-img">
-                </div>
-                <div class="d-flex align-items-center justify-content-between mt-auto pt-2">
-                  <span class="fw-bold text-dark text-truncate" style="font-size: 12px;">{{ showcaseCards[1].category }}</span>
-                  <span class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 arrow-pill-btn">
-                    <i class="fa-solid fa-arrow-right" style="font-size: 9px;"></i>
-                  </span>
-                </div>
-              </div>
-            </div>
-          }
-
-          <!-- Card 2: Peeked Card (Footwear) -->
-          @if (showcaseCards.length > 2) {
-            <div class="showcase-card showcase-card-sub showcase-card-2 rounded-4 overflow-hidden position-relative shadow-sm"
-                 [style.background]="showcaseCards[2].bgGradient"
-                 (click)="selectCard(2)">
-              <div class="p-3 text-center h-100 d-flex flex-column justify-content-between position-relative">
-                <div class="peek-img-box my-auto">
-                  <img [src]="showcaseCards[2].image" [alt]="showcaseCards[2].category" class="img-fluid peek-img">
-                </div>
-                <div class="d-flex align-items-center justify-content-between mt-auto pt-2">
-                  <span class="fw-bold text-dark text-truncate" style="font-size: 12px;">{{ showcaseCards[2].category }}</span>
-                  <span class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 arrow-pill-btn">
-                    <i class="fa-solid fa-arrow-right" style="font-size: 9px;"></i>
-                  </span>
-                </div>
-              </div>
-            </div>
-          }
-
-          <!-- Card 3: Peeked Card (Home) -->
-          @if (showcaseCards.length > 3) {
-            <div class="showcase-card showcase-card-sub showcase-card-3 rounded-4 overflow-hidden position-relative shadow-sm"
-                 [style.background]="showcaseCards[3].bgGradient"
-                 (click)="selectCard(3)">
-              <div class="p-3 text-center h-100 d-flex flex-column justify-content-between position-relative">
-                <div class="peek-img-box my-auto">
-                  <img [src]="showcaseCards[3].image" [alt]="showcaseCards[3].category" class="img-fluid peek-img">
-                </div>
-                <div class="d-flex align-items-center justify-content-between mt-auto pt-2">
-                  <span class="fw-bold text-dark text-truncate" style="font-size: 12px;">{{ showcaseCards[3].category }}</span>
-                  <span class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 arrow-pill-btn">
-                    <i class="fa-solid fa-arrow-right" style="font-size: 9px;"></i>
-                  </span>
-                </div>
-              </div>
-            </div>
-          }
-
-          <!-- Floating Carousel Next Button -->
-          <button type="button" 
-                  class="btn btn-light rounded-circle shadow-lg p-0 d-flex align-items-center justify-content-center deck-next-arrow"
-                  (click)="nextShowcase()"
-                  title="Next Slide">
-            <i class="fa-solid fa-chevron-right text-dark" style="font-size: 14px;"></i>
-          </button>
-
-        </div>
-      </div>
+      
 
     </div>
 
     <!-- Bottom Row: Category Quick Cards with Prev/Next Navigation -->
-    <div class="position-relative d-flex align-items-center gap-3 pt-3">
+    <div class="position-relative d-flex align-items-center gap-3 pt-2">
       
       <!-- Prev Navigation Button -->
       <button type="button" 

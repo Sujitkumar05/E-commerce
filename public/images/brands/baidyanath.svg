@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 90" width="220" height="90">
+    <g transform="translate(14, 12)">
+      <!-- Heritage Oval Seal -->
+      <g transform="translate(0, 4)">
+        <rect x="0" y="0" width="54" height="54" rx="27" fill="#b71c1c"/>
+        <circle cx="27" cy="27" r="23" fill="none" stroke="#ffd54f" stroke-width="1.8"/>
+        <!-- Golden Mortar & Plant Emblem -->
+        <path d="M 27 12 C 27 12 33 18 31 24 C 29 27 24 27 23 24 C 21 18 27 12 27 12 Z" fill="#ffd54f"/>
+        <path d="M 27 12 C 27 12 21 18 23 24 C 25 27 30 27 31 24 C 33 18 27 12 27 12 Z" fill="#ffe082" opacity="0.8"/>
+        <path d="M 18 28 L 36 28 C 36 37 18 37 18 28 Z" fill="#ffd54f"/>
+        <rect x="25" y="24" width="4" height="6" fill="#ffe082"/>
+        <rect x="22" y="38" width="10" height="3" rx="1.5" fill="#ffd54f"/>
+      </g>
+      <!-- Baidyanath Wordmark -->
+      <text x="64" y="34" font-family="'Georgia', serif" font-size="23" font-weight="bold" fill="#b71c1c" letter-spacing="0.2">Baidyanath</text>
+      <text x="65" y="47" font-family="'Segoe UI', sans-serif" font-size="8.5" font-weight="700" fill="#333" letter-spacing="1.2">SHREE BAIDYANATH AYURVED</text>
+      <text x="65" y="58" font-family="'Segoe UI', sans-serif" font-size="7.5" font-weight="600" fill="#2e7d32" letter-spacing="1">100 YEARS OF AYURVEDA</text>
+    </g>
+  </svg>

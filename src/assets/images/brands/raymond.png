@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 90" width="220" height="90">
+    <g transform="translate(18, 16)">
+      <text x="10" y="30" font-family="'Playfair Display', 'Georgia', serif" font-size="24" font-weight="bold" fill="#b71c1c" letter-spacing="1">Raymond</text>
+      <text x="116" y="30" font-family="'Segoe UI', sans-serif" font-size="12" font-weight="900" fill="#212121" letter-spacing="1.5">ETHNIC</text>
+      <text x="12" y="45" font-family="'Segoe UI', sans-serif" font-size="8" font-weight="600" fill="#757575" letter-spacing="2">SINCE 1925 · CRAFTED FOR LIFE</text>
+    </g>
+  </svg>

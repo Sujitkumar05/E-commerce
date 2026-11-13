@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 90" width="220" height="90">
+    <g transform="translate(18, 14)">
+      <circle cx="22" cy="24" r="18" fill="#1b5e20"/>
+      <path d="M 22 12 C 22 12 30 20 28 26 C 26 30 22 32 22 32 C 22 32 18 30 16 26 C 14 20 22 12 22 12 Z" fill="#ffd54f"/>
+      <text x="48" y="28" font-family="'Arial Black', sans-serif" font-size="22" font-weight="900" fill="#1b5e20" letter-spacing="1">KAPIVA</text>
+      <text x="49" y="42" font-family="'Segoe UI', sans-serif" font-size="8.5" font-weight="700" fill="#388e3c" letter-spacing="2">PURE AYURVEDA</text>
+    </g>
+  </svg>

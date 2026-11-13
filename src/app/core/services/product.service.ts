@@ -2507,17 +2507,21 @@ export class ProductService {
   public getCategoryDisplayName(group: string): string {
     switch (group) {
       case 'beauty':
-        return 'Beauty, Fragrances & Skincare';
+      case 'beauty-care':
+        return 'Beauty & Personal Care';
       case 'electronics':
         return 'Electronics, Mobiles & Tech';
       case 'fashion':
-        return 'Fashion, Apparel & Watches';
+      case 'ethnic-clothing':
+        return 'Ethnic Clothing & Handlooms';
       case 'homeopathy':
-        return 'Indian Homeopathic Remedies & Healthcare';
+        return 'Homeopathy & Healthcare';
       case 'wellness':
-        return 'Natural Supplements & Wellness';
+      case 'ayurveda':
+        return 'Wellness & Ayurveda';
       case 'pantry':
-        return 'Heritage Pantry, Groceries & Staples';
+      case 'food-pantry':
+        return 'Food & Heritage Pantry';
       case 'sweets-snacks':
         return 'Sweets, Snacks & Confections';
       case 'beverages':
@@ -2595,13 +2599,11 @@ export class ProductService {
 
     const categoriesList = [
       { id: 'all', name: 'All Products', icon: 'fa-cubes', count: counts['all'] },
-      { id: 'beauty', name: 'Beauty & Skincare', icon: 'fa-wand-magic-sparkles', count: counts['beauty'] || 0 },
-      { id: 'electronics', name: 'Electronics & Gadgets', icon: 'fa-laptop', count: counts['electronics'] || 0 },
-      { id: 'fashion', name: 'Fashion & Apparel', icon: 'fa-shirt', count: counts['fashion'] || 0 },
-      { id: 'craft-living', name: 'Home & Living', icon: 'fa-couch', count: counts['craft-living'] || 0 },
-      { id: 'pantry', name: 'Groceries & Pantry', icon: 'fa-basket-shopping', count: counts['pantry'] || 0 },
-      { id: 'wellness', name: 'Natural Wellness', icon: 'fa-leaf', count: counts['wellness'] || 0 },
-      { id: 'homeopathy', name: 'Indian Homeopathy', icon: 'fa-stethoscope', count: counts['homeopathy'] || 0 },
+      { id: 'wellness', name: 'Wellness', icon: 'fa-spa', count: counts['wellness'] || 0 },
+      { id: 'homeopathy', name: 'Homeopathy', icon: 'fa-mortar-pestle', count: counts['homeopathy'] || 0 },
+      { id: 'beauty', name: 'Beauty Care', icon: 'fa-wand-magic-sparkles', count: counts['beauty'] || 0 },
+      { id: 'pantry', name: 'Food & Pantry', icon: 'fa-utensils', count: (counts['pantry'] || 0) + (counts['sweets-snacks'] || 0) },
+      { id: 'fashion', name: 'Ethnic Clothing', icon: 'fa-vest', count: counts['fashion'] || 0 },
     ];
 
     // Only return All + categories that have at least 1 product

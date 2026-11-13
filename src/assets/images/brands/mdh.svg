@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 70" width="200" height="70">
+  <rect width="200" height="70" rx="10" fill="#FFFFFF"/>
+  <rect x="25" y="10" width="150" height="50" rx="8" fill="#D32F2F" stroke="#FBC02D" stroke-width="2"/>
+  <circle cx="100" cy="24" r="10" fill="#FBC02D"/>
+  <text x="100" y="28" font-family="Georgia, serif" font-size="9" font-weight="900" fill="#8B0000" text-anchor="middle">ASG</text>
+  <text x="100" y="50" font-family="Impact, Arial Black, sans-serif" font-size="24" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="3">M D H</text>
+</svg>

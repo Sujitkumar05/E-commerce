@@ -7,6 +7,8 @@ import { FormsModule } from '@angular/forms';
 import { AdminOrder } from '../../models/order.model';
 import { AdminOrderService } from '../../services/admin-order.service';
 import { ProcurementService } from '../../services/procurement.service';
+import { BannerService } from '../../../../core/services/banner.service';
+import { HomepageBuilderService } from '../../../../core/services/homepage-builder.service';
 
 export interface AdminNotification {
   id: number;
@@ -96,7 +98,9 @@ export class AdminLayout {
     public auth: AuthService,
     private router: Router,
     public orderService: AdminOrderService,
-    public procurementService: ProcurementService
+    public procurementService: ProcurementService,
+    public bannerService: BannerService,
+    public homeLayoutService: HomepageBuilderService
   ) {
     this.checkScreenSize();
     this.currentUrl = this.router.url;
@@ -139,6 +143,14 @@ export class AdminLayout {
 
   get pendingProcurementCount(): number {
     return this.procurementService.getProcurementOrders().length;
+  }
+
+  get bannerCount(): number {
+    return this.bannerService.totalBanners();
+  }
+
+  get homeSectionsCount(): number {
+    return this.homeLayoutService.activeSectionsCount();
   }
 
   toggleOrdersSubmenu(): void {

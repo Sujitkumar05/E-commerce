@@ -24,7 +24,8 @@
       transition: color 0.15s ease-in-out, stroke 0.15s ease-in-out;
     }
 
-    &:hover {
+    &:hover,
+    &.active {
       color: #1748D8 !important;
 
       i {

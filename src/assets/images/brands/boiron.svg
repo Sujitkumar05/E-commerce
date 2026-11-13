@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 90" width="220" height="90">
+    <g transform="translate(18, 14)">
+      <!-- Boiron Blue & Orange Wordmark from Banner -->
+      <g transform="translate(4, 4)">
+        <!-- Golden Arc above -->
+        <path d="M 2 12 Q 52 0 102 12" stroke="#fbc02d" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <!-- BOIRON Text -->
+        <text x="2" y="36" font-family="'Arial Black', 'Helvetica', sans-serif" font-size="27" font-weight="900" fill="#0277bd" letter-spacing="1">BOIR</text>
+        <!-- The 'O' with Orange Center Dot -->
+        <text x="76" y="36" font-family="'Arial Black', 'Helvetica', sans-serif" font-size="27" font-weight="900" fill="#0277bd">ON</text>
+        <circle cx="69" cy="27" r="4.5" fill="#ef6c00"/>
+      </g>
+      <text x="8" y="57" font-family="'Segoe UI', sans-serif" font-size="8.5" font-weight="700" fill="#0277bd" letter-spacing="1.5">HOMEOPATHIC MEDICINE</text>
+    </g>
+  </svg>

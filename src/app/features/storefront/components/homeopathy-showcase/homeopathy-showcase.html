@@ -7,19 +7,19 @@
       <!-- Left Promotional Banner: "Indian Homeopathy" -->
       <div class="col-12 col-lg-5 col-xl-4">
         <div class="homeopathy-banner h-100 rounded-4 overflow-hidden position-relative shadow-sm d-flex flex-column justify-content-between p-4 p-xl-5"
-             style="background-image: linear-gradient(180deg, rgba(13, 148, 136, 0.25) 0%, rgba(15, 23, 42, 0.75) 100%), url('/images/homeopathy/homeopathy-banner.jpg'); background-size: cover; background-position: center;">
+             [style.backgroundImage]="bannerBackgroundStyle" style="background-size: cover; background-position: center;">
           
           <!-- Top Tag & Title -->
           <div class="position-relative z-2">
             <span class="badge rounded-pill bg-white text-dark fw-bold px-3 py-1.5 shadow-sm mb-3 d-inline-flex align-items-center gap-1.5" style="font-size: 11.5px; color: #0f766e !important;">
               <i class="fa-solid fa-mortar-pestle"></i>
-              <span>NATURAL HEALTHCARE</span>
+              <span>{{ homeopathyBanner.badgeText || 'NATURAL HEALTHCARE' }}</span>
             </span>
             <h2 class="homeopathy-banner-title fw-bold text-white mb-2" style="font-size: 2.2rem; line-height: 1.15; letter-spacing: -0.5px;">
-              Indian &amp; German<br>Homeopathy
+              {{ homeopathyBanner.title }}
             </h2>
             <p class="text-white-50 small mb-0" style="max-width: 280px; font-size: 13.5px; line-height: 1.45;">
-              Clinically verified potencies, mother tinctures, biochemic tissue salts, and targeted biological drops.
+              {{ homeopathyBanner.subtitle }}
             </p>
           </div>
 

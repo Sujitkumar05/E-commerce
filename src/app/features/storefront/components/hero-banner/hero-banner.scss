@@ -2,6 +2,10 @@
 .hero-banner-section {
   position: relative;
   background-color: #ffffff;
+  background-image: url('/images/hero-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 
   .hero-heading {
     .hero-title-line-1 {
@@ -23,6 +27,9 @@
     letter-spacing: -0.5px;
   }
 
+  .hero-description{
+    width: 60%;
+  }
   .start-exploring-btn {
     background-color: #1748D8;
     border-color: #1748D8;
@@ -35,159 +42,61 @@
     }
   }
 
-  .watch-video-btn {
-    transition: all 0.2s ease;
-    &:hover {
-      background-color: #f9fafb !important;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08) !important;
-    }
-    &:hover .play-icon-circle {
-      transform: scale(1.08);
-    }
-    .play-icon-circle {
-      transition: transform 0.2s ease;
-    }
-  }
+
 
   .feature-icon-badge {
-    width: 32px;
-    height: 32px;
+    width: 50px;
+    height: 50px;
     background-color: #eff6ff;
     color: #1748D8;
-    font-size: 13px;
+    font-size: 35px;
   }
 
   // 3D Cascading Card Showcase Deck
-  .showcase-deck-container {
-    height: 380px;
-    width: 100%;
+
+  .hero-Carousel-section {
     position: relative;
+    width: 100%;
+    min-height: 400px;
     display: flex;
+    justify-content: flex-end;
     align-items: center;
+    overflow: hidden;
+    z-index: 5;
 
-    .showcase-card-active {
-      width: clamp(280px, 45vw, 440px);
-      height: 360px;
-      z-index: 10;
-      flex-shrink: 0;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-      box-shadow: 0 20px 40px -10px rgba(23, 72, 216, 0.35) !important;
-
-      .product-img-wrapper {
-        padding: 40px 20px 30px;
-        .featured-product-image {
-          max-height: 240px;
-          object-fit: contain;
-          filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.3));
-          transition: transform 0.3s ease;
-        }
-      }
-
-      &:hover .featured-product-image {
-        transform: scale(1.04);
-      }
-
-      .play-btn-overlay {
-        width: 48px;
-        height: 48px;
-        transition: transform 0.2s ease;
-        &:hover {
-          transform: translate(-50%, -50%) scale(1.12) !important;
-        }
-      }
-
-      .audio-spec-pill {
-        background: rgba(11, 17, 26, 0.85);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-
-        .wave-bar {
-          width: 3px;
-          height: 8px;
-          background-color: #60a5fa;
-          border-radius: 2px;
-          &.tall { height: 16px; background-color: #3b82f6; }
-          &.medium { height: 12px; background-color: #93c5fd; }
-        }
-      }
-    }
-
-    .showcase-card-sub {
-      position: absolute;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-      border: 1px solid rgba(255, 255, 255, 0.6);
-
-      &:hover {
-        transform: translateY(-8px) !important;
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12) !important;
-      }
-
-      .peek-img-box {
-        height: 160px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        .peek-img {
-          max-height: 140px;
-          object-fit: contain;
-          filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.1));
-        }
-      }
-
-      .arrow-pill-btn {
-        width: 24px;
-        height: 24px;
-        background-color: #eff6ff;
-        color: #1748D8;
-        transition: all 0.2s ease;
-      }
-      &:hover .arrow-pill-btn {
-        background-color: #1748D8;
-        color: #ffffff;
-      }
-    }
-
-    .showcase-card-1 {
-      left: clamp(230px, 32vw, 360px);
-      width: clamp(140px, 18vw, 190px);
-      height: 330px;
-      z-index: 8;
-    }
-    .showcase-card-2 {
-      left: clamp(340px, 45vw, 500px);
-      width: clamp(130px, 16vw, 175px);
-      height: 300px;
-      z-index: 6;
-      opacity: 0.95;
-    }
-    .showcase-card-3 {
-      left: clamp(440px, 57vw, 630px);
-      width: clamp(120px, 15vw, 160px);
-      height: 270px;
-      z-index: 4;
-      opacity: 0.9;
-    }
-
-    .deck-next-arrow {
-      position: absolute;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 44px;
-      height: 44px;
-      z-index: 20;
-      background: #ffffff;
-      border: 1px solid rgba(0, 0, 0, 0.08);
-      transition: all 0.2s ease;
-      &:hover {
-        background-color: #f3f4f6;
-        transform: translateY(-50%) scale(1.08);
-      }
+    app-hero-carousel {
+      display: block;
+      width: 74%;
+      margin-left: auto;
     }
   }
+
+.hero-content-overlay {
+  position: absolute;
+  top: 35%;
+  left: 1%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 41.666667%;
+  padding: 20px;
+  pointer-events: none;
+
+  a, button, .btn {
+    pointer-events: auto;
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 991px) {
+  .hero-content-overlay {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    width: 100%;
+  }
+}
+
 
   // Category Cards Carousel
   .carousel-nav-btn {
@@ -204,8 +113,9 @@
 
   .category-quick-card {
     min-width: 260px;
-    border: 1px solid #e5e7eb !important;
+    border: 1px solid #e5e7eb ;
     transition: all 0.2s ease;
+    padding-top: 10px;
 
     .cat-thumb-box {
       width: 56px;

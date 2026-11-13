@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 90" width="220" height="90">
+    <g transform="translate(20, 14)">
+      <!-- Green & Gold Oval Plaque -->
+      <rect x="6" y="8" width="168" height="46" rx="23" fill="#1b5e20" stroke="#fbc02d" stroke-width="2.5"/>
+      <rect x="10" y="12" width="160" height="38" rx="19" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.6"/>
+      <text x="90" y="38" font-family="'Arial Black', Impact, sans-serif" font-size="23" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="2">ZANDU</text>
+      <text x="90" y="65" font-family="'Segoe UI', sans-serif" font-size="8.5" font-weight="700" fill="#1b5e20" text-anchor="middle" letter-spacing="1">AYURVEDA SINCE 1910</text>
+    </g>
+  </svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 70" width="200" height="70">
+  <rect width="200" height="70" rx="10" fill="#FFFFFF"/>
+  <rect x="20" y="12" width="160" height="46" rx="6" fill="#C8102E" stroke="#FFD100" stroke-width="2"/>
+  <polygon points="100,14 105,22 95,22" fill="#FFD100"/>
+  <text x="100" y="42" font-family="Arial, sans-serif" font-size="20" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="1.5">EVEREST</text>
+  <text x="100" y="52" font-family="sans-serif" font-size="7" font-weight="bold" fill="#FFD100" text-anchor="middle" letter-spacing="1.2">SPICES</text>
+</svg>

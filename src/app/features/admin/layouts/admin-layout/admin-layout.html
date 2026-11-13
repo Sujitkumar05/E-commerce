@@ -162,9 +162,21 @@
       </a>
 
       <!-- Banners -->
-      <a routerLink="/admin/banners" routerLinkActive="active" class="nav-item" title="Banners">
+      <a routerLink="/admin/banners" routerLinkActive="active" class="nav-item" title="Banner Management">
         <i class="bi bi-images"></i>
         <span>Banners</span>
+        @if (bannerCount > 0) {
+          <span class="nav-pill-badge" style="background-color: #eff6ff; color: #2563eb;">{{ bannerCount }}</span>
+        }
+      </a>
+
+      <!-- Homepage Builder -->
+      <a routerLink="/admin/home-manager" routerLinkActive="active" class="nav-item" title="Homepage Builder">
+        <i class="bi bi-layout-text-window-reverse"></i>
+        <span>Homepage Builder</span>
+        @if (homeSectionsCount > 0) {
+          <span class="nav-pill-badge" style="background-color: #f0fdf4; color: #16a34a;">{{ homeSectionsCount }}</span>
+        }
       </a>
 
       <!-- Reports -->

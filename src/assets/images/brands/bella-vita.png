@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 90" width="220" height="90">
+    <g transform="translate(15, 12)">
+      <!-- Luxury Gold Emblem from Banner -->
+      <circle cx="24" cy="26" r="18" fill="none" stroke="#b78103" stroke-width="1.8"/>
+      <text x="24" y="32" font-family="'Cinzel', 'Georgia', serif" font-size="16" font-weight="bold" fill="#b78103" text-anchor="middle">BV</text>
+      <text x="52" y="26" font-family="'Cinzel', 'Georgia', serif" font-size="16" font-weight="bold" fill="#212121" letter-spacing="1">BELLA VITA</text>
+      <text x="53" y="40" font-family="'Segoe UI', sans-serif" font-size="9" font-weight="600" fill="#b78103" letter-spacing="3.5">ORGANIC</text>
+      <text x="53" y="52" font-family="'Segoe UI', sans-serif" font-size="7.5" font-weight="500" fill="#757575">Pure Natural Luxury</text>
+    </g>
+  </svg>

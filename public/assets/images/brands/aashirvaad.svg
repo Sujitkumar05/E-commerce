@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 70" width="200" height="70">
+  <rect width="200" height="70" rx="10" fill="#FFFFFF"/>
+  <rect x="15" y="10" width="170" height="50" rx="6" fill="#CC1E1E"/>
+  <polygon points="100,12 110,24 90,24" fill="#F39C12"/>
+  <circle cx="100" cy="20" r="5" fill="#FFD700"/>
+  <text x="100" y="46" font-family="Arial, sans-serif" font-size="18" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="1.5">AASHIRVAAD</text>
+  <text x="100" y="56" font-family="Georgia, serif" font-size="7.5" font-weight="bold" fill="#FFD700" text-anchor="middle" letter-spacing="2">SELECT</text>
+</svg>

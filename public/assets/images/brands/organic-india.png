@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 90" width="220" height="90">
+    <g transform="translate(12, 14)">
+      <!-- Sunburst & Leaf Symbol -->
+      <g transform="translate(6, 4)">
+        <circle cx="24" cy="24" r="23" fill="#e8f5e9"/>
+        <circle cx="24" cy="24" r="17" fill="#c8e6c9"/>
+        <circle cx="24" cy="24" r="11" fill="#81c784"/>
+        <path d="M 18 29 C 18 19 28 15 31 14 C 31 24 24 30 18 29 Z" fill="#1b5e20"/>
+        <path d="M 21 26 Q 26 21 29 16" stroke="#ffffff" stroke-width="1" fill="none"/>
+      </g>
+      <!-- Organic India Typography -->
+      <text x="62" y="27" font-family="'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="900" fill="#2e7d32" letter-spacing="0.5">ORGANIC</text>
+      <text x="62" y="44" font-family="'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="900" fill="#1b5e20" letter-spacing="0.5">INDIA</text>
+      <text x="63" y="55" font-family="'Segoe UI', sans-serif" font-size="7.5" font-weight="600" fill="#388e3c" letter-spacing="0.8">Healthy Conscious Living</text>
+    </g>
+  </svg>

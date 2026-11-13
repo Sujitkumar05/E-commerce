@@ -1,32 +1,79 @@
 <div class="banners-page-container">
 
-  <!-- PAGE HEADER & BREADCRUMBS -->
-  <div class="page-header">
-    <div class="header-left">
-      <h1 class="page-title">Banners</h1>
-      <div class="breadcrumbs">
-        <span>Dashboard</span>
-        <i class="bi bi-chevron-right"></i>
-        <span class="active-crumb">Banners</span>
+  <!-- NOTIFICATION TOAST ALERT -->
+  @if (notificationMessage) {
+    <div class="alert alert-success d-flex align-items-center justify-content-between rounded-3 py-2 px-3 mb-3 shadow-sm banner-alert">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-check-circle-fill fs-5 text-success"></i>
+        <span class="fw-semibold">{{ notificationMessage }}</span>
       </div>
+      <button type="button" class="btn-close" (click)="notificationMessage = ''" aria-label="Close"></button>
+    </div>
+  }
+
+  <!-- PAGE HEADER & BREADCRUMBS -->
+  <div class="page-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div class="header-left">
+      <h1 class="page-title mb-1">Banner Management</h1>
+      <div class="breadcrumbs">
+        <span>Admin Panel</span>
+        <i class="bi bi-chevron-right"></i>
+        <span class="active-crumb">Centralized Website Banners</span>
+      </div>
+    </div>
+    <div class="header-right d-flex align-items-center gap-2">
+      <button type="button" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1.5 rounded-pill px-3 py-1.5"
+              (click)="resetAllToDefaults()" title="Restore Factory Default Banners">
+        <i class="bi bi-arrow-counterclockwise"></i>
+        <span>Reset to Defaults</span>
+      </button>
+      <button type="button" class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1.5 rounded-pill px-3.5 py-1.5"
+              (click)="addBannerForSection('Home Hero Carousel')">
+        <i class="bi bi-plus-lg"></i>
+        <span>Add New Banner</span>
+      </button>
     </div>
   </div>
 
+  <!-- TAB NAVIGATION BAR: WEBSITE BANNERS VS BENTO GRID IMAGES -->
+  <div class="banner-tabs-nav d-flex flex-wrap align-items-center justify-content-between p-2 bg-white rounded-4 border shadow-xs mb-4">
+    <div class="nav-pills-group d-flex align-items-center gap-1">
+      <button type="button" class="tab-pill-btn" [class.active]="activeTab === 'banners'" (click)="activeTab = 'banners'">
+        <i class="bi bi-images me-1.5"></i>
+        <span>Website Promotional &amp; Hero Banners</span>
+        <span class="badge bg-light text-dark rounded-pill ms-1.5">{{ totalBanners }}</span>
+      </button>
+      <button type="button" class="tab-pill-btn" [class.active]="activeTab === 'bento'" (click)="activeTab = 'bento'">
+        <i class="bi bi-grid-3x3-gap-fill me-1.5 text-primary"></i>
+        <span>Bento Grid Showcase Images</span>
+        <span class="badge bg-primary-subtle text-primary rounded-pill ms-1.5">6 Cards</span>
+      </button>
+    </div>
+
+    @if (activeTab === 'bento') {
+      <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 d-inline-flex align-items-center gap-1.5" (click)="resetBentoDefaults()">
+        <i class="bi bi-arrow-counterclockwise"></i>
+        <span>Reset Bento Defaults</span>
+      </button>
+    }
+  </div>
+
+  <!-- HIDDEN FILE INPUTS FOR BENTO MANAGEMENT -->
+  <input type="file" id="bentoFileInput" style="display: none;" accept="image/*" (change)="onBentoFileSelected($event)" />
+  <input type="file" id="bentoFormImageInput" style="display: none;" accept="image/*" (change)="onBentoFormImageFileSelected($event)" />
+
+  @if (activeTab === 'banners') {
   <!-- 3 STATS CARDS -->
-  <div class="stats-grid">
+  <div class="stats-grid mb-4">
     <!-- Total Banners -->
     <div class="stat-card">
       <div class="stat-icon-wrapper bg-blue-soft">
-        <i class="bi bi-image"></i>
+        <i class="bi bi-images"></i>
       </div>
       <div class="stat-content">
         <span class="stat-label">Total Banners</span>
         <h3 class="stat-value">{{ totalBanners }}</h3>
-        <div class="stat-trend positive">
-          <i class="bi bi-arrow-up-short"></i>
-          <span>2%</span>
-          <span class="trend-sub">from last month</span>
-        </div>
+        <span class="stat-meta text-muted">Across {{ bannerSections.length }} Storefront Sections</span>
       </div>
     </div>
 
@@ -37,12 +84,8 @@
       </div>
       <div class="stat-content">
         <span class="stat-label">Active Banners</span>
-        <h3 class="stat-value">{{ activeBanners }}</h3>
-        <div class="stat-trend positive">
-          <i class="bi bi-arrow-up-short"></i>
-          <span>1%</span>
-          <span class="trend-sub">from last month</span>
-        </div>
+        <h3 class="stat-value text-success">{{ activeBanners }}</h3>
+        <span class="stat-meta text-success">Live on Storefront</span>
       </div>
     </div>
 
@@ -53,45 +96,57 @@
       </div>
       <div class="stat-content">
         <span class="stat-label">Inactive Banners</span>
-        <h3 class="stat-value">{{ inactiveBanners }}</h3>
-        <div class="stat-trend neutral">
-          <i class="bi bi-arrow-down-short"></i>
-          <span>0%</span>
-          <span class="trend-sub">from last month</span>
-        </div>
+        <h3 class="stat-value text-secondary">{{ inactiveBanners }}</h3>
+        <span class="stat-meta text-muted">Hidden / Draft</span>
       </div>
     </div>
   </div>
 
-  <!-- BANNER SECTIONS OVERVIEW (Cards across the entire store with 'Add New Banner' button) -->
-  <div class="sections-panel-card">
-    <div class="panel-header-row">
+  <!-- BANNER SECTIONS OVERVIEW (All 8 Storefront Sections) -->
+  <div class="sections-panel-card mb-4">
+    <div class="panel-header-row mb-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
       <div>
-        <h2 class="panel-section-title">Active Banner Sections Across Storefront (8 Sections)</h2>
-        <p class="panel-section-sub">All detected banner placement slots currently rendered across home, catalog, homeopathy, product details, header, and footer.</p>
+        <h2 class="panel-section-title mb-0">Website Sections ({{ bannerSections.length }} Managed Locations)</h2>
+        <p class="panel-section-sub mb-0 text-muted">Click any section to filter the banner table, or use "+ Add" to create a new banner for that exact location.</p>
       </div>
+      @if (sectionFilter !== 'All Sections') {
+        <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" (click)="filterBySection('All Sections')">
+          <i class="bi bi-x-circle me-1"></i>Clear Filter (Showing {{ sectionFilter }})
+        </button>
+      }
     </div>
 
     <div class="sections-cards-grid">
-      <div class="section-summary-card" *ngFor="let sec of bannerSections">
-        <div class="card-top-row">
-          <span class="sec-badge" [ngClass]="sec.badgeClass">{{ sec.name }}</span>
-          <span class="badge-count-pill">{{ getCountForSection(sec.key) }} Active</span>
+      @for (sec of bannerSections; track sec.key) {
+        <div class="section-summary-card" [class.active-section]="sectionFilter === sec.key">
+          <div class="card-top-row">
+            <span class="sec-badge" [ngClass]="sec.badgeClass">{{ sec.name }}</span>
+            <span class="badge-count-pill">{{ getCountForSection(sec.key) }} Active</span>
+          </div>
+          <p class="sec-description">{{ sec.description }}</p>
+          <div class="sec-meta-row">
+            <span class="meta-item"><i class="bi bi-geo-alt"></i> {{ sec.location }}</span>
+            <span class="meta-item"><i class="bi bi-aspect-ratio"></i> {{ sec.recommendedSize }}</span>
+          </div>
+          <div class="sec-actions-row d-flex align-items-center gap-2 mt-2">
+            <button type="button" class="btn-filter-sec" (click)="filterBySection(sec.key)" [class.active]="sectionFilter === sec.key">
+              <i class="bi bi-funnel"></i>
+              <span>{{ sectionFilter === sec.key ? 'Filtered' : 'Filter' }}</span>
+            </button>
+            <button type="button" class="btn-add-section-banner flex-grow-1" (click)="addBannerForSection(sec.key)">
+              <i class="bi bi-plus-circle"></i>
+              <span>Add Banner</span>
+            </button>
+          </div>
         </div>
-        <p class="sec-description">{{ sec.description }}</p>
-        <div class="sec-meta-row">
-          <span class="meta-item"><i class="bi bi-geo-alt"></i> {{ sec.location }}</span>
-          <span class="meta-item"><i class="bi bi-aspect-ratio"></i> {{ sec.recommendedSize }}</span>
-        </div>
-        <button class="btn-add-section-banner" (click)="addBannerForSection(sec.key)">
-          <i class="bi bi-plus-circle"></i>
-          <span>Add Banner to this Section</span>
-        </button>
-      </div>
+      }
     </div>
   </div>
 
-  <!-- MAIN 2-COLUMN LAYOUT: Banners Table (Left) + Add New Banner Form (Right) -->
+  <!-- HIDDEN FILE INPUT FOR QUICK REPLACE -->
+  <input type="file" id="quickReplaceInput" style="display: none;" accept="image/*" (change)="onQuickImageSelected($event)" />
+
+  <!-- MAIN 2-COLUMN LAYOUT: Banners Table (Left) + Add/Edit Form (Right) -->
   <div class="banners-layout-grid">
 
     <!-- LEFT COLUMN: All Banners Table Panel -->
@@ -104,7 +159,7 @@
           <input
             type="text"
             [(ngModel)]="searchTerm"
-            placeholder="Search banners by title or section..."
+            placeholder="Search by title, section, category..."
             class="search-input"
           />
         </div>
@@ -125,15 +180,18 @@
             <span class="field-label-tiny">Section</span>
             <select [(ngModel)]="sectionFilter" class="custom-select">
               <option value="All Sections">All Sections</option>
-              <option *ngFor="let sec of bannerSections" [value]="sec.key">{{ sec.name }}</option>
+              @for (sec of bannerSections; track sec.key) {
+                <option [value]="sec.key">{{ sec.name }}</option>
+              }
             </select>
           </div>
 
-          <!-- Add New Banner Primary Button -->
-          <button class="btn-primary-add" (click)="addBannerForSection('Home Hero Carousel')">
-            <i class="bi bi-plus"></i>
-            <span>Add New Banner</span>
-          </button>
+          <!-- Bulk Delete Button (Shows when selected) -->
+          @if (hasSelectedBanners) {
+            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" (click)="deleteSelectedBanners()">
+              <i class="bi bi-trash me-1"></i>Delete Selected
+            </button>
+          }
         </div>
       </div>
 
@@ -151,87 +209,119 @@
                 />
               </th>
               <th class="th-hash">#</th>
-              <th class="th-banner-img">Image</th>
-              <th class="th-title">Title</th>
+              <th class="th-banner-img">Banner Image</th>
+              <th class="th-title">Title / Placement</th>
               <th class="th-section">Section</th>
               <th class="th-status">Status</th>
-              <th class="th-order">Sort Order</th>
-              <th class="th-actions text-center">Action</th>
+              <th class="th-order">Order</th>
+              <th class="th-actions text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let banner of filteredBanners; let i = index">
-              <td class="td-checkbox">
-                <input
-                  type="checkbox"
-                  [(ngModel)]="banner.selected"
-                  (change)="checkIndividualSelection()"
-                  class="custom-checkbox"
-                />
-              </td>
-              <td class="td-hash">{{ banner.id }}</td>
-              <td class="td-banner-img">
-                <div class="banner-preview-box">
-                  <img [src]="banner.image" [alt]="banner.title" />
-                </div>
-              </td>
-              <td class="td-title">
-                <div class="title-meta">
-                  <span class="banner-title-text">{{ banner.title }}</span>
-                  <span class="banner-sub-text">{{ banner.subtitle }}</span>
-                </div>
-              </td>
-              <td class="td-section">
-                <span class="section-pill sec-category">
-                  {{ banner.section }}
-                </span>
-              </td>
-              <td class="td-status">
-                <span class="status-pill" [ngClass]="banner.status === 'Active' ? 'status-active' : 'status-inactive'">
-                  {{ banner.status }}
-                </span>
-              </td>
-              <td class="td-order">{{ banner.sortOrder }}</td>
-              <td class="td-actions text-center">
-                <div class="action-buttons-group">
-                  <button class="action-btn btn-view" (click)="viewBanner(banner)" title="View Details">
-                    <i class="bi bi-eye"></i>
+            @for (banner of filteredBanners; track banner.id; let i = $index) {
+              <tr [class.row-editing]="isEditing && editingId === banner.id">
+                <td class="td-checkbox">
+                  <input
+                    type="checkbox"
+                    [(ngModel)]="banner.selected"
+                    (change)="checkIndividualSelection()"
+                    class="custom-checkbox"
+                  />
+                </td>
+                <td class="td-hash">{{ banner.id }}</td>
+                <td class="td-banner-img">
+                  <div class="banner-preview-box position-relative group">
+                    @if (banner.image) {
+                      <img [src]="banner.image" [alt]="banner.title" />
+                    } @else {
+                      <div class="text-banner-placeholder">
+                        <i class="bi bi-type"></i>
+                        <span>Text Strip</span>
+                      </div>
+                    }
+                    <button type="button" class="btn-quick-replace" (click)="quickReplaceImage(banner)" title="Replace this image with a new file">
+                      <i class="bi bi-camera"></i>
+                      <span>Replace</span>
+                    </button>
+                  </div>
+                </td>
+                <td class="td-title">
+                  <div class="title-meta">
+                    <span class="banner-title-text fw-bold text-dark">{{ banner.title }}</span>
+                    @if (banner.subtitle) {
+                      <span class="banner-sub-text text-muted small">{{ banner.subtitle }}</span>
+                    }
+                    @if (banner.categoryKey) {
+                      <span class="badge bg-light text-primary border rounded-pill mt-1 d-inline-block align-self-start" style="font-size: 11px;">
+                        Category: {{ banner.categoryKey | uppercase }}
+                      </span>
+                    }
+                    @if (banner.link) {
+                      <span class="banner-link-url text-truncate mt-0.5" style="font-size: 11.5px; color: #1748D8;">
+                        <i class="bi bi-link-45deg"></i>{{ banner.link }}
+                      </span>
+                    }
+                  </div>
+                </td>
+                <td class="td-section">
+                  <span class="section-pill sec-category">
+                    {{ banner.section }}
+                  </span>
+                </td>
+                <td class="td-status">
+                  <button type="button" class="status-pill status-toggle-btn border-0"
+                          [ngClass]="banner.status === 'Active' ? 'status-active' : 'status-inactive'"
+                          (click)="toggleBannerStatus(banner)"
+                          [title]="'Click to toggle status (Currently ' + banner.status + ')'">
+                    <i class="bi" [ngClass]="banner.status === 'Active' ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+                    <span>{{ banner.status }}</span>
                   </button>
-                  <button class="action-btn btn-edit" (click)="editBanner(banner)" title="Edit Banner">
-                    <i class="bi bi-pencil"></i>
-                  </button>
-                  <button class="action-btn btn-delete" (click)="deleteBanner(banner)" title="Delete Banner">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
+                </td>
+                <td class="td-order">{{ banner.sortOrder }}</td>
+                <td class="td-actions text-center">
+                  <div class="action-buttons-group">
+                    <button class="action-btn btn-view" (click)="viewBanner(banner)" title="View Details">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="action-btn btn-edit" (click)="editBanner(banner)" title="Edit Banner Details & Image">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="action-btn btn-delete" (click)="deleteBanner(banner)" title="Delete Banner">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
 
-            <tr *ngIf="filteredBanners.length === 0">
-              <td colspan="8" class="no-records-cell">
-                <div class="empty-state">
-                  <i class="bi bi-images"></i>
-                  <p>No banners found matching your criteria.</p>
-                </div>
-              </td>
-            </tr>
+            @if (filteredBanners.length === 0) {
+              <tr>
+                <td colspan="8" class="no-records-cell">
+                  <div class="empty-state py-5 text-center">
+                    <i class="bi bi-images display-4 text-muted mb-3 d-block"></i>
+                    <h5 class="fw-bold text-dark">No banners found</h5>
+                    <p class="text-secondary mb-3">No banners match your search or filter criteria.</p>
+                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3"
+                            (click)="searchTerm = ''; statusFilter = 'All Status'; sectionFilter = 'All Sections'">
+                      Reset Filters
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
           </tbody>
         </table>
       </div>
 
-      <!-- Table Footer / Pagination -->
-      <div class="table-footer">
-        <span class="results-count">
-          Showing 1 to {{ filteredBanners.length }} of {{ banners.length }} banners
+      <!-- Table Footer / Count -->
+      <div class="table-footer d-flex align-items-center justify-content-between p-3 border-top">
+        <span class="results-count text-muted small">
+          Showing <strong>{{ filteredBanners.length }}</strong> of <strong>{{ banners.length }}</strong> website banners
         </span>
-        <div class="pagination-controls">
-          <button class="page-arrow" disabled>
-            <i class="bi bi-chevron-left"></i>
-          </button>
-          <button class="page-number active">1</button>
-          <button class="page-arrow">
-            <i class="bi bi-chevron-right"></i>
-          </button>
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1">
+            <i class="bi bi-broadcast me-1"></i>Live Sync with Storefront
+          </span>
         </div>
       </div>
 
@@ -241,56 +331,118 @@
           <i class="bi bi-lightbulb"></i>
         </div>
         <div class="tips-content">
-          <h4 class="tips-title">Banner Tips</h4>
+          <h4 class="tips-title">Admin Management Guidelines</h4>
           <ul class="tips-list">
-            <li>Use high-quality images (recommended sizes specified in the sections above).</li>
-            <li>Keep titles short and clear.</li>
-            <li>Use relevant sections for better organization.</li>
-            <li>You can drag and drop to change the sort order.</li>
+            <li><strong>Instant Updates:</strong> Any image uploaded or replaced here immediately reflects on the live storefront.</li>
+            <li><strong>One-Click Replace:</strong> Hover over any banner image thumbnail in the table above and click <em>Replace</em> to upload a new file instantly.</li>
+            <li><strong>Responsive Sizes:</strong> Recommended sizes are shown for each section (e.g., 1024×338 px for Catalog banners, 1920×600 px for Hero Carousel).</li>
+            <li><strong>Restore Anytime:</strong> You can click <em>Reset to Defaults</em> anytime to restore all default promotional assets.</li>
           </ul>
         </div>
       </div>
 
     </div>
 
-    <!-- RIGHT COLUMN: Add New Banner Form Panel -->
-    <div class="form-card">
+    <!-- RIGHT COLUMN: Add / Edit Banner Form Panel -->
+    <div class="form-card" [class.editing-mode]="isEditing">
       <div class="form-header-row">
-        <h2 class="panel-title form-header-title">Add New Banner</h2>
-        <button class="btn-close-form" (click)="resetForm()" title="Reset Form">
+        <div>
+          <h2 class="panel-title form-header-title mb-0">
+            {{ isEditing ? 'Edit Banner (#' + editingId + ')' : 'Add New Banner' }}
+          </h2>
+          <span class="small text-muted">
+            {{ isEditing ? 'Update banner image or text on the website' : 'Publish a new banner to any website section' }}
+          </span>
+        </div>
+        <button type="button" class="btn-close-form" (click)="resetForm()" title="Cancel / Reset Form">
           <i class="bi bi-x"></i>
         </button>
       </div>
 
       <div class="form-body">
-        
+
+        <!-- Target Section Selector -->
+        <div class="form-group">
+          <label class="form-label">Storefront Section <span class="required">*</span></label>
+          <div class="select-wrapper-full">
+            <select [(ngModel)]="bannerForm.section" class="form-control form-select">
+              @for (sec of bannerSections; track sec.key) {
+                <option [value]="sec.key">
+                  {{ sec.name }} ({{ sec.recommendedSize }})
+                </option>
+              }
+            </select>
+          </div>
+          <span class="field-hint text-muted small mt-1 d-block">
+            <i class="bi bi-info-circle me-1"></i>Displays in: <strong>{{ currentSectionLocation }}</strong> (Recommended: {{ currentRecommendedSize }})
+          </span>
+        </div>
+
+        <!-- Target Page Selector -->
+        <div class="form-group">
+          <label class="form-label">Target Page</label>
+          <div class="select-wrapper-full">
+            <select [(ngModel)]="bannerForm.targetPage" class="form-control form-select">
+              <option value="Home">Home (Storefront)</option>
+              <option value="Catalog">Product Catalog (/products)</option>
+              <option value="Homeopathy">Homeopathy Page (/homeopathy)</option>
+              <option value="Product Details">Product Details (/product/:id)</option>
+              <option value="Global">Global (All Pages)</option>
+            </select>
+          </div>
+          <span class="field-hint text-muted small mt-1 d-block">
+            Page where this banner is rendered.
+          </span>
+        </div>
+
+        <!-- Category Key (Shows when Product Catalog Banners is selected) -->
+        @if (bannerForm.section === 'Product Catalog Banners') {
+          <div class="form-group">
+            <label class="form-label">Product Category <span class="required">*</span></label>
+            <div class="select-wrapper-full">
+              <select [(ngModel)]="bannerForm.categoryKey" class="form-control form-select">
+                <option value="wellness">Wellness & Ayurveda (/products?category=wellness)</option>
+                <option value="homeopathy">Homeopathy & Natural Care (/products?category=homeopathy)</option>
+                <option value="beauty">Beauty & Personal Care (/products?category=beauty)</option>
+                <option value="pantry">Food & Pantry (/products?category=pantry)</option>
+                <option value="fashion">Ethnic Clothing & Handlooms (/products?category=fashion)</option>
+              </select>
+            </div>
+            <span class="field-hint text-muted small mt-1 d-block">
+              Connects directly to the selected category in the website header and catalog.
+            </span>
+          </div>
+        }
+
         <!-- Banner Title -->
         <div class="form-group">
           <label class="form-label">Banner Title <span class="required">*</span></label>
           <input
             type="text"
-            [(ngModel)]="newBanner.title"
-            placeholder="Enter banner title"
+            [(ngModel)]="bannerForm.title"
+            placeholder="e.g. Taste the Tradition, Pure Herbal Formulations..."
             class="form-control"
           />
         </div>
 
-        <!-- Section Selector -->
+        <!-- Banner Subtitle / Description -->
         <div class="form-group">
-          <label class="form-label">Storefront Section <span class="required">*</span></label>
-          <div class="select-wrapper-full">
-            <select [(ngModel)]="newBanner.section" class="form-control form-select">
-              <option *ngFor="let sec of bannerSections" [value]="sec.key">
-                {{ sec.name }} ({{ sec.recommendedSize }})
-              </option>
-            </select>
-          </div>
+          <label class="form-label">Subtitle / Tagline</label>
+          <input
+            type="text"
+            [(ngModel)]="bannerForm.subtitle"
+            placeholder="e.g. Pure Spices. Rich Flavor. A Healthier You."
+            class="form-control"
+          />
         </div>
 
-        <!-- Banner Image Upload Box -->
+        <!-- Desktop Banner Image Upload Dropzone -->
         <div class="form-group">
-          <label class="form-label">Banner Image <span class="required">*</span></label>
-          
+          <div class="d-flex align-items-center justify-content-between mb-1">
+            <label class="form-label mb-0"><i class="bi bi-display me-1"></i> Desktop Banner Image <span class="required">*</span></label>
+            <span class="badge bg-light text-secondary border">Rec: {{ currentRecommendedSize }}</span>
+          </div>
+
           <input
             type="file"
             id="bannerImageInput"
@@ -304,79 +456,397 @@
               <div class="cloud-icon-circle">
                 <i class="bi bi-cloud-arrow-up"></i>
               </div>
-              <p class="upload-title"><strong>Click to upload image</strong></p>
-              <p class="upload-sub">or drag and drop</p>
-              <span class="upload-formats">Supports JPG, PNG (Max 2MB)</span>
+              <p class="upload-title mb-1"><strong>Click to select file or drag & drop</strong></p>
+              <p class="upload-sub mb-1 text-muted small">Upload high-res JPG, PNG, WebP for desktop screens</p>
+              <span class="upload-formats">Automatic live preview before publishing</span>
             </div>
+          </div>
+
+          <!-- Direct Image URL / Path input -->
+          <div class="input-group input-group-sm mt-2">
+            <span class="input-group-text bg-light text-secondary"><i class="bi bi-link"></i> Desktop URL</span>
+            <input
+              type="text"
+              [ngModel]="bannerForm.image"
+              (ngModelChange)="onImageUrlChange($event)"
+              placeholder="assets/images/... or https://..."
+              class="form-control"
+            />
           </div>
         </div>
 
-        <!-- Link (Optional) -->
+        <!-- Mobile Banner Image (Optional) -->
         <div class="form-group">
-          <label class="form-label">Link (Optional)</label>
+          <div class="d-flex align-items-center justify-content-between mb-1">
+            <label class="form-label mb-0"><i class="bi bi-phone me-1"></i> Mobile Banner Image (Optional)</label>
+            <span class="badge bg-light text-secondary border">Rec: 768 × 500 px</span>
+          </div>
+
+          <input
+            type="file"
+            id="bannerMobileImageInput"
+            style="display: none;"
+            accept="image/*"
+            (change)="onMobileImageSelected($event)"
+          />
+
+          <div class="upload-dropzone" (click)="triggerMobileImageUpload()">
+            <div class="upload-placeholder">
+              <div class="cloud-icon-circle bg-light text-primary">
+                <i class="bi bi-phone"></i>
+              </div>
+              <p class="upload-title mb-1"><strong>Click to select mobile image</strong></p>
+              <p class="upload-sub mb-1 text-muted small">Optimized crop for smartphones and compact layouts</p>
+            </div>
+          </div>
+
+          <div class="input-group input-group-sm mt-2">
+            <span class="input-group-text bg-light text-secondary"><i class="bi bi-link"></i> Mobile URL</span>
+            <input
+              type="text"
+              [(ngModel)]="bannerForm.mobileImage"
+              placeholder="assets/images/... or https://..."
+              class="form-control"
+            />
+          </div>
+        </div>
+
+        <!-- Banner Scheduling (Start & End Dates) -->
+        <div class="row g-2 mb-3">
+          <div class="col-6">
+            <label class="form-label"><i class="bi bi-calendar-check me-1"></i> Schedule Start</label>
+            <input
+              type="date"
+              [(ngModel)]="bannerForm.scheduleStart"
+              class="form-control form-control-sm"
+            />
+          </div>
+          <div class="col-6">
+            <label class="form-label"><i class="bi bi-calendar-x me-1"></i> Schedule End</label>
+            <input
+              type="date"
+              [(ngModel)]="bannerForm.scheduleEnd"
+              class="form-control form-control-sm"
+            />
+          </div>
+        </div>
+
+        <!-- Target Link -->
+        <div class="form-group">
+          <label class="form-label">Click Target Link (Optional)</label>
           <input
             type="text"
-            [(ngModel)]="newBanner.link"
-            placeholder="Enter link (e.g. /shop, /products?category=...)"
+            [(ngModel)]="bannerForm.link"
+            placeholder="e.g. /products, /products?category=wellness"
             class="form-control"
           />
         </div>
 
-        <!-- Status Segmented Buttons -->
+        <!-- Badge / Micro Tag -->
         <div class="form-group">
-          <label class="form-label">Status <span class="required">*</span></label>
-          <div class="status-toggle-group">
-            <button
-              type="button"
-              class="toggle-btn"
-              [class.active]="newBanner.status === 'Active'"
-              (click)="newBanner.status = 'Active'"
-            >
-              Active
-            </button>
-            <button
-              type="button"
-              class="toggle-btn"
-              [class.active]="newBanner.status === 'Inactive'"
-              (click)="newBanner.status = 'Inactive'"
-            >
-              Inactive
-            </button>
+          <label class="form-label">Micro Badge Text (Optional)</label>
+          <input
+            type="text"
+            [(ngModel)]="bannerForm.badgeText"
+            placeholder="e.g. 100% Herbal, Certified Natural..."
+            class="form-control"
+          />
+        </div>
+
+        <!-- Status & Sort Order in 2 Columns -->
+        <div class="row g-3">
+          <div class="col-6">
+            <label class="form-label">Status <span class="required">*</span></label>
+            <div class="status-toggle-group">
+              <button
+                type="button"
+                class="toggle-btn"
+                [class.active]="bannerForm.status === 'Active'"
+                (click)="bannerForm.status = 'Active'"
+              >
+                Active
+              </button>
+              <button
+                type="button"
+                class="toggle-btn"
+                [class.active]="bannerForm.status === 'Inactive'"
+                (click)="bannerForm.status = 'Inactive'"
+              >
+                Inactive
+              </button>
+            </div>
+          </div>
+          <div class="col-6">
+            <label class="form-label">Display Order</label>
+            <input
+              type="number"
+              [(ngModel)]="bannerForm.sortOrder"
+              placeholder="1"
+              min="1"
+              class="form-control"
+            />
           </div>
         </div>
 
-        <!-- Sort Order -->
-        <div class="form-group">
-          <label class="form-label">Sort Order <span class="required">*</span></label>
-          <input
-            type="number"
-            [(ngModel)]="newBanner.sortOrder"
-            placeholder="Enter sort order (e.g. 1)"
-            class="form-control"
-          />
-        </div>
+        <!-- Live Visual Preview of Banner Card with Desktop/Mobile preview switcher -->
+        <div class="form-group mt-3">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <label class="form-label mb-0 fw-semibold">Live Preview Before Publishing</label>
+            <div class="btn-group btn-group-sm">
+              <button
+                type="button"
+                class="btn btn-sm"
+                [class.btn-primary]="previewMode === 'desktop'"
+                [class.btn-outline-secondary]="previewMode !== 'desktop'"
+                (click)="previewMode = 'desktop'"
+                title="Desktop Preview"
+              >
+                <i class="bi bi-display me-1"></i>Desktop
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm"
+                [class.btn-primary]="previewMode === 'mobile'"
+                [class.btn-outline-secondary]="previewMode !== 'mobile'"
+                (click)="previewMode = 'mobile'"
+                title="Mobile Preview"
+              >
+                <i class="bi bi-phone me-1"></i>Mobile
+              </button>
+            </div>
+          </div>
 
-        <!-- Live Visual Preview of Banner Card -->
-        <div class="form-group">
-          <label class="form-label">Live Preview (Selected Section: {{ newBanner.section }})</label>
-          <div class="banner-live-card">
-            <img [src]="newBanner.imagePreview" alt="Live Preview" class="preview-hero-img" />
+          <div class="banner-live-card" [class.mobile-view-card]="previewMode === 'mobile'">
+            @if (previewMode === 'mobile' && bannerForm.mobileImage) {
+              <img [src]="bannerForm.mobileImage" alt="Mobile Live Preview" class="preview-hero-img" />
+            } @else if (bannerForm.image) {
+              <img [src]="bannerForm.image" alt="Live Preview" class="preview-hero-img" />
+            } @else {
+              <div class="preview-empty-stage d-flex align-items-center justify-content-center text-muted">
+                <i class="bi bi-image fs-1 me-2"></i> No Image Selected
+              </div>
+            }
             <div class="preview-overlay">
-              <h3 class="preview-heading">{{ newBanner.title || 'Natural Care for a Better You' }}</h3>
-              <p class="preview-sub">{{ newBanner.section }}</p>
+              <span class="preview-tag-pill" *ngIf="bannerForm.badgeText">{{ bannerForm.badgeText }}</span>
+              <h3 class="preview-heading">{{ bannerForm.title || 'Banner Title' }}</h3>
+              <p class="preview-sub">{{ bannerForm.subtitle || bannerForm.section }}</p>
             </div>
           </div>
         </div>
 
-        <!-- Save Banner Button -->
-        <button type="button" class="btn-submit-save" (click)="saveBanner()">
-          <i class="bi bi-save"></i>
-          <span>Save Banner to {{ newBanner.section }}</span>
-        </button>
+        <!-- Save / Update Action Buttons -->
+        <div class="form-actions-row d-flex align-items-center gap-2 mt-4 pt-2">
+          <button type="button" class="btn btn-outline-secondary px-3 py-2.5 rounded-pill" (click)="resetForm()">
+            Cancel
+          </button>
+          <button type="button" class="btn-submit-save flex-grow-1" (click)="saveBanner()">
+            <i class="bi" [ngClass]="isEditing ? 'bi-check-circle' : 'bi-cloud-arrow-up'"></i>
+            <span>{{ isEditing ? 'Save Changes to Website' : 'Publish Banner to Website' }}</span>
+          </button>
+        </div>
 
       </div>
     </div>
 
   </div>
+  }
+
+  <!-- BENTO GRID MANAGEMENT VIEW -->
+  @if (activeTab === 'bento') {
+    <div class="bento-manager-panel">
+      <!-- Info Header Banner -->
+      <div class="card p-3 p-md-4 mb-4 bg-white rounded-4 border shadow-xs">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">
+                <i class="bi bi-grid-fill me-1"></i>Home Page • Signature Picks
+              </span>
+              <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1" style="font-size: 11px;">
+                <i class="bi bi-check2-circle me-1"></i>Live Synchronized
+              </span>
+            </div>
+            <h2 class="h5 fw-bold mb-1 text-dark">Bento Grid Showcase Image Management</h2>
+            <p class="text-secondary small mb-0">
+              Easily change and replace cover images and details for the 6 cards in the Home Page Bento Grid (Signature Picks).
+              Click <strong>"Upload New Image"</strong> or enter an image URL on any card to update it immediately on the live storefront.
+            </p>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <a href="/" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3 d-inline-flex align-items-center gap-1.5">
+              <i class="bi bi-box-arrow-up-right"></i>
+              <span>View on Storefront</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bento Cards Grid (3 Columns) -->
+      <div class="row g-4 bento-admin-grid mb-4">
+        @for (item of bentoItems; track item.id) {
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 rounded-4 border shadow-xs overflow-hidden bento-admin-card">
+              <!-- Card Top Header -->
+              <div class="card-header bg-white border-bottom py-2.5 px-3 d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="badge bg-light text-secondary border rounded-pill px-2 py-0.5" style="font-size: 10.5px;">
+                    Column {{ item.column }} • {{ item.isTall ? 'Tall Card' : 'Standard Card' }}
+                  </span>
+                  @if (item.floatingTag) {
+                    <span class="badge rounded-pill px-2 py-0.5" style="background-color: #ecfdf5; color: #047857; font-size: 10.5px;">
+                      {{ item.floatingTag }}
+                    </span>
+                  }
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-0.5 d-inline-flex align-items-center gap-1"
+                        (click)="openEditBento(item)" title="Edit Card Details">
+                  <i class="bi bi-pencil-square" style="font-size: 11px;"></i>
+                  <span style="font-size: 11.5px;">Edit</span>
+                </button>
+              </div>
+
+              <!-- Live Card Image Preview Box -->
+              <div class="position-relative bento-preview-stage overflow-hidden" [class.tall-stage]="item.isTall">
+                <img [src]="item.image" [alt]="item.title" class="bento-stage-img" loading="lazy" />
+                <div class="bento-stage-overlay"></div>
+                
+                <!-- Floating Info over image -->
+                <div class="bento-stage-content p-3 d-flex flex-column justify-content-between">
+                  @if (item.floatingTag) {
+                    <span class="bento-stage-tag align-self-end">{{ item.floatingTag }}</span>
+                  }
+                  <div class="mt-auto">
+                    <h4 class="text-white fw-bold mb-0 text-shadow">{{ item.title }}</h4>
+                    <p class="text-white-50 small mb-2 text-shadow">{{ item.tagline }}</p>
+                    <span class="badge bg-white text-dark rounded-pill px-2.5 py-1 fw-bold" style="font-size: 10px;">
+                      SHOP NOW <i class="bi bi-arrow-right ms-1"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card Body Actions & Controls -->
+              <div class="card-body p-3 bg-light-subtle d-flex flex-column gap-2">
+                <!-- Replace Upload Button -->
+                <div class="d-flex align-items-center gap-2">
+                  <button type="button" class="btn btn-primary btn-sm rounded-pill flex-grow-1 d-inline-flex align-items-center justify-content-center gap-1.5"
+                          (click)="triggerBentoImageUpload(item)">
+                    <i class="bi bi-cloud-arrow-up"></i>
+                    <span>Upload New Image</span>
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-2.5"
+                          (click)="openEditBento(item)" title="Edit Card Title & Info">
+                    <i class="bi bi-gear"></i>
+                  </button>
+                </div>
+
+                <!-- Direct URL Input with Apply -->
+                <div class="input-group input-group-sm mt-1">
+                  <span class="input-group-text bg-white text-muted" style="font-size: 11px;">URL</span>
+                  <input type="text" #urlInput [value]="item.image" placeholder="Paste image link..." class="form-control" style="font-size: 11.5px;" />
+                  <button type="button" class="btn btn-outline-primary" (click)="updateBentoImageUrl(item, urlInput.value)" title="Apply Image URL">
+                    Apply
+                  </button>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between text-muted mt-1" style="font-size: 11px;">
+                  <span>Link: <code class="text-primary">{{ item.shopUrl }}</code></span>
+                  <span>ID: {{ item.id }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- BENTO ITEM EDIT MODAL -->
+  @if (editingBentoItem) {
+    <div class="modal fade show d-block bento-modal-backdrop" tabindex="-1" style="background: rgba(15, 23, 42, 0.65); z-index: 1060;">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+          
+          <div class="modal-header bg-light px-4 py-3 border-bottom">
+            <div>
+              <h5 class="modal-title fw-bold text-dark mb-0">Edit Bento Grid Card</h5>
+              <span class="text-muted small">Card ID: <code>{{ editingBentoItem.id }}</code> • Column {{ editingBentoItem.column }}</span>
+            </div>
+            <button type="button" class="btn-close" (click)="closeBentoEdit()" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body p-4">
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold small text-muted">Card Title *</label>
+                <input type="text" [(ngModel)]="bentoEditForm.title" class="form-control" placeholder="e.g. Dry Fruits" />
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold small text-muted">Tagline / Subtitle</label>
+                <input type="text" [(ngModel)]="bentoEditForm.tagline" class="form-control" placeholder="e.g. Premium California & Afghan Picks" />
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold small text-muted">Floating Tag Badge</label>
+                <input type="text" [(ngModel)]="bentoEditForm.floatingTag" class="form-control" placeholder="e.g. 100% Organic, Pure Aroma" />
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold small text-muted">Shop URL / Route</label>
+                <input type="text" [(ngModel)]="bentoEditForm.shopUrl" class="form-control" placeholder="e.g. /products?category=pantry" />
+              </div>
+
+              <!-- Image Configuration -->
+              <div class="col-12">
+                <label class="form-label fw-semibold small text-muted">Card Cover Image *</label>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <input type="text" [(ngModel)]="bentoEditForm.image" class="form-control" placeholder="Image URL or uploaded file..." />
+                  <button type="button" class="btn btn-outline-primary d-inline-flex align-items-center gap-1.5 flex-shrink-0"
+                          (click)="triggerBentoFormImageUpload()">
+                    <i class="bi bi-upload"></i>
+                    <span>Choose File</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Live Preview in Modal -->
+              <div class="col-12">
+                <label class="form-label fw-semibold small text-muted mb-2">Card Live Preview</label>
+                <div class="modal-bento-preview position-relative rounded-4 overflow-hidden border shadow-xs" style="height: 190px;">
+                  <img [src]="bentoEditForm.image" [alt]="bentoEditForm.title" class="w-100 h-100 object-fit-cover" />
+                  <div class="bento-stage-overlay"></div>
+                  <div class="bento-stage-content p-3 d-flex flex-column justify-content-between">
+                    @if (bentoEditForm.floatingTag) {
+                      <span class="bento-stage-tag align-self-end">{{ bentoEditForm.floatingTag }}</span>
+                    }
+                    <div class="mt-auto">
+                      <h4 class="text-white fw-bold mb-0 text-shadow">{{ bentoEditForm.title || 'Card Title' }}</h4>
+                      <p class="text-white-50 small mb-2 text-shadow">{{ bentoEditForm.tagline || 'Tagline here' }}</p>
+                      <span class="badge bg-white text-dark rounded-pill px-2.5 py-1 fw-bold" style="font-size: 10px;">
+                        SHOP NOW <i class="bi bi-arrow-right ms-1"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer bg-light px-4 py-3 border-top d-flex align-items-center justify-content-between">
+            <button type="button" class="btn btn-outline-secondary rounded-pill px-4" (click)="closeBentoEdit()">
+              Cancel
+            </button>
+            <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm d-inline-flex align-items-center gap-2"
+                    (click)="saveBentoEdit()">
+              <i class="bi bi-check-circle-fill"></i>
+              <span>Save Changes &amp; Update Home Page</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  }
 
 </div>

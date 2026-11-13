@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 70" width="200" height="70">
+  <rect width="200" height="70" rx="10" fill="#FFFFFF"/>
+  <rect x="15" y="12" width="170" height="46" rx="6" fill="#007934"/>
+  <circle cx="42" cy="35" r="16" fill="#FFFFFF"/>
+  <text x="42" y="40" font-family="Arial, sans-serif" font-size="13" font-weight="900" fill="#005A9C" text-anchor="middle">TATA</text>
+  <text x="116" y="37" font-family="Arial, sans-serif" font-size="16" font-weight="800" fill="#FFFFFF" text-anchor="middle">SAMPANN</text>
+  <text x="116" y="49" font-family="sans-serif" font-size="7.5" font-weight="bold" fill="#FFD200" text-anchor="middle" letter-spacing="1">PURE &amp; WHOLESOME</text>
+</svg>

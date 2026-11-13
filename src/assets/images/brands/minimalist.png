@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 90" width="220" height="90">
+    <g transform="translate(18, 16)">
+      <text x="6" y="34" font-family="'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="400" fill="#212121">[Be] </text>
+      <text x="46" y="34" font-family="'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="800" fill="#212121" letter-spacing="-0.5">Minimalist</text>
+      <path d="M 8 42 L 160 42" stroke="#212121" stroke-width="1"/>
+      <text x="8" y="53" font-family="'Segoe UI', monospace" font-size="7.5" font-weight="600" fill="#616161" letter-spacing="1">HIDE NOTHING · TRANSPARENT BEAUTY</text>
+    </g>
+  </svg>
