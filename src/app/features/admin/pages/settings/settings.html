@@ -1,1 +1,137 @@
-<div class="page-heading"><div><div class="eyebrow">CONFIGURATION</div><h1>Store settings</h1><p>Manage basic store preferences. Changes are a local preview until connected to an API.</p></div><button class="primary-btn" (click)="save()">Save changes</button></div><div class="settings-grid"><section class="panel"><div class="panel-head"><div><h2>General information</h2><p>Store identity and customer support details</p></div></div><label>Store name<input [(ngModel)]="storeName" class="field"></label><label>Support email<input [(ngModel)]="supportEmail" type="email" class="field"></label><label>Default currency<select [(ngModel)]="currency" class="field"><option>USD</option><option>INR</option><option>GBP</option><option>EUR</option></select></label><label>Store timezone<select [(ngModel)]="timezone" class="field"><option>Asia/Kolkata</option><option>UTC</option><option>America/New_York</option><option>Europe/London</option></select></label>@if(saved){<div class="notice">Settings preview saved in this page state. Backend persistence is not configured yet.</div>}</section><section class="panel"><div class="panel-head"><div><h2>Access & security</h2><p>Recommended controls for production handover</p></div></div><div class="security-row"><span>Admin role verification</span><b class="status pending">Backend required</b></div><div class="security-row"><span>Audit trail</span><b class="status pending">Not connected</b></div><div class="security-row"><span>Multi-factor authentication</span><b class="status pending">Not configured</b></div><div class="security-note">Do not store secrets or payment credentials in frontend code. Configure authorization, audit logging and secure sessions on the server.</div></section></div>
+<div class="settings-page">
+  <div class="page-heading">
+    <div>
+      <div class="eyebrow"><i class="bi bi-sliders"></i> STORE CONFIGURATION</div>
+      <h1>Settings</h1>
+      <p>Manage your store preferences, operations and admin controls from one place.</p>
+    </div>
+    <div class="heading-actions">
+      <span class="save-state" [class.visible]="saved"><i class="bi bi-check-circle-fill"></i> Changes saved locally</span>
+      <button class="btn-reset" type="button" (click)="reset()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+      <button class="btn-save" type="button" (click)="save()"><i class="bi bi-check2"></i> Save changes</button>
+    </div>
+  </div>
+
+  <div class="settings-summary">
+    <div class="summary-icon"><i class="bi bi-shop-window"></i></div>
+    <div class="summary-copy"><span>YOUR STORE</span><strong>{{ storeName }}</strong><small>{{ website }}</small></div>
+    <div class="summary-divider"></div>
+    <div class="summary-meta"><span class="live-dot"></span><div><strong>Store is active</strong><small>Customers can browse and place orders</small></div></div>
+    <div class="summary-right"><span>CONFIGURATION</span><strong>Admin workspace</strong></div>
+  </div>
+
+  <div class="settings-layout">
+    <aside class="settings-nav">
+      <div class="nav-title">SETTINGS MENU</div>
+      @for (section of sections; track section.id) {
+        <button type="button" class="settings-nav-item" [class.active]="activeSection === section.id" (click)="setSection(section.id)">
+          <span class="nav-icon"><i class="bi" [class]="'bi ' + section.icon"></i></span>
+          <span class="nav-copy"><strong>{{ section.label }}</strong><small>{{ section.description }}</small></span>
+          @if (activeSection === section.id) { <i class="bi bi-chevron-right nav-arrow"></i> }
+        </button>
+      }
+      <div class="nav-help"><div class="help-icon"><i class="bi bi-headset"></i></div><strong>Need a hand?</strong><p>Visit the help centre for setup guidance.</p><a href="mailto:support@distamarketplace.com">Get support <i class="bi bi-arrow-up-right"></i></a></div>
+    </aside>
+
+    <main class="settings-content">
+      @if (activeSection === 'general') {
+        <section class="settings-card">
+          <div class="card-heading"><div class="section-icon blue"><i class="bi bi-shop"></i></div><div><h2>General information</h2><p>Basic details that identify your store to customers.</p></div></div>
+          <div class="store-brand-row"><div class="store-logo">D</div><div class="brand-info"><strong>Store logo</strong><span>Use a square PNG or SVG. Recommended size 512 × 512px.</span></div><button class="outline-btn" type="button" disabled><i class="bi bi-upload"></i> Upload logo</button></div>
+          <div class="form-grid">
+            <label class="form-field"><span>Store name <b>*</b></span><input [(ngModel)]="storeName" placeholder="Your store name"></label>
+            <label class="form-field"><span>Store email <b>*</b></span><input [(ngModel)]="storeEmail" type="email" placeholder="hello@yourstore.com"></label>
+            <label class="form-field"><span>Support email</span><input [(ngModel)]="supportEmail" type="email" placeholder="support@yourstore.com"></label>
+            <label class="form-field"><span>Phone number</span><input [(ngModel)]="phone" placeholder="+91 00000 00000"></label>
+            <label class="form-field full"><span>Website URL</span><input [(ngModel)]="website" placeholder="https://yourstore.com"></label>
+            <label class="form-field full"><span>Business address</span><textarea [(ngModel)]="address" rows="3" placeholder="Enter your business address"></textarea></label>
+          </div>
+        </section>
+        <section class="settings-card info-card"><div class="info-symbol"><i class="bi bi-info-circle"></i></div><div><strong>Keep your store details up to date</strong><p>Your store name and support contact details may appear in customer emails, invoices and order updates.</p></div></section>
+      }
+
+      @if (activeSection === 'regional') {
+        <section class="settings-card"><div class="card-heading"><div class="section-icon violet"><i class="bi bi-globe2"></i></div><div><h2>Regional preferences</h2><p>Set the formats and defaults used across your storefront.</p></div></div>
+          <div class="form-grid">
+            <label class="form-field"><span>Default currency</span><select [(ngModel)]="currency"><option value="INR">INR — Indian Rupee (₹)</option><option value="USD">USD — US Dollar ($)</option><option value="EUR">EUR — Euro (€)</option><option value="GBP">GBP — Pound (£)</option></select><small>Used for product prices and orders.</small></label>
+            <label class="form-field"><span>Store timezone</span><select [(ngModel)]="timezone"><option value="Asia/Kolkata">India Standard Time (IST)</option><option value="UTC">UTC</option><option value="Europe/London">London</option><option value="America/New_York">New York</option></select></label>
+            <label class="form-field"><span>Store language</span><select [(ngModel)]="language"><option>English</option><option>Hindi</option></select></label>
+            <label class="form-field"><span>Date format</span><select [(ngModel)]="dateFormat"><option>DD/MM/YYYY</option><option>MM/DD/YYYY</option><option>YYYY-MM-DD</option></select></label>
+          </div>
+          <div class="setting-option"><div><strong>Display prices inclusive of tax</strong><p>Show product prices with applicable taxes included.</p></div><label class="switch"><input type="checkbox" [(ngModel)]="taxInclusive"><span></span></label></div>
+        </section>
+      }
+
+      @if (activeSection === 'payments') {
+        <section class="settings-card"><div class="card-heading"><div class="section-icon green"><i class="bi bi-credit-card"></i></div><div><h2>Payment methods</h2><p>Choose which payment options customers can see at checkout.</p></div></div>
+          <div class="payment-row"><div class="payment-logo cod"><i class="bi bi-cash-coin"></i></div><div class="payment-copy"><strong>Cash on Delivery</strong><span>Collect payment when the order is delivered.</span></div><label class="switch"><input type="checkbox" [(ngModel)]="payments.cod"><span></span></label></div>
+          <div class="payment-row"><div class="payment-logo online"><i class="bi bi-wallet2"></i></div><div class="payment-copy"><strong>Online payments</strong><span>Accept payments through a payment gateway.</span></div><label class="switch"><input type="checkbox" [(ngModel)]="payments.online"><span></span></label></div>
+          <div class="payment-row"><div class="payment-logo upi">UPI</div><div class="payment-copy"><strong>UPI payments</strong><span>Accept UPI apps such as Google Pay, PhonePe and Paytm.</span></div><label class="switch"><input type="checkbox" [(ngModel)]="payments.upi"><span></span></label></div>
+          <div class="payment-row"><div class="payment-logo cards"><i class="bi bi-credit-card-2-front"></i></div><div class="payment-copy"><strong>Credit & debit cards</strong><span>Visa, Mastercard and supported card networks.</span></div><label class="switch"><input type="checkbox" [(ngModel)]="payments.cards"><span></span></label></div>
+          <div class="payment-row"><div class="payment-logo bank"><i class="bi bi-bank"></i></div><div class="payment-copy"><strong>Net banking</strong><span>Direct bank payments through your gateway.</span></div><label class="switch"><input type="checkbox" [(ngModel)]="payments.netbanking"><span></span></label></div>
+          <div class="integration-note"><i class="bi bi-shield-lock"></i><span><strong>Payment gateway connection required</strong><small>These controls are UI preferences only. Connect and verify a payment provider on the backend before accepting live payments. Never store secret keys in frontend code.</small></span></div>
+        </section>
+      }
+
+      @if (activeSection === 'shipping') {
+        <section class="settings-card"><div class="card-heading"><div class="section-icon orange"><i class="bi bi-truck"></i></div><div><h2>Shipping & delivery</h2><p>Configure the delivery options available to your customers.</p></div></div>
+          <div class="setting-option"><div><strong>Enable free shipping</strong><p>Allow free shipping when your order conditions are met.</p></div><label class="switch"><input type="checkbox" [(ngModel)]="shipping.freeShipping"><span></span></label></div>
+          <div class="setting-option"><div><strong>Local delivery</strong><p>Allow delivery within your supported local service areas.</p></div><label class="switch"><input type="checkbox" [(ngModel)]="shipping.localDelivery"><span></span></label></div>
+          <div class="setting-option"><div><strong>Shipment tracking</strong><p>Show tracking information on customer order details.</p></div><label class="switch"><input type="checkbox" [(ngModel)]="shipping.tracking"><span></span></label></div>
+          <div class="integration-note"><i class="bi bi-info-circle"></i><span><strong>Shipping zones are not configured</strong><small>Add delivery zones, rates and courier API credentials when the shipping backend is ready.</small></span></div>
+        </section>
+      }
+
+      @if (activeSection === 'orders') {
+        <section class="settings-card"><div class="card-heading"><div class="section-icon blue"><i class="bi bi-bag-check"></i></div><div><h2>Orders & checkout</h2><p>Control the checkout experience and order preferences.</p></div></div>
+          <div class="form-grid"><label class="form-field"><span>Order number prefix</span><input [(ngModel)]="orders.prefix" maxlength="8"><small>Example: {{ orders.prefix }}-10001</small></label><label class="form-field"><span>Minimum order amount ({{ currency }})</span><input type="number" min="0" [(ngModel)]="orders.minimumOrder"></label></div>
+          <div class="setting-option"><div><strong>Guest checkout</strong><p>Let customers place orders without creating an account.</p></div><label class="switch"><input type="checkbox" [(ngModel)]="orders.guestCheckout"><span></span></label></div>
+          <div class="setting-option"><div><strong>Order confirmation</strong><p>Send a confirmation after an order is successfully placed.</p></div><label class="switch"><input type="checkbox" [(ngModel)]="orders.orderConfirmation"><span></span></label></div>
+          <div class="setting-option"><div><strong>Allow order cancellation</strong><p>Allow customers to request cancellation before dispatch.</p></div><label class="switch"><input type="checkbox" [(ngModel)]="orders.allowCancellation"><span></span></label></div>
+        </section>
+      }
+
+      @if (activeSection === 'notifications') {
+        <section class="settings-card"><div class="card-heading"><div class="section-icon violet"><i class="bi bi-bell"></i></div><div><h2>Notifications</h2><p>Choose which store events should trigger admin alerts.</p></div></div>
+          <div class="setting-option"><div><strong>New order placed</strong><p>Get notified whenever a customer places an order.</p></div><label class="switch"><input type="checkbox" [(ngModel)]="notifications.newOrder"><span></span></label></div>
+          <div class="setting-option"><div><strong>Low stock alert</strong><p>Receive an alert when a product reaches its stock threshold.</p></div><label class="switch"><input type="checkbox" [(ngModel)]="notifications.lowStock"><span></span></label></div>
+          <div class="setting-option"><div><strong>New customer registration</strong><p>Get notified when a new customer creates an account.</p></div><label class="switch"><input type="checkbox" [(ngModel)]="notifications.newCustomer"><span></span></label></div>
+          <div class="setting-option"><div><strong>Failed payment</strong><p>Be alerted when a payment attempt fails.</p></div><label class="switch"><input type="checkbox" [(ngModel)]="notifications.failedPayment"><span></span></label></div>
+          <div class="subheading">DELIVERY CHANNELS</div>
+          <div class="setting-option"><div><strong>Email notifications</strong><p>Send alerts to your store email address.</p></div><label class="switch"><input type="checkbox" [(ngModel)]="notifications.email"><span></span></label></div>
+          <div class="setting-option"><div><strong>In-app notifications</strong><p>Show alerts inside the admin dashboard.</p></div><label class="switch"><input type="checkbox" [(ngModel)]="notifications.inApp"><span></span></label></div>
+        </section>
+      }
+
+      @if (activeSection === 'security') {
+        <section class="settings-card"><div class="card-heading"><div class="section-icon red"><i class="bi bi-shield-lock"></i></div><div><h2>Security & access</h2><p>Recommended controls to protect your admin workspace.</p></div></div>
+          <div class="setting-option"><div><strong>Two-factor authentication</strong><p>Require a second verification step for admin sign-in.</p><span class="backend-tag">Backend setup required</span></div><label class="switch"><input type="checkbox" [(ngModel)]="security.twoFactor"><span></span></label></div>
+          <div class="setting-option"><div><strong>Strong password policy</strong><p>Require strong passwords for all administrator accounts.</p></div><label class="switch"><input type="checkbox" [(ngModel)]="security.strongPasswords"><span></span></label></div>
+          <div class="setting-option"><div><strong>Login alerts</strong><p>Notify admins about new sign-ins.</p></div><label class="switch"><input type="checkbox" [(ngModel)]="security.loginAlerts"><span></span></label></div>
+          <label class="form-field session-field"><span>Session timeout</span><select [(ngModel)]="security.sessionTimeout"><option value="15">15 minutes</option><option value="30">30 minutes</option><option value="60">1 hour</option><option value="120">2 hours</option></select></label>
+          <div class="integration-note warning"><i class="bi bi-exclamation-triangle"></i><span><strong>Frontend settings do not enforce security</strong><small>Implement authorization, password rules, secure sessions, 2FA and audit logging in the server/API before production use.</small></span></div>
+        </section>
+      }
+
+      @if (activeSection === 'admins') {
+        <section class="settings-card"><div class="card-heading"><div class="section-icon blue"><i class="bi bi-people"></i></div><div><h2>Admin users & roles</h2><p>Manage who can access your store administration.</p></div></div>
+          <div class="admin-role"><div class="role-avatar owner">OW</div><div class="role-copy"><strong>Store owner</strong><span>Full access to all store settings and operations.</span></div><span class="role-label">FULL ACCESS</span></div>
+          <div class="admin-role"><div class="role-avatar manager">AM</div><div class="role-copy"><strong>Admin manager</strong><span>Manage products, orders, customers and reports.</span></div><span class="role-label limited">CUSTOM ROLE</span></div>
+          <div class="admin-role"><div class="role-avatar staff">ST</div><div class="role-copy"><strong>Staff member</strong><span>Access assigned modules only.</span></div><span class="role-label limited">CUSTOM ROLE</span></div>
+          <div class="integration-note"><i class="bi bi-info-circle"></i><span><strong>Role management is a planned configuration</strong><small>Connect this section to your user and permissions API before creating or changing admin access.</small></span></div>
+        </section>
+      }
+
+      @if (activeSection === 'system') {
+        <section class="settings-card"><div class="card-heading"><div class="section-icon orange"><i class="bi bi-cpu"></i></div><div><h2>System & maintenance</h2><p>Store availability and operational tools.</p></div></div>
+          <div class="setting-option"><div><strong>Maintenance mode</strong><p>Temporarily prevent customers from accessing the storefront.</p><span class="backend-tag">Requires storefront/API support</span></div><label class="switch"><input type="checkbox" [(ngModel)]="maintenanceMode"><span></span></label></div>
+          <div class="system-row"><div class="system-symbol"><i class="bi bi-database-check"></i></div><div><strong>Database backup</strong><span>Automated backups are not connected.</span></div><span class="status-pill pending">Not configured</span></div>
+          <div class="system-row"><div class="system-symbol"><i class="bi bi-file-earmark-arrow-down"></i></div><div><strong>Data export</strong><span>Export orders, customers and product data.</span></div><button class="outline-btn" type="button" disabled>Coming soon</button></div>
+          <div class="system-row"><div class="system-symbol"><i class="bi bi-activity"></i></div><div><strong>System health</strong><span>API and server health monitoring.</span></div><span class="status-pill pending">Not connected</span></div>
+        </section>
+      }
+      <div class="content-footer"><span><i class="bi bi-lock"></i> Your settings are only available to authorized admins.</span><span>Changes are currently a local preview.</span></div>
+    </main>
+  </div>
+  @if (saved) { <div class="save-toast"><i class="bi bi-check-circle-fill"></i><div><strong>Settings saved</strong><span>Preview updated at {{ lastSaved }}. API persistence is not connected.</span></div></div> }
+</div>

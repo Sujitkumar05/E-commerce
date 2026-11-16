@@ -64,91 +64,140 @@
 }
 
 /* ---------------- 1. TOP STATS GRID ---------------- */
+
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 18px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+  width: 100%;
 }
 
 .stat-card {
-  background-color: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #eef2f6;
-  padding: 20px 22px;
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-}
-
-.stat-icon-wrapper {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
+  position: relative;
+  min-height: 136px;
+  padding: 22px 20px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 19px;
-  flex-shrink: 0;
-}
+  justify-content: space-between;
+  gap: 12px;
+  overflow: hidden;
 
-.bg-green-soft {
-  background-color: #52c41a;
+  text-decoration: none;
   color: #ffffff;
-}
-.bg-purple-soft {
-  background-color: #722ed1;
-  color: #ffffff;
-}
-.bg-amber-soft {
-  background-color: #fa8c16;
-  color: #ffffff;
-}
-.bg-blue-soft {
-  background-color: #1677ff;
-  color: #ffffff;
+
+  border-radius: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+
+  background: linear-gradient(
+    125deg,
+    #aeb8ed 0%,
+    #999ed8 50%,
+    #aaa5dc 100%
+  );
+
+  box-shadow:
+    0 8px 22px rgba(70, 75, 130, 0.16),
+    inset 0 2px 8px rgba(255, 255, 255, 0.45),
+    inset 0 -3px 8px rgba(70, 65, 130, 0.10);
+
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+
+    box-shadow:
+      0 14px 28px rgba(70, 75, 130, 0.22),
+      inset 0 2px 8px rgba(255, 255, 255, 0.45);
+  }
 }
 
 .stat-content {
-  display: flex;
-  flex-direction: column;
+  position: relative;
+  z-index: 2;
+  min-width: 0;
 }
 
 .stat-label {
-  font-size: 12.5px;
-  color: #64748b;
+  display: block;
+  font-size: 13px;
   font-weight: 500;
-  margin-bottom: 4px;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 9px;
 }
 
 .stat-value {
-  font-size: 22px;
-  font-weight: 700;
-  color: #0f172a;
-  margin: 0 0 6px;
-  letter-spacing: -0.3px;
+  font-size: 40px;
+  font-weight: 750;
+  color: #ffffff;
+  margin: 8px 0 0;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  overflow-wrap: anywhere;
 }
 
 .stat-trend {
   display: flex;
   align-items: center;
-  font-size: 11.5px;
-  font-weight: 600;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #ffffff;
+
+  i {
+    font-size: 12px;
+  }
+
+  &.positive {
+    color: #f3fff7;
+  }
+
+  &.warning {
+    color: #fff2cc;
+  }
 }
 
-.stat-trend.positive {
-  color: #10b981;
+/* Circular Glass Icon */
+.stat-circle {
+  position: relative;
+  width: 66px;
+  height: 66px;
+  min-width: 66px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 5px solid rgba(255, 255, 255, 0.75);
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.10);
+
+  box-shadow:
+    0 0 12px rgba(255, 255, 255, 0.15),
+    inset 0 0 10px rgba(255, 255, 255, 0.15);
+
+  i {
+    font-size: 23px;
+    color: #ffffff;
+  }
 }
 
-.stat-trend i {
-  font-size: 16px;
-  margin-right: -1px;
+/* Responsive */
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
-.trend-sub {
-  color: #94a3b8;
-  font-weight: 400;
-  margin-left: 4px;
+@media (max-width: 600px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .stat-card {
+    min-height: 125px;
+  }
 }
 
 /* ---------------- 2. MIDDLE GRID ---------------- */

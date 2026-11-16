@@ -1,70 +1,85 @@
 <div class="dashboard-container">
 
   <!-- TOP STATS ROW: 4 Stat Cards -->
-  <div class="stats-grid">
+  
+<div class="stats-grid">
 
-    <!-- Total Orders -->
-    <a routerLink="/admin/orders" class="stat-card" style="text-decoration: none;">
-      <div class="stat-icon-wrapper bg-green-soft">
-        <i class="bi bi-cart3"></i>
-      </div>
-      <div class="stat-content">
-        <span class="stat-label">Total Orders</span>
-        <h3 class="stat-value">{{ metrics.total }}</h3>
-        <div class="stat-trend positive">
-          <i class="bi bi-check2-circle"></i>
-          <span>{{ metrics.delivered }} delivered</span>
-          <span class="trend-sub">({{ metrics.pending + metrics.processing }} pending)</span>
-        </div>
-      </div>
-    </a>
+  <!-- Total Orders -->
+  <a routerLink="/admin/orders" class="stat-card">
+    <div class="stat-content">
+      <span class="stat-label">Total Orders</span>
 
-    <!-- Total Customers -->
-    <a routerLink="/admin/customers" class="stat-card" style="text-decoration: none;">
-      <div class="stat-icon-wrapper bg-purple-soft">
+      <div class="stat-trend">
+        <i class="bi bi-check-circle-fill"></i>
+        <span>{{ metrics.delivered }} Delivered</span>
+      </div>
+
+      <h3 class="stat-value">{{ metrics.total }}</h3>
+    </div>
+
+    <div class="stat-circle">
+      <i class="bi bi-cart3"></i>
+    </div>
+  </a>
+
+  <!-- Total Customers -->
+  <a routerLink="/admin/customers" class="stat-card">
+    <div class="stat-content">
+      <span class="stat-label">Total Customers</span>
+
+      <div class="stat-trend">
         <i class="bi bi-people-fill"></i>
+        <span>Registered Buyers</span>
       </div>
-      <div class="stat-content">
-        <span class="stat-label">Total Customers</span>
-        <h3 class="stat-value">{{ totalCustomersCount }}</h3>
-        <div class="stat-trend positive">
-          <i class="bi bi-people"></i>
-          <span>Registered Buyers</span>
-        </div>
-      </div>
-    </a>
 
-    <!-- Total Products -->
-    <a routerLink="/admin/products" class="stat-card" style="text-decoration: none;">
-      <div class="stat-icon-wrapper bg-amber-soft">
-        <i class="bi bi-box-seam"></i>
-      </div>
-      <div class="stat-content">
-        <span class="stat-label">Stock Shortages / PO</span>
-        <h3 class="stat-value">{{ metrics.procurementRequired }}</h3>
-        <div class="stat-trend" [ngClass]="metrics.procurementRequired > 0 ? 'text-amber' : 'positive'">
-          <i class="bi bi-exclamation-triangle"></i>
-          <span>{{ metrics.stockShortages }} Deficit Items</span>
-        </div>
-      </div>
-    </a>
+      <h3 class="stat-value">{{ totalCustomersCount }}</h3>
+    </div>
 
-    <!-- Total Revenue -->
-    <a routerLink="/admin/orders" class="stat-card" style="text-decoration: none;">
-      <div class="stat-icon-wrapper bg-blue-soft">
-        <i class="bi bi-cash-stack"></i>
-      </div>
-      <div class="stat-content">
-        <span class="stat-label">Total Order Revenue</span>
-        <h3 class="stat-value">₹{{ metrics.totalRevenue.toLocaleString() }}</h3>
-        <div class="stat-trend positive">
-          <i class="bi bi-graph-up-arrow"></i>
-          <span>Active Net Sales</span>
-        </div>
-      </div>
-    </a>
+    <div class="stat-circle">
+      <i class="bi bi-people-fill"></i>
+    </div>
+  </a>
 
-  </div>
+  <!-- Stock Shortages -->
+  <a routerLink="/admin/products" class="stat-card">
+    <div class="stat-content">
+      <span class="stat-label">Stock Shortages / PO</span>
+
+      <div class="stat-trend"
+           [ngClass]="metrics.procurementRequired > 0 ? 'warning' : 'positive'">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>{{ metrics.stockShortages }} Deficit Items</span>
+      </div>
+
+      <h3 class="stat-value">{{ metrics.procurementRequired }}</h3>
+    </div>
+
+    <div class="stat-circle">
+      <i class="bi bi-box-seam"></i>
+    </div>
+  </a>
+
+  <!-- Total Revenue -->
+  <a routerLink="/admin/orders" class="stat-card">
+    <div class="stat-content">
+      <span class="stat-label">Total Order Revenue</span>
+
+      <div class="stat-trend">
+        <i class="bi bi-graph-up-arrow"></i>
+        <span>Active Net Sales</span>
+      </div>
+
+      <h3 class="stat-value">
+        ₹{{ metrics.totalRevenue.toLocaleString('en-IN') }}
+      </h3>
+    </div>
+
+    <div class="stat-circle">
+      <i class="bi bi-currency-rupee"></i>
+    </div>
+  </a>
+
+</div>
 
   <!-- MIDDLE ROW: Sales Overview (Line chart) | Order Status (Donut) | Quick Actions -->
   <div class="middle-grid">
